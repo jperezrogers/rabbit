@@ -1,6 +1,6 @@
 # rabbit
 
-An R package for creating computational pipelines for biomarker discovery
+An R package for creating computational pipelines for biomarker discovery.
 
 # Task class
 
