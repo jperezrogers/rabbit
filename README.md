@@ -4,7 +4,7 @@ An R package for creating computational pipelines for biomarker discovery.
 
 # Task class
 
-Example Usage:
+Example Usage For Function:
 
 ```r
 label <- "example_task"
