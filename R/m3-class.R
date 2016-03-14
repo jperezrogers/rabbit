@@ -36,6 +36,9 @@ M3 <- R6Class("M3",
     # private members
     
     # private methods
+    validate <- function(){
+      
+    }
     
   ),
   
