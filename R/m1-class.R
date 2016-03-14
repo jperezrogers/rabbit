@@ -28,6 +28,10 @@ M1 <- R6Class("M1",
     # public members
     
     # public methods
+    initialize = function(label,class="M1"){
+      self$label <- label
+      private$class <- class
+    }
     
   ),
   
@@ -36,8 +40,8 @@ M1 <- R6Class("M1",
     # private members
     
     # private methods
-    validate <- function(){
-      
+    validate = function(){
+      invisible(self) 
     }
     
   ),
