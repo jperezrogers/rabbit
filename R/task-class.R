@@ -44,6 +44,9 @@ Task <- R6Class("Task",
       private$validateParameters(self$parameters)
     }
     
-  )
+  ),
+  
+  lock_class = TRUE
+  
 )
 
