@@ -1,20 +1,3 @@
-#' The definition of the M4 class
-#' 
-#' Here is a more detailed sentence
-#' about the M4 class
-#'
-#' @param name description
-#' @param name description
-#' 
-#' @return
-#'
-#' @keywords
-#'
-#' @export
-#' 
-#' @examples
-#'
-
 # load the required libraries
 library(R6)
 
@@ -36,8 +19,8 @@ M4 <- R6Class("M4",
     # private members
     
     # private methods
-    validate <- function(){
-      
+    validate = function(){
+      invisible(self)
     }
     
   ),

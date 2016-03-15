@@ -1,20 +1,3 @@
-#' The definition of the M1 class
-#' 
-#' Here is a more detailed sentence
-#' about the M1 class
-#'
-#' @param name description
-#' @param name description
-#' 
-#' @return
-#'
-#' @keywords
-#'
-#' @export
-#' 
-#' @examples
-#'
-
 # load the required libraries
 library(R6)
 
