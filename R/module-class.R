@@ -17,7 +17,6 @@
 #' 
 #' @section Methods:
 #' \describe{
-#'    \item{\code{addTask(label,method,parameters=NA,libraries=NA,control=NA,datatype)}}{Add a Task to the Module}
 #'    \item{\code{deleteTask(label)}}{Remove a Task from the Module}
 #'    \item{\code{run()}}{Execute a Task}
 #'    \item{\code{activate(label)}}{Activate a Task}
@@ -38,9 +37,6 @@ Module <- R6Class("Module",
     label = NA, # the name of the Module
     
     # public methods
-    addTask = function(){ # a function to create a new Task and add it to the Module (add or addTask?)
-      invisible(self)
-    },
     deleteTask = function(){ # a funtion to delete a Task from a Module (delete or deleteTask?)
       invisible(self)
     },
@@ -51,9 +47,6 @@ Module <- R6Class("Module",
       invisible(self)
     },
     deactivate = function(){ # a function to turn off a task or tasks
-      invisible(self)
-    },
-    summary = function(){ # a function that will print out a summary of the Tasks in the Module
       invisible(self)
     }
 
@@ -67,13 +60,21 @@ Module <- R6Class("Module",
     active = NA, # a Boolean vector of length = number of Tasks
     
     # private methods
-    addTaskMember = function(){ # a function to add a Task as a member of the Module object
+    addPublicMember = function(){ # a function to add a Task as a public member to the Module object
       invisible(self)
     }
     
   ),
   
-  lock_class = TRUE
+  active = list(
+    
+    summary = function(){ # a function that will print out a summary of the Tasks in the Module
+      invisible(self)
+    }
+    
+  ),
+  
+  lock_class = FALSE
   
 )
 
