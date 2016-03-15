@@ -1,22 +1,33 @@
-#' The definition of the Module class
+#' Class providing the Module object
 #' 
 #' Here is a more detailed sentence
 #' about the Module class
 #'
-#' @param name description
-#' @param name description
-#' 
-#' @return
-#'
-#' @keywords
-#'
+#' @docType class
+#' @importFrom R6 R6Class
 #' @export
+#' @keywords biomarker classification
+#' @return An object of class \code{Module}
+#' @format \code{\link{R6Class}} object
+#' 
+#' @field label The name of the Module
+#' @field class The class of the Module (one of \code{M1}, \code{M2}, \code{M3}, \code{M4})
+#' @field tasks A list of Task objects
+#' @field active A Boolean vector of length \code{length(tasks)}
+#' 
+#' @section Methods:
+#' \describe{
+#'    \item{\code{addTask(label,method,parameters=NA,libraries=NA,control=NA,datatype)}}{Add a Task to the Module}
+#'    \item{\code{deleteTask(label)}}{Remove a Task from the Module}
+#'    \item{\code{run()}}{Execute a Task}
+#'    \item{\code{activate(label)}}{Activate a Task}
+#'    \item{\code{deactivate(label)}}{Deactivate a Task}
+#'    \item{\code{summary()}}{Print out a summary of the Tasks in the Module}
+#' }
 #' 
 #' @examples
-#'
-
-# load the required libraries
-library(R6)
+#' 
+#' 
 
 # define the Module class
 Module <- R6Class("Module",
