@@ -16,7 +16,7 @@
 #' validateParameters(parameters)
 
 # validate the input parameters slot for an object of class Task
-validateParameters = function(parameters){
+validateParameters = function(parameters=NULL){
   
   # check that parameters is not null
   if(!is.null(parameters)){
