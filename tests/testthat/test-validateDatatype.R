@@ -23,3 +23,11 @@ test_that("an error is thrown if datatype is not one or more of microarray, coun
   expect_error(validateDatatype(c("microarray","not")),msg)
   expect_error(validateDatatype(c("microarray","count","rpkm","not")),msg)
 })
+
+# test that the function executes silently if datatype is correctly specified
+test_that("the function executes silently if datatype is correctly specified",{
+  expect_silent(validateDatatype("microarray"))
+  expect_silent(validateDatatype("count"))
+  expect_silent(validateDatatype("rpkm"))
+  expect_silent(validateDatatype(c("microarray","count","rpkm")))
+})
