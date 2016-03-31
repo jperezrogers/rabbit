@@ -2,9 +2,9 @@
 #' 
 #' More detailed explaination here
 #' 
-#' @param label One or more of \code{microarray}, \code{count}, \code{rpkm}
+#' @param datatype One or more of \code{microarray}, \code{count}, \code{rpkm}
 #' 
-#' @return Function will execute silently if no errors are detected in \code{label}
+#' @return Function will execute silently if no errors are detected in \code{datatype}
 #' 
 #' @examples
 #' validateDatatype("microarray")
