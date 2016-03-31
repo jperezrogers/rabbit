@@ -10,7 +10,8 @@
 #' parameters <- data.frame(
 #'  parameter = c("x","y"),
 #'  class = c("logical","numeric"),
-#'  label = c("myX","myY")
+#'  label = c("myX","myY"),
+#'  stringsAsFactors=FALSE
 #'  )
 #' validateParameters(parameters)
 
