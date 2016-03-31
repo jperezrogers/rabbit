@@ -1,4 +1,4 @@
-context("validateParameters")
+context("module::validateParameters")
 source("../../R/module-validateParameters-method.R")
 
 # test that nothing happens when parameters is NULL
