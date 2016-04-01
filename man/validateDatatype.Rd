@@ -7,10 +7,10 @@
 validateDatatype(datatype = NULL)
 }
 \arguments{
-\item{label}{One or more of \code{microarray}, \code{count}, \code{rpkm}}
+\item{datatype}{One or more of \code{microarray}, \code{count}, \code{rpkm}}
 }
 \value{
-Function will execute silently if no errors are detected in \code{label}
+Function will execute silently if no errors are detected in \code{datatype}
 }
 \description{
 More detailed explaination here
