@@ -2,4 +2,5 @@
 
 export(Module)
 export(Task)
+export(validateLabel)
 importFrom(R6,R6Class)
