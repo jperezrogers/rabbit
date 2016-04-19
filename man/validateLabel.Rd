@@ -17,5 +17,6 @@ More detailed explaination here
 }
 \examples{
 validateLabel("label")
+
 }
 

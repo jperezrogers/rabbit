@@ -20,16 +20,12 @@ about the Module class
 \describe{
 \item{\code{label}}{The name of the Module}
 
-\item{\code{class}}{The class of the Module (one of \code{M1}, \code{M2}, \code{M3}, \code{M4})}
-
 \item{\code{tasks}}{A list of Task objects}
-
-\item{\code{active}}{A Boolean vector of length \code{length(tasks)}}
 }}
 \section{Methods}{
 
 \describe{
-   \item{\code{addTask(label,method,parameters=NA,libraries=NA,control=NA,datatype)}}{Add a Task to the Module}
+   \item{\code{addTask(label,method,datatype,parameters,control,libraries)}}{Add a Task to the Module}
    \item{\code{deleteTask(label)}}{Remove a Task from the Module}
    \item{\code{run()}}{Execute a Task}
    \item{\code{activate(label)}}{Activate a Task}
