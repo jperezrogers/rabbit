@@ -1,31 +1,46 @@
 # load the required libraries
 library(R6)
 
-# define the M2 class
+# define the M1 class
 M2 <- R6Class("M2",
   
   inherit = Module,
   
   public = list(
+  
+    #================#
+    # public members #
+    #================#
     
-    # public members
-    
-    # public methods
+    #================#
+    # public methods #
+    #================#
     
   ),
   
   private = list(
     
-    # private members
+    #=================#
+    # private members #
+    #=================#
     
-    # private methods
-    validate = function(){
-      invisible(self)
+    #=================#
+    # private methods #
+    #=================#
+    
+    # validate all of the components of the Task
+    validate = function(task){
+      validateLabel(task$label)
+      validateMethodM2(task$method)
+      validateParameters(task$parameters)
+      validateLibraries(task$libraries)
+      validateControl(task$control)
+      validateDatatype(task$datatype)
     }
     
   ),
   
-  lock_class = TRUE
-  
+  lock_class = FALSE
+              
 )
 

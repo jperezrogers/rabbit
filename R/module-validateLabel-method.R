@@ -8,6 +8,8 @@
 #' 
 #' @examples
 #' validateLabel("label")
+#' 
+#' @export
 
 validateLabel <- function(label=NULL){
   

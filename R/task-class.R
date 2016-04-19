@@ -30,10 +30,10 @@ Task <- R6Class("Task",
     # public members
     label = NA,
     method = NA,
+    datatype = NA,
     parameters = NA,
     libraries = NA,
     control = NA,
-    datatype = NA,
     
     # public methods
     initialize = function(label,method,datatype,parameters=NULL,libraries=NULL,control=NULL){
@@ -43,9 +43,6 @@ Task <- R6Class("Task",
       self$parameters = parameters
       self$libraries = libraries
       self$control = control
-      self$testdata = testdata
-      self$moduletype = moduletype
-      private$validateParameters(self$parameters)
     }
     
   ),

@@ -11,12 +11,11 @@
 #' @format \code{\link{R6Class}} object
 #' 
 #' @field label The name of the Module
-#' @field class The class of the Module (one of \code{M1}, \code{M2}, \code{M3}, \code{M4})
 #' @field tasks A list of Task objects
-#' @field active A Boolean vector of length \code{length(tasks)}
 #' 
 #' @section Methods:
 #' \describe{
+#'    \item{\code{addTask(label,method,datatype,parameters,control,libraries)}}{Add a Task to the Module}
 #'    \item{\code{deleteTask(label)}}{Remove a Task from the Module}
 #'    \item{\code{run()}}{Execute a Task}
 #'    \item{\code{activate(label)}}{Activate a Task}
@@ -33,20 +32,159 @@ Module <- R6Class("Module",
   
   public = list(
     
-    # public members
-    label = NA, # the name of the Module
+    #================#
+    # public members #
+    #================#
     
-    # public methods
-    deleteTask = function(){ # a funtion to delete a Task from a Module (delete or deleteTask?)
+    label = NA, # the name of the Module
+    tasks = list(), # a list of Task objects
+    
+    #================#
+    # public methods #
+    #================#
+    
+    # initialization function for all submodules
+    initialize = function(label=NULL){
+      
+      # check that label is provided and in the right format, if so, set self$label
+      if(is.null(label)){
+        stop("'label' must be provided")
+      } else if(!is.character(label)){
+        stop("'label' must be of class character")
+      } else {
+        self$label <- label
+      }
+      
+      # set the task list to be empty
+      self$tasks <- list()
+      
+      # assign the class of the object to be M1 (might not need this)
+      private$class <- "M1"
+    },
+    
+    # global function to add a task
+    addTask = function(label=NULL,method=NULL,datatype=NULL,parameters=NULL,libraries=NULL,control=NULL){
+      
+      # create a new Task object
+      task <- Task$new(label,method,datatype,parameters,libraries,control)
+      
+      # validate the object's parameters
+      private$validate(task)
+      
+      # if there are no errors, the above function will execute silently
+      self$tasks[[label]] <- task
+      
+      # update the active task list
+      private$active[[label]] <- TRUE
+      
+      # return self
       invisible(self)
     },
-    run = function(){ # a function to execute a Task
+    
+    # global function to delete a task
+    deleteTask = function(label=NULL){
+      
+      # check that label is not null
+      if(is.null(label)){
+        stop("argument 'label' cannot be NULL")
+      }
+      
+      # check that label is a character string
+      if(!is.character(label)){
+        stop("argument 'label' must be of class character")
+      }
+      
+      # check that all values provided to label are true labels of tasks
+      if(!all(label%in%names(self$tasks))){
+        not.labels <- label[which(!(label%in%names(self$tasks)))]
+        if(length(not.labels)==1){
+          msg <- paste0(not.labels," is not a valid task label")
+        } else {
+          msg <- paste0(paste(not.labels,collapse=", ")," are not valid task labels")
+        }
+        stop(msg)
+      }
+      
+      # remove the task from the module
+      self$tasks[label] <- NULL
+      
+      # remove the task from the active list
+      private$active[label] <- NULL
+      
+      # if there are no more tasks in the module, restore to default
+      if(length(self$tasks)==0){
+        self$tasks <- list()
+      }
+      
+      # return self
       invisible(self)
     },
-    activate = function(){ # a function to turn on a task or tasks
+    
+    # TODO: global function to execute a task
+    run = function(){
       invisible(self)
     },
-    deactivate = function(){ # a function to turn off a task or tasks
+    
+    # global function to activate a task
+    activateTask = function(label){
+      
+      # check that label is not null
+      if(is.null(label)){
+        stop("argument 'label' cannot be NULL")
+      }
+      
+      # check that label is a character string
+      if(!is.character(label)){
+        stop("argument 'label' must be of class character")
+      }
+      
+      # check that all values provided to label are true labels of tasks
+      if(!all(label%in%names(self$tasks))){
+        not.labels <- label[which(!(label%in%names(self$tasks)))]
+        if(length(not.labels)==1){
+          msg <- paste0(not.labels," is not a valid task label")
+        } else {
+          msg <- paste0(paste(not.labels,collapse=", ")," are not valid task labels")
+        }
+        stop(msg)
+      }
+      
+      # activate the task(s)
+      private$active[label] <- TRUE
+      
+      # return self
+      invisible(self)
+      
+    },
+    
+    # global function to deactivate a task
+    deactivateTask = function(){
+      
+      # check that label is not null
+      if(is.null(label)){
+        stop("argument 'label' cannot be NULL")
+      }
+      
+      # check that label is a character string
+      if(!is.character(label)){
+        stop("argument 'label' must be of class character")
+      }
+      
+      # check that all values provided to label are true labels of tasks
+      if(!all(label%in%names(self$tasks))){
+        not.labels <- label[which(!(label%in%names(self$tasks)))]
+        if(length(not.labels)==1){
+          msg <- paste0(not.labels," is not a valid task label")
+        } else {
+          msg <- paste0(paste(not.labels,collapse=", ")," are not valid task labels")
+        }
+        stop(msg)
+      }
+      
+      # deactivate the task(s)
+      private$active[label] <- FALSE
+      
+      # return self
       invisible(self)
     }
 
@@ -54,16 +192,22 @@ Module <- R6Class("Module",
   
   private = list(
     
-    # private members
-    class = NA, # the child class of the Module
-    tasks = NA, # a list of Task objects
-    active = NA, # a Boolean vector of length = number of Tasks
+    #=================#
+    # private members #
+    #=================#
     
-    # private methods
-    addPublicMember = function(){ # a function to add a Task as a public member to the Module object
+    class = NA, # the child class of the Module
+    active = list(), # a Boolean vector of length = number of Tasks
+    
+    #=================#
+    # private methods #
+    #=================#
+    
+    # global placeholder for validate function. This method is reestablished in submodules
+    validate = function(task){
       invisible(self)
     }
-    
+
   ),
   
   active = list(
