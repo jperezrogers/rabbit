@@ -3,7 +3,7 @@
 #' More detailed explaination here
 #' 
 #' @param parameters A \code{data.frame} with columns \code{parameter}, \code{class}, and \code{label}
-#' @param control A \code{data.frame} with one or more named columns. Each column name must be equal to one of the values of \code{parameters$parameter}. The values included in \code{control} should be distinct instances of the parameter to be passed to the \code{method} of an object of class \code{Task}.
+#' @param control A \code{list} with one or more named elements. Each element name must be equal to one of the values of \code{parameters$parameter}. The values included in \code{control} should be distinct instances of the parameter to be passed to the \code{method} of an object of class \code{Task}.
 #' 
 #' @return Function will execute silently if no errors are detected in \code{libraries}
 #' 
@@ -14,14 +14,13 @@
 #'  label = c("myParamA","myParamB"),
 #'  stringsAsFactors=F
 #' )
-#' control <- data.frame(
-#'  paramA = c("str1","str2","str3"),
-#'  stringsAsFactors=F
+#' control <- list(
+#'  paramA = c("str1","str2","str3")
 #' )
 #' validateControl(parameters,control)
 
 
-validateControl <- function(parameters=NULL,control=NULL){
+validateControl <- function(control=NULL,parameters=NULL){
   
   # check if control is null, if so, exit, if not, proceed
   if(!(is.null(control))){
@@ -34,8 +33,9 @@ validateControl <- function(parameters=NULL,control=NULL){
     }
     
     # now that parameters are valid and control is defined, check that control is a list
-    if(!is.list(control)){
-      stop("control must be a list")
+    # if("list"%in%is(control)&!"data.frame"%in%is(control)){
+    if(class(control)!="list"){
+      stop("parameter 'control' must be of class 'list'")
     }
     
     # check that control has length greater than zero

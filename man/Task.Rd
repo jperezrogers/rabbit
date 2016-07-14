@@ -26,7 +26,7 @@ about the Task class
 
 \item{\code{libraries}}{A character vector of libraries required to run the \code{method}}
 
-\item{\code{control}}{Additional values of \code{parameters} to pass to \code{method}}
+\item{\code{control}}{A named list with values of \code{parameters} to pass to \code{method}}
 
 \item{\code{datatype}}{A character vector of valid datatypes on which \code{method} can be used}
 }}

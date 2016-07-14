@@ -33,7 +33,7 @@ test_that("an error is thrown when parameters is not valid",{
 
 # test that an error is thrown when control is not a list
 test_that("an error is thrown when control is not a list",{
-  msg <- "control must be a list"
+  msg <- "parameter 'control' must be of class 'list'"
   expect_error(validateControl(parameters=parameters,control=NA),msg)
   expect_error(validateControl(parameters=parameters,control=data.frame()),msg)
 })
@@ -89,3 +89,8 @@ test_that("an error is thrown if not values in control do not match the class pr
   expect_error(validateControl(parameters=parameters,control=list(x=TRUE,y=c("a",1))),msg)
   expect_error(validateControl(parameters=parameters,control=list(x=TRUE,y=c(1,"a"))),msg)
 })
+
+# bug: control not validated when you pass you run validateControl(control_list) 
+# without specifying validateControl(parameters=,control=)
+
+

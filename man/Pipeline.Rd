@@ -31,8 +31,9 @@ about the Pipeline class
 \section{Methods}{
 
 \describe{
-   \item{\code{addModule(type)}}{Add a Module to the Pipeline}
-   \item{\code{orderModules()}}{Change the order in which Modules are executed}
+   \item{\code{addModule(type,label)}}{Add a Module to the Pipeline}
+   \item{\code{orderModules(x)}}{Change the order in which Modules are executed}
+   \item{\code{run(x,y,data=NULL,ranks=NULL,verbose=FALSE,...)}}{Execute the pipeline}
 }
 }
 \examples{

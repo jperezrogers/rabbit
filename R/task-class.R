@@ -14,7 +14,7 @@
 #' @field method A function to perform
 #' @field parameters Additional input parameters used in \code{method}
 #' @field libraries A character vector of libraries required to run the \code{method}
-#' @field control Additional values of \code{parameters} to pass to \code{method}
+#' @field control A named list with values of \code{parameters} to pass to \code{method}
 #' @field datatype A character vector of valid datatypes on which \code{method} can be used
 #' 
 #' 

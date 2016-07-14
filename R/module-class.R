@@ -43,25 +43,6 @@ Module <- R6Class("Module",
     # public methods #
     #================#
     
-    # initialization function for all submodules
-    initialize = function(label=NULL){
-      
-      # check that label is provided and in the right format, if so, set self$label
-      if(is.null(label)){
-        stop("'label' must be provided")
-      } else if(!is.character(label)){
-        stop("'label' must be of class character")
-      } else {
-        self$label <- label
-      }
-      
-      # set the task list to be empty
-      self$tasks <- list()
-      
-      # assign the class of the object to be M1 (might not need this)
-      private$class <- "M1"
-    },
-    
     # global function to add a task
     addTask = function(label=NULL,method=NULL,datatype=NULL,parameters=NULL,libraries=NULL,control=NULL){
       
@@ -214,6 +195,10 @@ Module <- R6Class("Module",
     
     summary = function(){ # a function that will print out a summary of the Tasks in the Module
       invisible(self)
+    },
+    
+    getClass = function(){
+      return(private$class)
     }
     
   ),

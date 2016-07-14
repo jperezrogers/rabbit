@@ -53,9 +53,9 @@ validateMethodM4 <- function(method=NULL){
     stop("method must be a function")
   }
   
-  # check that method has input parameters x, y, and optionally data
-  if(!all(c("x","y")%in%names(formals(method)))){
-    stop("method must have input parameters 'x' and 'y'")
+  # check that method has input parameters x, y, and testdata
+  if(!all(c("x","y","testdata")%in%names(formals(method)))){
+    stop("method must have input parameters 'x', 'y', and 'testdata'")
   }
   
   # extract parameters and defaults from method, setting params with no default to NULL
@@ -75,6 +75,11 @@ validateMethodM4 <- function(method=NULL){
     warning("'y' should not have a default value. The default provided will be disregarded when invoking the method")
   }
   
+  # check if testdata has a default value, if so, issue a warning to the user
+  if(!is.null(f[["testdata"]])){
+    warning("'testdata' should not have a default value. The default provided will be disregarded when invoking the method")
+  }
+  
   # check if data has a default value, if so, issue a warning to the user
   if(!is.null(f[["data"]])){
     warning("'data' should not have a default value. The default provided will be disregarded when invoking the method")
@@ -86,10 +91,10 @@ validateMethodM4 <- function(method=NULL){
   # to actually have a default value of "", this would get overwritten. This is a known limitation.
   
   # check that all parameters other than x, y, and data have defaults, if not, issue error
-  cond <- f[-which(names(f)%in%c("x","y","data"))]
+  cond <- f[-which(names(f)%in%c("x","y","testdata","data"))]
   if(length(cond)>0){
     if(any(unlist(lapply(cond,function(x) is.null(x))))){
-      stop("All parameters other than 'x' and 'y', and 'data' in 'method' must have default values")
+      stop("All parameters other than 'x', 'y', 'testdata', and 'data' in 'method' must have default values")
     }    
   }
   
