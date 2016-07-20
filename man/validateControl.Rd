@@ -4,12 +4,12 @@
 \alias{validateControl}
 \title{Validate that input control conform to required standards of the Task class}
 \usage{
-validateControl(parameters = NULL, control = NULL)
+validateControl(control = NULL, parameters = NULL)
 }
 \arguments{
-\item{parameters}{A \code{data.frame} with columns \code{parameter}, \code{class}, and \code{label}}
-
 \item{control}{A \code{list} with one or more named elements. Each element name must be equal to one of the values of \code{parameters$parameter}. The values included in \code{control} should be distinct instances of the parameter to be passed to the \code{method} of an object of class \code{Task}.}
+
+\item{parameters}{A \code{data.frame} with columns \code{parameter}, \code{class}, and \code{label}}
 }
 \value{
 Function will execute silently if no errors are detected in \code{libraries}

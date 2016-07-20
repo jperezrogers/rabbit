@@ -15,7 +15,7 @@
   task.count <- .countTasks(pipeline)
   
   # create the parameter list
-  params <- sapply(as.numeric(task.count),function(x) 1:x)
+  params <- lapply(as.numeric(task.count),function(x) 1:x)
 
   # create the index matrix
   model.index <- .calculateIndex(params)

@@ -32,9 +32,9 @@ Pipeline <- R6Class("Pipeline",
   
   public = list(
   
-    #================#
-    # public members #
-    #================#
+#===============================================================================
+# Public Members
+#===============================================================================
     
     label = NA, # the name of the pipeline,
     modules = list(), # a list of modules in the pipeline
@@ -42,13 +42,15 @@ Pipeline <- R6Class("Pipeline",
     nfolds = NA, # number of folds or resampling iterations
     p = NA, # percentage of samples in the training set
     
-    #================#
-    # public methods #
-    #================#
+#===============================================================================
+# Public Methods
+#===============================================================================
     
+    #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    # initialization
+    #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
     initialize = function(label=NULL,cv="cv",nfolds=10,p=0.80){
-      
-      # maybe pipelines should come stock with an M4 module that cannot be moved
       
       # check that label is provided and in the right format, if so, set 
       # self$label
@@ -102,6 +104,10 @@ Pipeline <- R6Class("Pipeline",
       private$order <- c("classification")
       
     },
+
+    #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    # addModule
+    #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     
     addModule = function(type=NULL,label=NULL){
       
@@ -159,6 +165,10 @@ Pipeline <- R6Class("Pipeline",
       self$modules <- self$modules[match(private$order,names(self$modules))]
       
     },
+
+    #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    # deleteModule
+    #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     
     # function to remove a module from a pipeline
     deleteModule = function(label=NULL){
@@ -194,6 +204,10 @@ Pipeline <- R6Class("Pipeline",
       
     },
     
+    #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    # orderModules
+    #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
     orderModules = function(x=NULL){
       
       # if x is null, do nothing
@@ -230,6 +244,10 @@ Pipeline <- R6Class("Pipeline",
         
       }
     },
+
+    #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    # getOrder
+    #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     
     # function to return the private order member
     getOrder = function(verbose=FALSE){
@@ -244,23 +262,28 @@ Pipeline <- R6Class("Pipeline",
       return(private$order)
       
     },
-    #paste0(getwd(),"/",self$label,"_",round(as.numeric(Sys.time())))
-    run = function(x,y,data=NULL,ranks=NULL,outputdir=getwd(),iter=NULL,seed=NULL,force=FALSE,verbose=FALSE){
+
+    #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    # generic placeholder for a run function (for now)
+    #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    
+    run = function(x,y,data=NULL,rank=NULL,outputdir=getwd(),iter=NULL,seed=NULL,force=FALSE,verbose=FALSE,...){
       # seed and iter need to be specified together
       
-      # step 1: validate input parameters
-      
-      # step 2: validate pipeline config (i.e. cv, p, etc.)
+      # step #: validate pipeline config
       # > validate that all modules have tasks
       
-      # step 3: create model index (and assign to model.index private member)
+      # step #: create model index (and assign to model.index private member)
       private$model.index <- .indexModels(self)
       
-      # step 4: create parameter key (and assign to parameter.key private member)
+      # step #: create parameter key (and assign to parameter.key private member)
       private$parameter.key <- .generateParameterKey(self)
       
-      # step 5: create label key (and assign to label.key private member)
-      private$label.key <- .generateLabelKey()
+      # step #: create label key (and assign to label.key private member)
+      private$label.key <- .generateLabelKey(self)
+      
+      # step #: validate input parameters
+      self$.validateUserInputs(x,y,data,rank,iter)
       
       # step 6: split data into internal training/test sets based on cv
       data.partition <- .partitionData(y,cv=self$cv,nfolds=self$nfolds,p=self$p)
@@ -269,32 +292,109 @@ Pipeline <- R6Class("Pipeline",
       .createOutputDirectoryStructure(data.partition,outputdir,private$model.index,force)
       
       # step 8: run each model
-      if(verbose){
-        cat("Building & evaluating models:\n")
-      }
-      
-      for(i in 1:nrow(private$model.index)){
-        if(verbose){
-          cat(paste0("Model ",i,"\n"))
-        }
-      }
+      self$.buildModelsSingleIter(x=x,y=y,data=data,rank=rank,partition=data.partition,
+                                  iter=iter,model.index=private$model.index,
+                                  verbose=T,exitOnError=F,returnTraceback=T)
       
       invisible()
     },
     
-    #=========================#
-    # public 'hidden' methods #
-    #=========================#
+#===============================================================================
+# Public 'Hidden' Methods
+#===============================================================================
+
+    #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    # .getPrivate
+    #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     
     .getPrivate = function(what){
       return(private[[what]])
     },
     
+    #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    # .setPrivate
+    #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
     .setPrivate = function(what,value){
       private[[what]] <- value
     },
+
+    #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    # .validateUserInputs
+    #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     
-    .buildModelsSingleIter = function(x,y,partition,iter,model.index,data=NULL,rank=NULL,verbose=FALSE,exitOnError=FALSE,returnTraceback=TRUE){
+    .validateUserInputs = function(x=NULL,y=NULL,data=NULL,rank=NULL,iter=NULL){
+      
+      # check that x is not null
+      if(is.null(x)){
+        stop("parameter 'x' cannot be NULL")
+      }
+      
+      # check that x is a numerical matrix
+      if(!is.matrix(x)){
+        stop("parameter 'x' must be of class 'matrix'")
+      }
+      
+      # check that y is not null
+      if(is.null(y)){
+        stop("parameter 'y' cannot be NULL")
+      }
+      
+      # check that y is equal to ncol(x)
+      if(length(y)!=ncol(x)){
+        stop("parameter 'y' must have length equal to ncol(x)")
+      }
+      
+      # check that y is a two level factor
+      if(length(levels(as.factor(y)))!=2){
+        stop("parameter 'y' must be a two-level factor")
+      }
+      
+      # extract the parameters used in all tasks in the pipeline
+      params <- unlist(lapply(unlist(private$parameter.key,recursive=F),function(x) names(unlist(x))))
+      
+      # check if any tasks contain the 'data' input parameter
+      if(is.null(data)&"data"%in%params){
+        stop("parameter 'data' cannot be NULL. One or more tasks require this parameter to be defined.")
+      } else if(!is.null(data)&"data"%in%params){
+        if(!all(rownames(data)==colnames(x))){
+          stop("rownames(data) must be identical to colnames(x)")
+        }
+      }
+      
+      # check if any tasks contain the 'rank' input parameter
+      mods <- names(self$modules)
+      classes <- sapply(names(self$modules),function(x){self$modules[[x]]$getClass})
+      if(is.null(rank)&"rank"%in%params){
+        if(!"M2"%in%classes){
+          stop("parameter 'rank' cannot be NULL. One or more tasks require this parameter to be defined.")
+        }
+      } else if(!is.null(rank)&"rank"%in%params){
+        if(length(rank)!=nrow(x)){
+          stop("parameter 'rank' must have length equal to nrow(x)")
+        }
+      }
+      
+      # check that iter is a valid integer
+      if(!(iter%in%c(1:self$nfolds))){
+        stop(paste0("parameter 'iter' must be an integer between 1 and ",self$nfolds))
+      }
+      
+    },
+
+    #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    # .validatePipelineConfig
+    #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+    .validatePipelineConfig = function(){
+      invisible(self)
+    },
+
+    #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    # .buildModelSingleIter
+    #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    
+    .buildModelsSingleIter = function(x,y,data=NULL,rank=NULL,partition,iter,model.index,verbose=FALSE,exitOnError=FALSE,returnTraceback=TRUE){
       
       # set up the internal training set
       train.x <- x[,partition[[iter]]]
@@ -303,6 +403,8 @@ Pipeline <- R6Class("Pipeline",
       # if data is not null, subset it to only the training set samples
       if(!is.null(data)){
         train.data <- data[partition[[iter]],]
+      } else {
+        train.data <- NULL
       }
       
       # set up the internal test set
@@ -313,7 +415,7 @@ Pipeline <- R6Class("Pipeline",
       if(verbose){cat("Evaluating Models\n")}
       
       # for each model
-      for(model.n in 1:nrow(pipeline$.getPrivate(what="model.index"))){
+      for(model.n in 1:nrow(private$model.index)){
         
         # print out the model number
         if(verbose){cat("\tModel",model.n)}
@@ -321,61 +423,32 @@ Pipeline <- R6Class("Pipeline",
         # beginning model computation, no errors have occured
         error.occured <- FALSE
         
-        # set a generic placeholder for x and rank
-        generic.x <- train.x
-        generic.rank <- rank
+        # set the generic variables
+        generics <- list(x=train.x,y=train.y,data=train.data,rank=rank,testdata=test.x)
       
         # loop through the modules & tasks for the first model
-        for(module.name in colnames(pipeline$.getPrivate(what="model.index"))){
+        for(module.name in colnames(private$model.index)){
           
-          i <- pipeline$.getPrivate(what="model.index")[model.n,module.name]
-          task.label <- pipeline$.getPrivate(what="label.key")[[module.name]][[i]]
-          method <- pipeline$modules[[module.name]]$tasks[[task.label]]$method
-          params <- pipeline$.getPrivate(what="parameter.key")[[module.name]][[i]]
+          i <- private$model.index[model.n,module.name]
+          task.label <- private$label.key[[module.name]][[i]]
+          method <- self$modules[[module.name]]$tasks[[task.label]]$method
+          params <- private$parameter.key[[module.name]][[i]]
           
           # load the required libraries if they're not already loaded
-          libs <- pipeline$modules[[module.name]]$tasks[[task.label]]$libraries
+          libs <- self$modules[[module.name]]$tasks[[task.label]]$libraries
           if(!is.null(libs)){
             suppressPackageStartupMessages(library(libs,character.only=T))  
           }
           
           # extract the module class
-          module.class <- pipeline$modules[[module.name]]$getClass
+          module.class <- self$modules[[module.name]]$getClass
           
           #=====================================================================
           # Depending on the module class, we have to assign values to certain
           # input parameters that will be passed to the task's method function. 
           #=====================================================================
           
-          if(module.class=="M1"){
-            
-            params[["x"]] <- generic.x
-            
-          } else if(module.class=="M2"){
-            
-            params[["x"]] <- generic.x
-            params[["y"]] <- train.y
-            if(!is.null(data)){
-              params[["data"]] <- train.data
-            }
-            
-          } else if(module.class=="M3"){
-            
-            params[["x"]] <- generic.x
-            params[["rank"]] <- generic.rank
-            
-          } else if(module.class=="M4"){
-            
-            params[["x"]] <- generic.x
-            params[["y"]] <- train.y
-            if("data"%in%names(params)){
-              params[["data"]] <- train.data
-            }
-            
-            # subset the test data to contain only the features in generic.x
-            params[["testdata"]] <- test.x[row.names(generic.x),]
-            
-          }
+          params <- .updateParametersFromGenerics(params,generics,module.class)
           
           #=====================================================================
           # Now that the parameters are set, we can run the task. In the event
@@ -398,7 +471,10 @@ Pipeline <- R6Class("Pipeline",
           # check if an error occured and determine whether to proceed
           if(class(o)=="try-error"|is.null(o)){
             error.occured <- TRUE
-            if(verbose){cat(paste0("\tAn error occured in the '",task.label,"' task within the '",module.name,"' module\n",sep=""))}
+            if(verbose){
+              cat(paste0("\tAn error occured in the '",task.label,
+                         "' task within the '",module.name,"' module\n",sep=""))
+              }
             if(exitOnError){
               stop("An error has occured. Try using traceback() or set traceback=T or exitOnError=F")
             } else {
@@ -412,33 +488,20 @@ Pipeline <- R6Class("Pipeline",
           # M4, wite out the final feature names and prediction scores to files
           #=====================================================================
           
-          # if no errors occured, continute with processing
-          if(module.class=="M1"){
+          generics <- .updateGenerics(generics,o,module.class)
+          
+          if(module.class=="M4"){
             
-            generic.x <- o
-            
-          } else if(module.class=="M2"){
-            
-            generic.x <- o[["x"]]
-            generic.rank <- o[["rank"]]
-            
-          } else if(module.class=="M3"){
-            
-            generic.x <- o
-            
-          } else if(module.class=="M4"){
-            
-            # if module.class is M4 (the classification module), write out the 
-            # feature names and predictions
-            feature.names <- row.names(generic.x)
+            # for now, write results out to flat files
+            feature.names <- row.names(generics$x)
             predictions <- o
             
-            # for now, write them out to flat files
-            prefix <- paste0(outputdir,"/cv_loop_",cv.n,"/model_",model.n)
+            prefix <- paste0(outputdir,"/cv_loop_",iter,"/model_",model.n)
             write.table(feature.names,paste(prefix,"feature_names.txt",sep="/"),
                         sep="\t",col.names=F,row.names=F,quote=F)
-            write.table(predictions,paste(prefix,"predictions.txt",sep="/"),
-                        sep="\t",col.names=F,row.names=T,quote=F)
+            write.table(cbind(SampleID=colnames(params$testdata),Score=predictions),
+                        paste(prefix,"predictions.txt",sep="/"),sep="\t",col.names=T,
+                        row.names=F,quote=F)
             
           }
 
@@ -452,29 +515,24 @@ Pipeline <- R6Class("Pipeline",
         }
         
       }
-    },
-    
-    .runTask = function(method,params){
-      out <- try(do.call(method,params))
-      
-      return(out)
     }
+
   ),
   
   private = list(
     
-    #=================#
-    # private members #
-    #=================#
+#===============================================================================
+# Private Members
+#===============================================================================
     
     order = NA, # the order in which the modules will be executed
     model.index = NA, # the index matrix of models and tasks
     parameter.key = NA, # key matching modules, tasks, and parameters
     label.key = NA # key matching task names to indices
     
-    #=================#
-    # private methods #
-    #=================#
+#===============================================================================
+# Private Methods
+#===============================================================================
 
     
   ),

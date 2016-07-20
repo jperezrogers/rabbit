@@ -18,7 +18,7 @@
   if(file.exists(file.path(outputdir))){
     if(!force){
       if(file.exists(file.path(paste0(outputdir,"/cv_loop_1")))){
-        stop("It looks like this directory already contains results from a previous pipeline run. To overwrite these results, set 'force=TRUE' or change 'outputdir' to write to a different directory")
+        stop("It looks like this directory already contains results from a previous pipeline run. To overwrite these results, set 'force=TRUE' or change 'outputdir' to write to a different directory. Warning: setting force=T will remove all subdirectories in the output directory with the pattern 'cv_loop_X'where X is an integer")
       }  
     }
   } else {
@@ -27,6 +27,15 @@
     }, warning = function(war) {
       stop(paste0("Cannot create output directory '",outputdir,"'. Likely reason: Permission denied\n...exiting"))
     })
+  }
+  
+  # remove any cross-validation directories in the output directory
+  if(force){
+    old.files <- dir(path=outputdir,pattern="cv_loop_")
+    if(length(old.files)>0){
+      old.files <- file.path(paste(outputdir,old.files,sep="/"))
+      unlink(old.files,recursive=T,force=F)  
+    }
   }
   
   # create the sub-directories that will contain the results of the pipeline

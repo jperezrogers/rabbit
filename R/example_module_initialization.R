@@ -33,15 +33,15 @@ pipeline <- Pipeline$new(label="example pipeline",cv="cv",nfolds=5)
 pipeline$addModule(type="M1",label="feature filter")
 
 # add a task
-# pipeline$modules$`feature filter`$addTask(
-#   label = "variance filter",
-#   method = function(x){
-#     variance <- apply(x,1,var)
-#     x <- x[variance>median(variance),]
-#     return(x)
-#   },
-#   datatype = "microarray" 
-# )
+pipeline$modules$`feature filter`$addTask(
+  label = "variance filter",
+  method = function(x){
+    variance <- apply(x,1,var)
+    x <- x[variance>median(variance),]
+    return(x)
+  },
+  datatype = "microarray"
+)
 
 # add another task
 pipeline$modules$`feature filter`$addTask(
@@ -77,15 +77,14 @@ pipeline$modules$`feature selection`$addTask(
   },
   datatype = "microarray",
   parameters = data.frame(
-    parameter = c("cutoff","tmp"),
-    class = c("numeric","character"),
-    label = c("cutoff","tmp"),
+    parameter = c("cutoff"),
+    class = c("numeric"),
+    label = c("cutoff"),
     stringsAsFactors = F
   ),
-  control = list(
-    cutoff = c(0.05,0.005),
-    tmp = c("abc","def","gfi")
-  ),
+  # control = list(
+  #   cutoff = c(0.05,0.005)
+  # ),
   libraries = "limma"
 )
 
@@ -107,9 +106,9 @@ pipeline$modules$`feature selection`$addTask(
     label = "cutoff",
     stringsAsFactors = F
   ),
-  control = list(
-    cutoff = c(0.05,0.005)
-  ),
+  # control = list(
+  #   cutoff = c(0.05,0.005)
+  # ),
   libraries = "limma"
 )
 
@@ -140,7 +139,8 @@ pipeline$modules$`biomarker size selection`$addTask(
     stringsAsFactors = F
   ),
   control = list(
-    size = seq(5,100,by=5)
+    size = c(5,25)
+    # size = seq(5,100,by=5)
   )
 )
 
@@ -151,8 +151,8 @@ pipeline$modules$`biomarker size selection`$addTask(
 pipeline$modules$classification$addTask(
   label = "lda",
   method = function(x,y,testdata){ # might also need to take in x2, y2 for the test set
-    mod <- caret::train(x=t(train.x[1:5,]),y=train.y,method="lda")
-    preds <- predict(mod,newdata=t(test.x[1:5,]),type="prob")
+    mod <- caret::train(x=t(x),y=y,method="lda")
+    preds <- predict(mod,newdata=t(testdata),type="prob")
     return(preds[,1])
   },
   datatype = "microarray"
@@ -161,43 +161,52 @@ pipeline$modules$classification$addTask(
 pipeline$modules$classification$addTask(
   label = "knn",
   method = function(x,y,testdata){ # might also need to take in x2, y2 for the test set
-    mod <- caret::train(x=t(train.x[1:5,]),y=as.factor(train.y),method="knn",
+    mod <- caret::train(x=t(x),y=as.factor(y),method="knn",
                         trControl=trainControl(method = "none"),
                         tuneGrid=data.frame(k=2))
-    preds <- predict(mod,newdata=t(test.x[1:5,]),type="prob")
+    preds <- predict(mod,newdata=t(testdata),type="prob")
     return(preds[,1])
   },
   datatype = "microarray"
 )
 
+outputdir <- "/Users/Joe/Desktop/Pipeline_Output"
+for(i in 1:pipeline$nfolds){
+  cat("CV Loop ",i,"\n")
+  pipeline$run(x,y,data,outputdir=outputdir,iter=i,force=T,verbose=T)  
 }
 
-if(!interactive()){
-  
-  # set up the private members of the pipeline
-  pipeline$.setPrivate(what="model.index",value=.indexModels(pipeline))
-  pipeline$.setPrivate(what="parameter.key",value=.generateParameterKey(pipeline))
-  pipeline$.setPrivate(what="label.key",value=.generateLabelKey(pipeline))
-  data.partition <- .partitionData(y,cv=pipeline$cv,nfolds=pipeline$nfolds,p=pipeline$p)
 
-  # create the output directory structure
-  outputdir <- "/Users/Joe/Desktop/Pipeline_Output"
-  .createOutputDirectoryStructure(data.partition,outputdir,pipeline$.getPrivate(what="model.index"),force=T)
-  
-  # deconstructing the .buildModelsSingleIter() function
-  partition <- data.partition
-  iter <- 1
-  model.index <- pipeline$.getPrivate(what="model.index")
-  data=data
-  rank=NULL
-  verbose=FALSE
-  
-  model.n <- 1
-  cv.n <- 1
-  
-  exitOnError=FALSE
-  returnTraceback=TRUE
-  
+
+
+
+
+
+# set up the private members of the pipeline
+pipeline$.setPrivate(what="model.index",value=.indexModels(pipeline))
+pipeline$.setPrivate(what="parameter.key",value=.generateParameterKey(pipeline))
+pipeline$.setPrivate(what="label.key",value=.generateLabelKey(pipeline))
+data.partition <- .partitionData(y,cv=pipeline$cv,nfolds=pipeline$nfolds,p=pipeline$p)
+
+# create the output directory structure
+outputdir <- "/Users/Joe/Desktop/Pipeline_Output"
+.createOutputDirectoryStructure(data.partition,outputdir,pipeline$.getPrivate(what="model.index"),force=T)
+
+# deconstructing the .buildModelsSingleIter() function
+partition <- data.partition
+iter <- 1
+model.index <- pipeline$.getPrivate(what="model.index")
+data=data
+rank=NULL
+verbose=TRUE
+
+model.n <- 1
+cv.n <- 1
+
+exitOnError=FALSE
+returnTraceback=TRUE
+
+pipeline$.buildModelsSingleIter(x,y,data.partition,iter,model.index,data=data,rank=NULL,verbose=TRUE,exitOnError=FALSE,returnTraceback=TRUE)
   
 }
 
