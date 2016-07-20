@@ -14,7 +14,7 @@
 #' addModule(pipeline, type="M1", label="module 1")
 #' addTask(pipeline, "module 1", label="task 1", method=function(x){return(x[1:5,])})
 
-addTask <- function(pipeline,module,label,method,datatype="microarray",parameters=NULL,control=NULL,libraries=NULL){
+addTask <- function(pipeline,module,label,method,datatype="microarray",parameters=NULL,libraries=NULL,control=NULL){
   
   if(!"Pipeline"%in%class(pipeline)){
     stop("parameter 'pipeline' must be of class 'Pipeline'")
@@ -26,5 +26,5 @@ addTask <- function(pipeline,module,label,method,datatype="microarray",parameter
     stop("parameter 'module' must be one of: '",paste0(module.names,collapse="', '"),"'")
   }
   
-  pipeline$modules[[module]]$addTask(label,method,datatype,parameters,control,libraries)
+  pipeline$modules[[module]]$addTask(label,method,datatype,parameters,libraries,control)
 }

@@ -292,10 +292,20 @@ Pipeline <- R6Class("Pipeline",
       .createOutputDirectoryStructure(data.partition,outputdir,private$model.index,force)
       
       # step 8: run each model
-      self$.buildModelsSingleIter(x=x,y=y,data=data,rank=rank,partition=data.partition,
-                                  iter=iter,model.index=private$model.index,
-                                  verbose=T,exitOnError=F,returnTraceback=T)
+      if(is.null(iter)){
+        i.iter <- 1
+        i.max <- self$nfolds
+      } else {
+        i.iter <- iter
+        i.max <- iter
+      }
       
+      for(i in i.iter:i.max){
+        self$.buildModelsSingleIter(x=x,y=y,data=data,rank=rank,outputdir=outputdir,
+                                    partition=data.partition,iter=i,
+                                    model.index=private$model.index,
+                                    verbose=T,exitOnError=F,returnTraceback=T)  
+      }
       invisible()
     },
     
@@ -394,7 +404,7 @@ Pipeline <- R6Class("Pipeline",
     # .buildModelSingleIter
     #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     
-    .buildModelsSingleIter = function(x,y,data=NULL,rank=NULL,partition,iter,model.index,verbose=FALSE,exitOnError=FALSE,returnTraceback=TRUE){
+    .buildModelsSingleIter = function(x,y,data=NULL,rank=NULL,outputdir,partition,iter,model.index,verbose=FALSE,exitOnError=FALSE,returnTraceback=TRUE){
       
       # set up the internal training set
       train.x <- x[,partition[[iter]]]
