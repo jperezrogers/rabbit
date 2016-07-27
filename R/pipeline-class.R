@@ -272,6 +272,10 @@ Pipeline <- R6Class("Pipeline",
       
       # step #: validate pipeline config
       # > validate that all modules have tasks
+      task.count <- .countTasks(self)
+      if(any(task.count==0)){
+        stop(paste0("all modules must have at least one task: ",paste(names(which(task.count==0)),collapse=", ")))
+      }
       
       # step #: create model index (and assign to model.index private member)
       private$model.index <- .indexModels(self)

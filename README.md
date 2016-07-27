@@ -21,7 +21,7 @@ data$Height = sample(58:72,20,replace=T)
 # create an empty pipeline object
 #===============================================================================
 
-pipeline <- newPipeline(label = "example pipeline")
+pipeline <- newPipeline(label="example pipeline",cv="cv",nfolds=5)
 
 #===============================================================================
 # set up feature filter module & associated tasks
@@ -180,5 +180,11 @@ addTask(
 #===============================================================================
 # run the pipeline
 #===============================================================================
+
+outputdir <- "/Users/Joe/Desktop/Pipeline_Output"
+for(i in 1:pipeline$nfolds){
+  cat("CV Loop ",i,"\n")
+  pipeline$run(x,y,data,outputdir=outputdir,iter=i,force=T,verbose=T)  
+}
 
 ```

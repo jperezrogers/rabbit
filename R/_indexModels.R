@@ -14,15 +14,22 @@
   # count the tasks
   task.count <- .countTasks(pipeline)
   
-  # create the parameter list
-  params <- lapply(as.numeric(task.count),function(x) 1:x)
-
-  # create the index matrix
-  model.index <- .calculateIndex(params)
+  # if any modules have no tasks, return NULL
+  if(any(task.count==0)){
+    model.index <- NULL
+  } else {
+    
+    # create the parameter list
+    params <- lapply(as.numeric(task.count),function(x) 1:x)
   
-  # add names to the rows and columns
-  colnames(model.index) <- names(task.count)
-  row.names(model.index) <- paste0("Model_",1:nrow(model.index))
+    # create the index matrix
+    model.index <- .calculateIndex(params)
+    
+    # add names to the rows and columns
+    colnames(model.index) <- names(task.count)
+    row.names(model.index) <- paste0("Model_",1:nrow(model.index))
+  
+  }
   
   # return model.index
   return(model.index)

@@ -24,7 +24,9 @@ summary.Pipeline <- function(x,level="overview",pretty=TRUE){
     
     overview <- list()
     overview[["label"]] <- x$label
-    overview[["total models"]] <- nrow(.indexModels(x))
+    model.index <- .indexModels(x)
+    totmod <- ifelse(is.null(model.index),0,nrow(model.index))
+    overview[["total models"]] <- totmod
     overview[["cross-validation method (cv)"]] <- x$cv
     overview[["training set fraction (p)"]] <- x$p
     

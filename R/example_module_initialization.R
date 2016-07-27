@@ -30,10 +30,12 @@ pipeline <- newPipeline(label="example pipeline",cv="cv",nfolds=5)
 #=======================================================================
 
 # initialize the module
-pipeline$addModule(type="M1",label="feature filter")
+addModule(pipeline = pipeline, type = "M1", label = "feature filter")
 
 # add a task
-pipeline$modules$`feature filter`$addTask(
+addTask(
+  pipeline = pipeline,
+  module = "feature filter",
   label = "variance filter",
   method = function(x){
     variance <- apply(x,1,var)
@@ -44,7 +46,9 @@ pipeline$modules$`feature filter`$addTask(
 )
 
 # add another task
-pipeline$modules$`feature filter`$addTask(
+addTask(
+  pipeline = pipeline,
+  module = "feature filter",
   label = "mean expression",
   method = function(x){
     mean.expr <- mean(apply(x,1,mean))
@@ -54,18 +58,20 @@ pipeline$modules$`feature filter`$addTask(
     x <- x[p<0.05,]
     return(x)
   },
-  datatype = "microarray" 
+  datatype = "microarray"
 )
 
-#=======================================================================
+#===============================================================================
 # set up feature selection module & associated tasks
-#=======================================================================
+#===============================================================================
 
 # initialize the module
-pipeline$addModule(type="M2",label="feature selection")
+addModule(pipeline = pipeline, type = "M2", label = "feature selection")
 
 # add a task (linear model correcting for 1 covariate)
-pipeline$modules$`feature selection`$addTask(
+addTask(
+  pipeline = pipeline,
+  module = "feature selection",
   label = "linear model correcting for 1 covariate",
   method = function(x,y,data,cutoff=0.05,tmp="abc"){
     mod <- model.matrix(~as.character(y)+Age,data=data)
@@ -82,14 +88,13 @@ pipeline$modules$`feature selection`$addTask(
     label = c("cutoff"),
     stringsAsFactors = F
   ),
-  # control = list(
-  #   cutoff = c(0.05,0.005)
-  # ),
   libraries = "limma"
 )
 
 # add another task (linear model correcting for 2 covariates)
-pipeline$modules$`feature selection`$addTask(
+addTask(
+  pipeline = pipeline,
+  module = "feature selection",
   label = "linear model correcting for 2 covariates",
   method = function(x,y,data,cutoff=0.05){
     mod <- model.matrix(~as.character(y)+Age+Height,data=data)
@@ -106,21 +111,20 @@ pipeline$modules$`feature selection`$addTask(
     label = "cutoff",
     stringsAsFactors = F
   ),
-  # control = list(
-  #   cutoff = c(0.05,0.005)
-  # ),
   libraries = "limma"
 )
 
 
-#=======================================================================
+#===============================================================================
 # set up biomarker size module & associated tasks
-#=======================================================================
+#===============================================================================
 
-pipeline$addModule(type="M3",label="biomarker size selection")
+addModule(pipeline = pipeline, type = "M3", label = "biomarker size selection")
 
-pipeline$modules$`biomarker size selection`$addTask(
-  label = "size selection",
+addTask(
+  pipeline = pipeline,
+  module = "biomarker size selection",
+  label = "size",
   method = function(x,rank,size=5){
     idx <- sort(rank,decreasing=F,index.return=T)$ix
     x <- x[idx,]
@@ -140,35 +144,44 @@ pipeline$modules$`biomarker size selection`$addTask(
   ),
   control = list(
     size = c(5,25)
-    # size = seq(5,100,by=5)
   )
 )
 
-#=======================================================================
+#===============================================================================
 # set up classification module & associated tasks
-#=======================================================================
+#===============================================================================
 
-pipeline$modules$classification$addTask(
+addTask(
+  pipeline = pipeline,
+  module = "classification",
   label = "lda",
-  method = function(x,y,testdata){ # might also need to take in x2, y2 for the test set
+  method = function(x,y,testdata){
     mod <- caret::train(x=t(x),y=y,method="lda")
     preds <- predict(mod,newdata=t(testdata),type="prob")
     return(preds[,1])
   },
-  datatype = "microarray"
+  datatype = "microarray",
+  libraries = "caret"
 )
 
-pipeline$modules$classification$addTask(
+addTask(
+  pipeline = pipeline,
+  module = "classification",
   label = "knn",
-  method = function(x,y,testdata){ # might also need to take in x2, y2 for the test set
+  method = function(x,y,testdata){
     mod <- caret::train(x=t(x),y=as.factor(y),method="knn",
                         trControl=trainControl(method = "none"),
                         tuneGrid=data.frame(k=2))
     preds <- predict(mod,newdata=t(testdata),type="prob")
     return(preds[,1])
   },
-  datatype = "microarray"
+  datatype = "microarray",
+  libraries = "caret"
 )
+
+#=======================================================================
+# run the pipeline
+#=======================================================================
 
 outputdir <- "/Users/Joe/Desktop/Pipeline_Output"
 for(i in 1:pipeline$nfolds){
