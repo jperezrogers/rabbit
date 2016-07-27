@@ -1,6 +1,6 @@
-#' Create a new instance of a Pipeline
+#' Create an object of class Pipeline
 #' 
-#' Author: Joe Perez-Rogers
+#' A more detailed description will eventually go here...
 #' 
 #' @param label a character string
 #' @param cv the cross-validation methodology to employ. One of 'cv', 'loocv', 'lgocv', or 'boot'
@@ -13,7 +13,7 @@
 #' 
 #' newPipeline(label="example pipeline",cv="cv",nfolds=10,p=0.80)
 
-newPipeline <- function(label=NULL,cv="cv",nfolds=10,p=0.80){
+newPipeline <- function(label,cv="cv",nfolds=10,p=0.80){
   x <- Pipeline$new(label,cv,nfolds,p)
   return(x)
 }

@@ -101,11 +101,6 @@ Module <- R6Class("Module",
       invisible(self)
     },
     
-    # TODO: global function to execute a task
-    run = function(){
-      invisible(self)
-    },
-    
     # global function to activate a task
     activateTask = function(label){
       
@@ -139,7 +134,7 @@ Module <- R6Class("Module",
     },
     
     # global function to deactivate a task
-    deactivateTask = function(){
+    deactivateTask = function(label){
       
       # check that label is not null
       if(is.null(label)){
@@ -167,6 +162,10 @@ Module <- R6Class("Module",
       
       # return self
       invisible(self)
+    },
+    
+    getActive = function(){
+      return(private$active)
     }
 
   ),

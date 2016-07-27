@@ -1,12 +1,10 @@
 #' Create a new Module within an existing Pipeline
 #' 
-#' Author: Joe Perez-Rogers
+#' A more detailed description will eventually go here...
 #' 
 #' @param pipeline an object of class \code{Pipeline}
 #' @param type the type of module to add. One of 'M1', 'M2', or 'M3'
 #' @param label a character string
-#' 
-#' @return function will execute silently
 #' 
 #' @examples
 #' 

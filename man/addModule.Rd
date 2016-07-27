@@ -2,9 +2,9 @@
 % Please edit documentation in R/addModule.R
 \name{addModule}
 \alias{addModule}
-\title{Function to create a new Module within an existing Pipeline}
+\title{Create a new Module within an existing Pipeline}
 \usage{
-addModule(pipeline = NULL, type = NULL, label = NULL)
+addModule(pipeline, type, label)
 }
 \arguments{
 \item{pipeline}{an object of class \code{Pipeline}}
@@ -13,11 +13,8 @@ addModule(pipeline = NULL, type = NULL, label = NULL)
 
 \item{label}{a character string}
 }
-\value{
-function will execute silently
-}
 \description{
-Author: Joe Perez-Rogers
+A more detailed description will eventually go here...
 }
 \examples{
 

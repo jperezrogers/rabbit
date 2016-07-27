@@ -2,9 +2,9 @@
 % Please edit documentation in R/newPipeline.R
 \name{newPipeline}
 \alias{newPipeline}
-\title{Function to create a new instance of a Pipeline}
+\title{Create an object of class Pipeline}
 \usage{
-newPipeline(label = NULL, cv = "cv", nfolds = 10, p = 0.8)
+newPipeline(label, cv = "cv", nfolds = 10, p = 0.8)
 }
 \arguments{
 \item{label}{a character string}
@@ -19,7 +19,7 @@ newPipeline(label = NULL, cv = "cv", nfolds = 10, p = 0.8)
 an object of class \code{Pipeline}
 }
 \description{
-Author: Joe Perez-Rogers
+A more detailed description will eventually go here...
 }
 \examples{
 

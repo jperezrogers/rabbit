@@ -23,7 +23,7 @@ data$Height = sample(58:72,20,replace=T)
 # create an empty pipeline object
 #=======================================================================
 
-pipeline <- Pipeline$new(label="example pipeline",cv="cv",nfolds=5)
+pipeline <- newPipeline(label="example pipeline",cv="cv",nfolds=5)
 
 #=======================================================================
 # set up feature filter module & associated tasks
