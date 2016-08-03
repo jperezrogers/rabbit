@@ -1,6 +1,6 @@
 context("pipeline::orderModules")
 
-source("../../R/pipeline-class.R")
+# source("../../R/pipeline-class.R")
 
 # set up test data
 pipeline <- Pipeline$new(label="pipeline")
@@ -47,7 +47,7 @@ test_that("an error is thrown if not all module labels in the pipeline are provi
 
 # test that an error is thrown if the classification module is not the last module in x
 test_that("an error is thrown if the classification module is not the last module in x",{
-  msg <- "The last element of parameter 'x' must be 'classification'"
+  msg <- "the last element of parameter 'x' must be 'classification'"
   expect_error(pipeline$orderModules(x=c("classification","newM1","newM2")),msg)
   expect_error(pipeline$orderModules(x=c("newM1","classification","newM2")),msg)
 })

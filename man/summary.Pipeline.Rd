@@ -4,19 +4,20 @@
 \alias{summary.Pipeline}
 \title{Report a summary of an object of class Pipeline}
 \usage{
-\method{summary}{Pipeline}(x, level = "overview", pretty = TRUE)
+\method{summary}{Pipeline}(object, ...)
 }
 \arguments{
-\item{x}{an object of class Pipeline}
+\item{object}{an object of class Pipeline}
 
-\item{level}{one of 'overview', 'structure', or 'active' (see details below)}
+\item{...}{additional parameters to be passed to summary. See Details below.}
 }
 \description{
 A more detailed description will eventually go here...
 }
 \examples{
-
-pipeline <- newPipeline(label="example pipeline",cv="cv",nfolds=10,p=0.80)
+\dontrun{
+pipeline <- newPipeline(label="example pipeline",cv="lgocv",nfolds=10,p=0.80)
 summary(pipeline)
+}
 }
 

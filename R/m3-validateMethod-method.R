@@ -1,23 +1,27 @@
-#' Validate that the input method conform to required standards of the Task class
-#' 
-#' More detailed explaination here
-#' 
-#' @param method A user-defined \code{function}. This \code{function} must contain input parameters \code{x} (a numerical matrix with \code{n} columns and \code{m} rows), \code{rank} (a numeric vector of length \code{m} that can be used with \code{\link[base]{sort}}). The user can provide additional parameters to the \code{function} but must specify default values in the \code{function}'s definition. \code{method} must return a numerical matrix with the same number of columns (\code{ncol}) and column names (\code{colnames}) as \code{x} (see example below).
-#' 
-#' @return Function will execute silently if no errors are detected in \code{libraries}
-#' 
-#' @examples
-#' set.seed(1234)
-#' x <- matrix(rnorm(100),nrow=10)
-#' colnames(x) <- paste0("sample_",1:10)
-#' row.names(x) <- paste0("gene_",1:10)
-#' rank <- 1:10
-#' 
-#' method <- function(x,rank){
-#'  x <- x[rank[1:5],]
-#'  return(x)
-#' }
-#' validateMethodM3(method)
+# Validate that the input method conform to required standards of the Task class
+# 
+# More detailed explaination here
+# 
+# @param method A user-defined \code{function}. This \code{function} must contain input parameters \code{x} (a numerical matrix with \code{n} columns and \code{m} rows), \code{rank} (a numeric vector of length \code{m} that can be used with \code{\link[base]{sort}}). The user can provide additional parameters to the \code{function} but must specify default values in the \code{function}'s definition. \code{method} must return a numerical matrix with the same number of columns (\code{ncol}) and column names (\code{colnames}) as \code{x} (see example below).
+# 
+# @return Function will execute silently if no errors are detected in \code{libraries}
+# 
+# @examples
+# \dontrun{
+# set.seed(1234)
+# x <- matrix(rnorm(100),nrow=10)
+# colnames(x) <- paste0("sample_",1:10)
+# row.names(x) <- paste0("gene_",1:10)
+# rank <- 1:10
+# 
+# method <- function(x,rank){
+#  x <- x[rank[1:5],]
+#  return(x)
+# }
+# validateMethodM3(method)
+# }
+# 
+# @keywords internal
 
 
 validateMethodM3 <- function(method=NULL){

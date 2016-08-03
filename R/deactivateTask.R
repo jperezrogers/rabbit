@@ -1,18 +1,18 @@
-#' Delete a task from a module within a pipeline
+#' Deactivate a task within a module in a pipeline
 #' 
 #' A more detailed description will eventually go here...
 #' 
 #' @param pipeline an object of class \code{Pipeline}
 #' @param module the label of a module within \code{pipeline}
-#' @param task a character string or vector. The label(s) of a task or tasks in \code{module} to delete. 
+#' @param task a character string or vector. The label(s) of a task or tasks in \code{module} to deactivate. 
 #' 
 #' @examples
 #' \dontrun{
-#' deleteTask(pipeline,module,task)
+#' deactivateTask(pipeline,module,task)
 #' }
 #' @export
 
-deleteTask <- function(pipeline,module,task){
+deactivateTask <- function(pipeline,module,task){
   
   module.names <- names(pipeline$modules)
   
@@ -20,5 +20,5 @@ deleteTask <- function(pipeline,module,task){
     stop("parameter 'module' must be one of: '",paste0(module.names,collapse="', '"),"'")
   }
   
-  pipeline$modules[[module]]$deleteTask(task)
+  pipeline$modules[[module]]$deactivateTask(task)
 }

@@ -1,5 +1,5 @@
 context("m2::validateMethodM2")
-source("../../R/m2-validateMethod-method.R")
+# source("../../R/m2-validateMethod-method.R")
 
 # test that an error is thrown if method is NULL
 test_that("an error is thrown if method is NULL",{

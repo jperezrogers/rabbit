@@ -17,8 +17,10 @@ addModule(pipeline, type, label)
 A more detailed description will eventually go here...
 }
 \examples{
-
+\dontrun{
 pipeline <- newPipeline(label="example pipeline",cv="cv",nfolds=10,p=0.80)
 addModule(pipeline,type="M1",label="module 1")
+}
+
 }
 

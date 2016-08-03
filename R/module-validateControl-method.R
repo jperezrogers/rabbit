@@ -1,23 +1,27 @@
-#' Validate that input control conform to required standards of the Task class
-#' 
-#' More detailed explaination here
-#' 
-#' @param parameters A \code{data.frame} with columns \code{parameter}, \code{class}, and \code{label}
-#' @param control A \code{list} with one or more named elements. Each element name must be equal to one of the values of \code{parameters$parameter}. The values included in \code{control} should be distinct instances of the parameter to be passed to the \code{method} of an object of class \code{Task}.
-#' 
-#' @return Function will execute silently if no errors are detected in \code{libraries}
-#' 
-#' @examples
-#' parameters <- data.frame(
-#'  parameter = c("paramA","paramB"),
-#'  class = c("character","character"),
-#'  label = c("myParamA","myParamB"),
-#'  stringsAsFactors=F
-#' )
-#' control <- list(
-#'  paramA = c("str1","str2","str3")
-#' )
-#' validateControl(parameters,control)
+# Validate that input control conform to required standards of the Task class
+# 
+# More detailed explaination here
+# 
+# @param parameters A \code{data.frame} with columns \code{parameter}, \code{class}, and \code{label}
+# @param control A \code{list} with one or more named elements. Each element name must be equal to one of the values of \code{parameters$parameter}. The values included in \code{control} should be distinct instances of the parameter to be passed to the \code{method} of an object of class \code{Task}.
+# 
+# @return Function will execute silently if no errors are detected in \code{libraries}
+# 
+# @examples
+# \dontrun{
+# parameters <- data.frame(
+#  parameter = c("paramA","paramB"),
+#  class = c("character","character"),
+#  label = c("myParamA","myParamB"),
+#  stringsAsFactors=F
+# )
+# control <- list(
+#  paramA = c("str1","str2","str3")
+# )
+# validateControl(parameters,control)
+# }
+# 
+# @keywords internal
 
 
 validateControl <- function(control=NULL,parameters=NULL){

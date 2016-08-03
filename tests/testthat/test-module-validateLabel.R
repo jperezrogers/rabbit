@@ -1,5 +1,5 @@
 context("module::validateLabel")
-source("../../R/module-validateLabel-method.R")
+# source("../../R/module-validateLabel-method.R")
 
 # test that an error is thrown when label is NULL
 test_that("an error is thrown when label is NULL",{

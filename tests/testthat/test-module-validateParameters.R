@@ -1,5 +1,5 @@
 context("module::validateParameters")
-source("../../R/module-validateParameters-method.R")
+# source("../../R/module-validateParameters-method.R")
 
 # test that nothing happens when parameters is NULL
 test_that("nothing happens when parameters is NULL",{

@@ -1,5 +1,5 @@
 context("module::validateDatatype")
-source("../../R/module-validateDatatype-method.R")
+# source("../../R/module-validateDatatype-method.R")
 
 # test that an error is thrown if datatype is NULL
 test_that("an error is thrown if datatype is NULL",{

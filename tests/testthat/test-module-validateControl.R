@@ -1,6 +1,6 @@
 context("module::validateControl")
-source("../../R/module-validateControl-method.R")
-source("../../R/module-validateParameters-method.R")
+# source("../../R/module-validateControl-method.R")
+# source("../../R/module-validateParameters-method.R")
 
 # set up test data
 parameters <- data.frame(

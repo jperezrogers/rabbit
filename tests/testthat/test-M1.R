@@ -1,6 +1,6 @@
 context("m1-class")
 
-source("../../R/m1-class.R")
+# source("../../R/m1-class.R")
 
 # set up test data
 

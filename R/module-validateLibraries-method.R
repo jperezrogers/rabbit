@@ -1,14 +1,18 @@
-#' Validate that input libraries conform to required standards of the Task class
-#' 
-#' More detailed explaination here
-#' 
-#' @param libraries A character vector of libraries
-#' 
-#' @return Function will execute silently if no errors are detected in \code{libraries}
-#' 
-#' @examples
-#' validateLibraries("limma")
-#' validateDatatype(c("limma","caret"))
+# Validate that input libraries conform to required standards of the Task class
+# 
+# More detailed explaination here
+# 
+# @param libraries A character vector of libraries
+# 
+# @return Function will execute silently if no errors are detected in \code{libraries}
+# 
+# @examples
+# \dontrun{
+# validateLibraries("limma")
+# validateDatatype(c("limma","caret"))
+# }
+# 
+# @keywords internal
 
 validateLibraries <- function(libraries=NULL){
   

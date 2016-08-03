@@ -1,30 +1,34 @@
-#' Validate that the input method conform to required standards of the Task class
-#' 
-#' More detailed explaination here
-#' 
-#' @param method A user-defined \code{function}. This \code{function} must contain input parameter \code{x} (a numerical matrix). The user can provide additional parameters to the \code{function} but must specify default values in the \code{function}'s definition. \code{method} must return a numerical matrix with the same number of columns (\code{ncol}) and column names (\code{colnames}) as \code{x} (see example below).
-#' 
-#' @return Function will execute silently if no errors are detected in \code{libraries}
-#' 
-#' @examples
-#' set.seed(1234)
-#' x <- matrix(rnorm(100),nrow=10)
-#' colnames(x) <- paste0("sample_",1:10)
-#' row.names(x) <- paste0("gene_",1:10)
-#' 
-#' method <- function(x){
-#'  x <- x**2
-#'  x <- x[1:5,]
-#'  return(x)
-#' }
-#' validateMethodM1(method)
-#' 
-#' method <- function(x,pwr=3){
-#'  x <- x**pwr
-#'  x <- x[1:5,]
-#'  return(x)
-#' }
-#' validateMethodM1(method,pwr=3)
+# Validate that the input method conform to required standards of the Task class
+# 
+# More detailed explaination here
+# 
+# @param method A user-defined \code{function}. This \code{function} must contain input parameter \code{x} (a numerical matrix). The user can provide additional parameters to the \code{function} but must specify default values in the \code{function}'s definition. \code{method} must return a numerical matrix with the same number of columns (\code{ncol}) and column names (\code{colnames}) as \code{x} (see example below).
+# 
+# @return Function will execute silently if no errors are detected in \code{libraries}
+# 
+# @examples
+# \dontrun{
+# set.seed(1234)
+# x <- matrix(rnorm(100),nrow=10)
+# colnames(x) <- paste0("sample_",1:10)
+# row.names(x) <- paste0("gene_",1:10)
+# 
+# method <- function(x){
+#  x <- x**2
+#  x <- x[1:5,]
+#  return(x)
+# }
+# validateMethodM1(method)
+# 
+# method <- function(x,pwr=3){
+#  x <- x**pwr
+#  x <- x[1:5,]
+#  return(x)
+# }
+# validateMethodM1(method,pwr=3)
+# }
+# 
+# @keywords internal
 
 validateMethodM1 <- function(method=NULL){
   

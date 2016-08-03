@@ -1,15 +1,17 @@
-#' Validate that input label conforms to required standards of the Task class
-#' 
-#' More detailed explaination here
-#' 
-#' @param label A character string
-#' 
-#' @return Function will execute silently if no errors are detected in \code{label}
-#' 
-#' @examples
-#' validateLabel("label")
-#' 
-#' @export
+# Validate that input label conforms to required standards of the Task class
+# 
+# More detailed explaination here
+# 
+# @param label A character string
+# 
+# @return Function will execute silently if no errors are detected in \code{label}
+# 
+# @examples
+# \dontrun{
+# validateLabel("label")
+# }
+# 
+# @keywords internal
 
 validateLabel <- function(label=NULL){
   

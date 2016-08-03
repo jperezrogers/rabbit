@@ -1,18 +1,21 @@
-#' Function to generate a key matching Task object labels to a model index
-#' 
-#' More detailed explaination here
-#' 
-#' @param pipeline An object of class \code{Pipeline}
-#' 
-#' @return A named list of lists where the name of each parent corresponds to a module in \code{pipeline} and each child corresponds to a task within that module
-#' 
-#' @examples
-#' .generateLabelKey(pipeline)
+# Function to generate a key matching Task object labels to a model index
+# 
+# More detailed explaination here
+# 
+# @param pipeline An object of class \code{Pipeline}
+# 
+# @return A named list of lists where the name of each parent corresponds to a module in \code{pipeline} and each child corresponds to a task within that module
+# 
+# @examples
+# \dontrun{
+# generateLabelKey(pipeline)
+# }
+# @keywords internal
 
-.generateLabelKey = function(pipeline){
+generateLabelKey <- function(pipeline){
   
   # count the tasks
-  task.count <- .countTasks(pipeline)
+  task.count <- countTasks(pipeline)
   
   # set up the label key
   label.key <- list()

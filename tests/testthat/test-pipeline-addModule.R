@@ -1,6 +1,6 @@
 context("pipeline::addModule")
 
-source("../../R/pipeline-class.R")
+# source("../../R/pipeline-class.R")
 
 # set up test data
 pipeline <- Pipeline$new(label="pipeline")

@@ -17,7 +17,8 @@ deleteTask(pipeline, module, task)
 A more detailed description will eventually go here...
 }
 \examples{
-
-need examples
+\dontrun{
+deleteTask(pipeline,module,task)
+}
 }
 

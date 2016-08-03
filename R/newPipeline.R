@@ -10,10 +10,12 @@
 #' @return an object of class \code{Pipeline}
 #' 
 #' @examples
-#' 
-#' newPipeline(label="example pipeline",cv="cv",nfolds=10,p=0.80)
+#' \dontrun{
+#' newPipeline(label="example pipeline",cv="lgocv",nfolds=10,p=0.80)
+#' }
+#' @export
 
-newPipeline <- function(label,cv="cv",nfolds=10,p=0.80){
+newPipeline <- function(label,cv="lgocv",nfolds=10,p=0.80){
   x <- Pipeline$new(label,cv,nfolds,p)
   return(x)
 }

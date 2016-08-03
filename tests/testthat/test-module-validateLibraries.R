@@ -1,5 +1,5 @@
 context("module::validateLibraries")
-source("../../R/module-validateLibraries-method.R")
+# source("../../R/module-validateLibraries-method.R")
 
 # test that the function executes silently if libraries is null
 test_that("the function executes silently if libraries is null",{

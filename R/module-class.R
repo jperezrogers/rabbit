@@ -1,34 +1,32 @@
-#' Class providing the Module object
-#' 
-#' Here is a more detailed sentence
-#' about the Module class
-#'
-#' @docType class
-#' @importFrom R6 R6Class
-#' @export
-#' @keywords biomarker classification
-#' @return An object of class \code{Module}
-#' @format \code{\link{R6Class}} object
-#' 
-#' @field label The name of the Module
-#' @field tasks A list of Task objects
-#' 
-#' @section Methods:
-#' \describe{
-#'    \item{\code{addTask(label,method,datatype,parameters,control,libraries)}}{Add a Task to the Module}
-#'    \item{\code{deleteTask(label)}}{Remove a Task from the Module}
-#'    \item{\code{run()}}{Execute a Task}
-#'    \item{\code{activate(label)}}{Activate a Task}
-#'    \item{\code{deactivate(label)}}{Deactivate a Task}
-#'    \item{\code{summary()}}{Print out a summary of the Tasks in the Module}
-#' }
-#' 
-#' @examples
-#' 
-#' 
+# Class providing the Module object
+# 
+# Here is a more detailed sentence
+# about the Module class
+#
+# @docType class
+# @keywords biomarker classification
+# @return An object of class \code{Module}
+# @format \code{\link{R6Class}} object
+# @import R6
+# 
+# @field label the name of the Module
+# @field tasks a list of active Task objects
+# @field inactive a list of inactive Task objects
+# 
+# @section Methods:
+# \describe{
+#    \item{\code{addTask(label,method,datatype,parameters,control,libraries)}}{Add a Task to the Module}
+#    \item{\code{deleteTask(label)}}{Remove a Task from the Module}
+#    \item{\code{run()}}{Execute a Task}
+#    \item{\code{activate(label)}}{Activate a Task}
+#    \item{\code{deactivate(label)}}{Deactivate a Task}
+#    \item{\code{summary()}}{Print out a summary of the Tasks in the Module}
+# }
+#
+# @keywords internal
 
 # define the Module class
-Module <- R6Class("Module",
+Module <- R6::R6Class("Module",
   
   public = list(
     
@@ -38,6 +36,7 @@ Module <- R6Class("Module",
     
     label = NA, # the name of the Module
     tasks = list(), # a list of Task objects
+    inactive =list(), # a list of inactive Task objects
     
     #================#
     # public methods #
@@ -76,8 +75,8 @@ Module <- R6Class("Module",
       }
       
       # check that all values provided to label are true labels of tasks
-      if(!all(label%in%names(self$tasks))){
-        not.labels <- label[which(!(label%in%names(self$tasks)))]
+      if(!all(label%in%c(names(self$tasks),names(self$inactive)))){
+        not.labels <- label[which(!(label%in%c(names(self$tasks),names(self$inactive))))]
         if(length(not.labels)==1){
           msg <- paste0(not.labels," is not a valid task label")
         } else {
@@ -88,6 +87,7 @@ Module <- R6Class("Module",
       
       # remove the task from the module
       self$tasks[label] <- NULL
+      self$inactive[label] <- NULL
       
       # remove the task from the active list
       private$active[label] <- NULL
@@ -115,8 +115,8 @@ Module <- R6Class("Module",
       }
       
       # check that all values provided to label are true labels of tasks
-      if(!all(label%in%names(self$tasks))){
-        not.labels <- label[which(!(label%in%names(self$tasks)))]
+      if(!all(label%in%c(names(self$tasks),names(self$inactive)))){
+        not.labels <- label[which(!(label%in%c(names(self$tasks),names(self$inactive))))]
         if(length(not.labels)==1){
           msg <- paste0(not.labels," is not a valid task label")
         } else {
@@ -125,8 +125,26 @@ Module <- R6Class("Module",
         stop(msg)
       }
       
-      # activate the task(s)
-      private$active[label] <- TRUE
+      # check if any of the tasks are already inactive, if so, issue warning
+      if(any(label%in%names(self$tasks))){
+        idx <- which(label%in%names(self$tasks))
+        already.active <- label[idx]
+        warning(paste0("the following tasks are already active: ",paste0("'",already.active,"'",collapse=", ")))
+        label <- label[-idx]
+      }
+      
+      if(length(label)>0){
+        
+        # activate the task(s) 
+        private$active[label] <- TRUE
+        
+        # move the task from the active task member to the inactive task member
+        for(i in 1:length(label)){
+          self$tasks[[label[i]]] <- self$inactive[[label[i]]]
+          self$inactive[[label[i]]] <- NULL
+        }
+        
+      }
       
       # return self
       invisible(self)
@@ -147,19 +165,38 @@ Module <- R6Class("Module",
       }
       
       # check that all values provided to label are true labels of tasks
-      if(!all(label%in%names(self$tasks))){
+      if(!all(label%in%c(names(self$tasks),names(self$inactive)))){
         not.labels <- label[which(!(label%in%names(self$tasks)))]
         if(length(not.labels)==1){
-          msg <- paste0(not.labels," is not a valid task label")
+          msg <- paste0("'",not.labels,"' is not a valid task label")
         } else {
-          msg <- paste0(paste(not.labels,collapse=", ")," are not valid task labels")
+          msg <- paste0(paste("'",not.labels,collapse="', "),"' are not valid task labels")
         }
         stop(msg)
       }
       
-      # deactivate the task(s)
-      private$active[label] <- FALSE
+      # check if any of the tasks are already inactive, if so, issue warning
+      if(any(label%in%names(self$inactive))){
+        idx <- which(label%in%names(self$inactive))
+        already.inactive <- label[idx]
+        warning(paste0("the following tasks are already inactive: ",paste0("'",already.inactive,"'",collapse=", ")))
+        label <- label[-idx]
+      }
       
+      
+      if(length(label)>0){
+        
+        # deactivate the task(s) 
+        private$active[label] <- FALSE  
+        
+        # move the task from the active task member to the inactive task member
+        for(i in 1:length(label)){
+          self$inactive[[label[i]]] <- self$tasks[[label[i]]]
+          self$tasks[[label[i]]] <- NULL
+        }
+        
+      }
+
       # return self
       invisible(self)
     },

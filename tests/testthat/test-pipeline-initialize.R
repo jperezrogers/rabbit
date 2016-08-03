@@ -1,6 +1,6 @@
 context("pipeline::initialize")
 
-source("../../R/pipeline-class.R")
+# source("../../R/pipeline-class.R")
 
 # set up test data
 
@@ -46,7 +46,7 @@ test_that("an error is thrown if parameter 'cv' is not correctly specified",{
 # test that parameter 'cv' is correctly assigned if it is correctly specified
 test_that("parameter 'cv' is correctly assigned if it is correctly specified",{
   pipeline <- Pipeline$new(label="pipeline")
-  expect_equal(pipeline$cv,"cv")
+  expect_equal(pipeline$cv,"lgocv")
   pipeline <- Pipeline$new(label="pipeline",cv="cv")
   expect_equal(pipeline$cv,"cv")
   pipeline <- Pipeline$new(label="pipeline",cv="loocv")

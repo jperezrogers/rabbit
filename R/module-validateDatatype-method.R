@@ -1,15 +1,19 @@
-#' Validate that input datatype conforms to required standards of the Task class
-#' 
-#' More detailed explaination here
-#' 
-#' @param datatype One or more of \code{microarray}, \code{count}, \code{rpkm}
-#' 
-#' @return Function will execute silently if no errors are detected in \code{datatype}
-#' 
-#' @examples
-#' validateDatatype("microarray")
-#' validateDatatype(c("microarray","count"))
-#' validateDatatype(c("microarray","count","rpkm"))
+# Validate that input datatype conforms to required standards of the Task class
+# 
+# More detailed explaination here
+# 
+# @param datatype One or more of \code{microarray}, \code{count}, \code{rpkm}
+# 
+# @return Function will execute silently if no errors are detected in \code{datatype}
+# 
+# @examples
+# \dontrun{
+# validateDatatype("microarray")
+# validateDatatype(c("microarray","count"))
+# validateDatatype(c("microarray","count","rpkm"))
+# }
+# 
+# @keywords internal
 
 validateDatatype <- function(datatype=NULL){
   

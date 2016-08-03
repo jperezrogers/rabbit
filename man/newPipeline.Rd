@@ -4,7 +4,7 @@
 \alias{newPipeline}
 \title{Create an object of class Pipeline}
 \usage{
-newPipeline(label, cv = "cv", nfolds = 10, p = 0.8)
+newPipeline(label, cv = "lgocv", nfolds = 10, p = 0.8)
 }
 \arguments{
 \item{label}{a character string}
@@ -22,7 +22,8 @@ an object of class \code{Pipeline}
 A more detailed description will eventually go here...
 }
 \examples{
-
-newPipeline(label="example pipeline",cv="cv",nfolds=10,p=0.80)
+\dontrun{
+newPipeline(label="example pipeline",cv="lgocv",nfolds=10,p=0.80)
+}
 }
 

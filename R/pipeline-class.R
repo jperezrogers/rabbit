@@ -1,34 +1,30 @@
-#' Class providing the Pipeline object
-#' 
-#' Here is a more detailed sentence
-#' about the Pipeline class
-#'
-#' @docType class
-#' @importFrom R6 R6Class
-#' @export
-#' @keywords biomarker classification
-#' @return An object of class \code{Pipeline}
-#' @format \code{\link{R6Class}} object
-#' 
-#' @usage Pipeline$new(label, order = NULL, cv = "cv", nfolds = 10, p = NULL)
-#' 
-#' @field label The name of the Module
-#' @field order An ordered character vector of \code{Module} names. \code{order} determined the order in which \code{Modules} will be run in the pipeline
-#' @field cv The resampling method to be used for cross-validation. One of \code{"cv"}, \code{"loocv"}, \code{"lgocv"}, \code{"boot"}, or \code{"boot632"}
-#' @field nfolds The number of folds for k-fold cross-validation or the number of resamplings for \code{"lgocv"}, \code{"boot"}, or \code{"boot632"}
-#' @field p The percentage of samples in the internal training set for \code{"lgocv"}
-#' 
-#' @section Methods:
-#' \describe{
-#'    \item{\code{addModule(type,label)}}{Add a Module to the Pipeline}
-#'    \item{\code{orderModules(x)}}{Change the order in which Modules are executed}
-#'    \item{\code{run(x,y,data=NULL,ranks=NULL,verbose=FALSE,...)}}{Execute the pipeline}
-#' }
-#' 
-#' @examples
-#' 
+# Class providing the Pipeline object
+# 
+# Here is a more detailed sentence
+# about the Pipeline class
+#
+# @docType class
+# @keywords biomarker classification
+# @return An object of class \code{Pipeline}
+# @format \code{\link{R6Class}} object
+# @import R6
+# 
+# @field label The name of the Module
+# @field order An ordered character vector of \code{Module} names. \code{order} determined the order in which \code{Modules} will be run in the pipeline
+# @field cv The resampling method to be used for cross-validation. One of \code{"cv"}, \code{"loocv"}, \code{"lgocv"}, \code{"boot"}
+# @field nfolds The number of folds for k-fold cross-validation or the number of resamplings for \code{"lgocv"}, \code{"boot"}, or \code{"boot632"}
+# @field p The percentage of samples in the internal training set for \code{"lgocv"}
+# 
+# @section Methods:
+# \describe{
+#    \item{\code{addModule(type,label)}}{Add a Module to the Pipeline}
+#    \item{\code{orderModules(x)}}{Change the order in which Modules are executed}
+#    \item{\code{run(x,y,data=NULL,ranks=NULL,verbose=FALSE,...)}}{Execute the pipeline}
+# }
+# 
+# @keywords internal
 
-Pipeline <- R6Class("Pipeline",
+Pipeline <- R6::R6Class("Pipeline",
   
   public = list(
   
@@ -50,7 +46,7 @@ Pipeline <- R6Class("Pipeline",
     # initialization
     #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-    initialize = function(label=NULL,cv="cv",nfolds=10,p=0.80){
+    initialize = function(label=NULL,cv="lgocv",nfolds=10,p=0.80){
       
       # check that label is provided and in the right format, if so, set 
       # self$label
@@ -195,7 +191,7 @@ Pipeline <- R6Class("Pipeline",
 
       # check if label = "classification"
       if(label=="classification"){
-        stop("The 'classification' module cannot be deleted from a pipeline")
+        stop("the 'classification' module cannot be deleted")
       }
       
       # delete the module
@@ -232,10 +228,15 @@ Pipeline <- R6Class("Pipeline",
         not.valid <- names(self$modules)[!names(self$modules)%in%x]
         stop(paste0("parameter 'x' must include all module labels. The following are missing: ",paste(not.valid,collapse=", ")))
         
-      # check if the last module label in x is 'classification', if not, issue an error message
+      # check if duplicate module names were provided
+      } else if(length(unique(x))!=length(x)){
+        
+        stop("duplicate module labels are not permitted")
+      
+      # check if the last module label in x is 'classification', if not, issue an error message  
       } else if(x[length(x)]!="classification"){
         
-        stop("The last element of parameter 'x' must be 'classification'")
+        stop("the last element of parameter 'x' must be 'classification'")
       
       # if all of the above pass, reorder the modules based on the order of x  
       } else {
@@ -267,33 +268,36 @@ Pipeline <- R6Class("Pipeline",
     # generic placeholder for a run function (for now)
     #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     
-    run = function(x,y,data=NULL,rank=NULL,outputdir=getwd(),iter=NULL,seed=NULL,force=FALSE,verbose=FALSE,...){
+    run = function(x,y,data=NULL,rank=NULL,outputdir=getwd(),iter=NULL,seed=NULL,
+                   force=FALSE,verbose=FALSE,exitOnError=FALSE,returnTraceback=TRUE){
+      
       # seed and iter need to be specified together
       
       # step #: validate pipeline config
-      # > validate that all modules have tasks
-      task.count <- .countTasks(self)
+      
+      # step #: validate that all modules have tasks
+      task.count <- countTasks(self)
       if(any(task.count==0)){
         stop(paste0("all modules must have at least one task: ",paste(names(which(task.count==0)),collapse=", ")))
       }
       
       # step #: create model index (and assign to model.index private member)
-      private$model.index <- .indexModels(self)
+      private$model.index <- indexModels(self)
       
       # step #: create parameter key (and assign to parameter.key private member)
-      private$parameter.key <- .generateParameterKey(self)
+      private$parameter.key <- generateParameterKey(self)
       
       # step #: create label key (and assign to label.key private member)
-      private$label.key <- .generateLabelKey(self)
+      private$label.key <- generateLabelKey(self)
       
       # step #: validate input parameters
-      self$.validateUserInputs(x,y,data,rank,iter)
+      self$.validateUserInputs(x,y,data,rank,iter,seed)
       
       # step 6: split data into internal training/test sets based on cv
-      data.partition <- .partitionData(y,cv=self$cv,nfolds=self$nfolds,p=self$p)
+      data.partition <- partitionData(y,cv=self$cv,nfolds=self$nfolds,p=self$p)
       
       # step 7: create the output directory structure that will store the results
-      .createOutputDirectoryStructure(data.partition,outputdir,private$model.index,force)
+      createOutputDirectoryStructure(data.partition,outputdir,private$model.index,force)
       
       # step 8: run each model
       if(is.null(iter)){
@@ -304,13 +308,14 @@ Pipeline <- R6Class("Pipeline",
         i.max <- iter
       }
       
+      if(verbose){cat("Evaluating Models\n\n")}
       for(i in i.iter:i.max){
         self$.buildModelsSingleIter(x=x,y=y,data=data,rank=rank,outputdir=outputdir,
                                     partition=data.partition,iter=i,
                                     model.index=private$model.index,
-                                    verbose=T,exitOnError=F,returnTraceback=T)  
+                                    verbose,exitOnError,returnTraceback)  
       }
-      invisible()
+
     },
     
 #===============================================================================
@@ -337,7 +342,7 @@ Pipeline <- R6Class("Pipeline",
     # .validateUserInputs
     #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     
-    .validateUserInputs = function(x=NULL,y=NULL,data=NULL,rank=NULL,iter=NULL){
+    .validateUserInputs = function(x=NULL,y=NULL,data=NULL,rank=NULL,iter=NULL,seed=NULL){
       
       # check that x is not null
       if(is.null(x)){
@@ -378,9 +383,11 @@ Pipeline <- R6Class("Pipeline",
       
       # check if any tasks contain the 'rank' input parameter
       mods <- names(self$modules)
-      classes <- sapply(names(self$modules),function(x){self$modules[[x]]$getClass})
+      classes <- sapply(private$order,function(x){self$modules[[x]]$getClass})
       if(is.null(rank)&"rank"%in%params){
-        if(!"M2"%in%classes){
+        # if rank is an input parameter for one of the tasks and M2 (which output's rank) is not defined,
+        # or, if M3 (which takes in rank) is before M2 in the pipeline, throw and error.
+        if(!"M2"%in%classes|(min(which(classes=="M2"))>min(which(classes=="M3")))){
           stop("parameter 'rank' cannot be NULL. One or more tasks require this parameter to be defined.")
         }
       } else if(!is.null(rank)&"rank"%in%params){
@@ -390,8 +397,19 @@ Pipeline <- R6Class("Pipeline",
       }
       
       # check that iter is a valid integer
-      if(!(iter%in%c(1:self$nfolds))){
-        stop(paste0("parameter 'iter' must be an integer between 1 and ",self$nfolds))
+      if(!is.null(iter)){
+        if(!(iter%in%c(1:self$nfolds))){
+          stop(paste0("parameter 'iter' must be an integer between 1 and ",self$nfolds))
+        }
+      }
+      
+      # if iter is defined, seed must also be defined
+      if(!is.null(iter)){
+        if(is.null(seed)){
+          stop("parameter 'seed' must be defined when 'iter' is not NULL")
+        } else if(!is.numeric(seed)){
+          stop("parameter 'seed' must be of class 'numeric'")
+        }
       }
       
     },
@@ -426,7 +444,7 @@ Pipeline <- R6Class("Pipeline",
       test.y <- y[-partition[[iter]]]
       
       # starting model evaluation
-      if(verbose){cat("Evaluating Models\n")}
+      if(verbose){cat("Iteration",iter,"\n")}
       
       # for each model
       for(model.n in 1:nrow(private$model.index)){
@@ -462,7 +480,7 @@ Pipeline <- R6Class("Pipeline",
           # input parameters that will be passed to the task's method function. 
           #=====================================================================
           
-          params <- .updateParametersFromGenerics(params,generics,module.class)
+          params <- updateParametersFromGenerics(params,generics,module.class)
           
           #=====================================================================
           # Now that the parameters are set, we can run the task. In the event
@@ -502,7 +520,7 @@ Pipeline <- R6Class("Pipeline",
           # M4, wite out the final feature names and prediction scores to files
           #=====================================================================
           
-          generics <- .updateGenerics(generics,o,module.class)
+          generics <- updateGenerics(generics,o,module.class)
           
           if(module.class=="M4"){
             

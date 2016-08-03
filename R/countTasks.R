@@ -1,20 +1,24 @@
-#' Function to count the total number of unique tasks in a Pipeline object
-#' 
-#' More detailed explaination here
-#' 
-#' @param pipeline An object of class \code{Pipeline}
-#' 
-#' @return A named numeric vector
-#' 
-#' @examples
-#' .countTasks(pipeline)
+# Function to count the total number of unique tasks in a Pipeline object
+# 
+# More detailed explaination here
+# 
+# @param pipeline An object of class \code{Pipeline}
+# 
+# @return A named numeric vector
+# 
+# @examples
+# \dontrun{
+# countTasks(pipeline)
+# }
+# @keywords internal
 
-.countTasks = function(pipeline){
+countTasks = function(pipeline){
   
   # calculate the total number of tasks per module
   task.count <- list()
   module.index <- 0
-  for(module in pipeline$modules){
+  for(module.name in pipeline$.getPrivate(what="order")){
+    module <- pipeline$modules[[module.name]]
     module.index <- module.index + 1
     ntasks <- 0
     for(task in module$tasks){

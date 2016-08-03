@@ -1,29 +1,26 @@
-#' Class providing the Task object
-#' 
-#' Here is a more detailed sentence
-#' about the Task class
-#'
-#' @docType class
-#' @importFrom R6 R6Class
-#' @export
-#' @keywords biomarker classification
-#' @return An object of class \code{Task} with members required to execute a discrete function
-#' @format \code{\link{R6Class}} object
-#' 
-#' @field label The name of the task
-#' @field method A function to perform
-#' @field parameters Additional input parameters used in \code{method}
-#' @field libraries A character vector of libraries required to run the \code{method}
-#' @field control A named list with values of \code{parameters} to pass to \code{method}
-#' @field datatype A character vector of valid datatypes on which \code{method} can be used
-#' 
-#' 
-#' @examples
-#' 
-#' 
+# Class providing the Task object
+# 
+# Here is a more detailed sentence
+# about the Task class
+#
+# @docType class
+# @keywords biomarker classification
+# @return An object of class \code{Task} with members required to execute a discrete function
+# @format \code{\link{R6Class}} object
+# @import R6
+# 
+# @field label The name of the task
+# @field method A function to perform
+# @field parameters Additional input parameters used in \code{method}
+# @field libraries A character vector of libraries required to run the \code{method}
+# @field control A named list with values of \code{parameters} to pass to \code{method}
+# @field datatype A character vector of valid datatypes on which \code{method} can be used
+# 
+# 
+# @keywords internal
 
 # define the Task class
-Task <- R6Class("Task",
+Task <- R6::R6Class("Task",
   
   public = list(
     

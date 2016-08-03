@@ -1,18 +1,21 @@
-#' Function to generate a key matching Module objects with Task objects and their respective parameters
-#' 
-#' More detailed explaination here
-#' 
-#' @param pipeline An object of class \code{Pipeline}
-#' 
-#' @return A named list of lists where the name of each parent corresponds to a module in \code{pipeline} and each child corresponds to a task within that module
-#' 
-#' @examples
-#' .generateParameterKey(pipeline)
+# Function to generate a key matching Module objects with Task objects and their respective parameters
+# 
+# More detailed explaination here
+# 
+# @param pipeline An object of class \code{Pipeline}
+# 
+# @return A named list of lists where the name of each parent corresponds to a module in \code{pipeline} and each child corresponds to a task within that module
+# 
+# @examples
+# \dontrun{
+# generateParameterKey(pipeline)
+# }
+# @keywords internal
 
-.generateParameterKey = function(pipeline){
+generateParameterKey <- function(pipeline){
   
   # count the tasks
-  task.count <- .countTasks(pipeline)
+  task.count <- countTasks(pipeline)
   
   # set up the parameter key
   parameter.key <- list()

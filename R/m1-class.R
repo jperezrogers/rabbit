@@ -1,8 +1,5 @@
-# load the required libraries
-library(R6)
-
 # define the M1 class
-M1 <- R6Class("M1",
+M1 <- R6::R6Class("M1",
   
   inherit = Module,
   

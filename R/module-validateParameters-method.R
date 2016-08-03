@@ -1,19 +1,23 @@
-#' Validate that input parameters conforms to required standards of the Task class
-#' 
-#' More detailed explaination here
-#' 
-#' @param parameters A data.frame with columns \code{parameter}, \code{class}, and \code{label}
-#' 
-#' @return TRUE if no errors are detected in \code{parameters}
-#' 
-#' @examples
-#' parameters <- data.frame(
-#'  parameter = c("x","y"),
-#'  class = c("logical","numeric"),
-#'  label = c("myX","myY"),
-#'  stringsAsFactors=FALSE
-#'  )
-#' validateParameters(parameters)
+# Validate that input parameters conforms to required standards of the Task class
+# 
+# More detailed explaination here
+# 
+# @param parameters A data.frame with columns \code{parameter}, \code{class}, and \code{label}
+# 
+# @return TRUE if no errors are detected in \code{parameters}
+# 
+# @examples
+# \dontrun{
+# parameters <- data.frame(
+#  parameter = c("x","y"),
+#  class = c("logical","numeric"),
+#  label = c("myX","myY"),
+#  stringsAsFactors=FALSE
+#  )
+# validateParameters(parameters)
+# }
+# 
+# @keywords internal
 
 # validate the input parameters slot for an object of class Task
 validateParameters = function(parameters=NULL){

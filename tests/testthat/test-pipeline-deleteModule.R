@@ -1,6 +1,6 @@
 context("pipeline::deleteModule")
 
-source("../../R/pipeline-class.R")
+# source("../../R/pipeline-class.R")
 
 # set up test data
 pipeline <- Pipeline$new(label="pipeline")
@@ -44,7 +44,7 @@ test_that("an error is thrown if label is not a valid module label",{
 
 # test that an error is thrown if the user tries to delete the classification module
 test_that("an error is thrown if the user tries to delete the classification module",{
-  msg <- "The 'classification' module cannot be deleted from a pipeline"
+  msg <- "the 'classification' module cannot be deleted"
   expect_error(pipeline$deleteModule(label="classification"),msg)
 })
 
