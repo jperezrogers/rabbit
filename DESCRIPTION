@@ -1,6 +1,6 @@
 Package: rabbit
 Title: An R Package to Create Computational Pipelines to Develop and Evaluate Biomarkers from High Dimensional Genomic Data
-Version: 0.1.1
+Version: 0.1.2
 Authors@R: person("Joe", "Perez-Rogers", email = "jperezrogers@gmail.com", role = c("aut", "cre"))
 Description: What the package does (one paragraph).
 Depends:
