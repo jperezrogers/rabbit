@@ -26,7 +26,7 @@ updateParametersFromGenerics <- function(parameters,generics,module.class){
 
     parameters[["x"]] <- generics$x
 
-    if(!is.null(data)){
+    if("data"%in%names(parameters)){
       parameters[["data"]] <- generics$data
     }
 
@@ -35,7 +35,7 @@ updateParametersFromGenerics <- function(parameters,generics,module.class){
     parameters[["x"]] <- generics$x
     parameters[["y"]] <- generics$y
 
-    if(!is.null(data)){
+    if("data"%in%names(parameters)){
       parameters[["data"]] <- generics$data
     }
 
@@ -48,6 +48,7 @@ updateParametersFromGenerics <- function(parameters,generics,module.class){
 
     parameters[["x"]] <- generics$x
     parameters[["y"]] <- generics$y
+
     if("data"%in%names(parameters)){
       parameters[["data"]] <- generics$data
     }
