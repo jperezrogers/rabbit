@@ -7,7 +7,6 @@
 # @keywords biomarker classification
 # @return An object of class \code{Task} with members required to execute a discrete function
 # @format \code{\link{R6Class}} object
-# @import R6
 # 
 # @field label The name of the task
 # @field method A function to perform

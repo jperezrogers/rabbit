@@ -7,7 +7,6 @@
 # @keywords biomarker classification
 # @return An object of class \code{Module}
 # @format \code{\link{R6Class}} object
-# @import R6
 # 
 # @field label the name of the Module
 # @field tasks a list of active Task objects

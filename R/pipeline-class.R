@@ -7,7 +7,6 @@
 # @keywords biomarker classification
 # @return An object of class \code{Pipeline}
 # @format \code{\link{R6Class}} object
-# @import R6
 #
 # @field label The name of the Module
 # @field order An ordered character vector of \code{Module} names. \code{order} determined the order in which \code{Modules} will be run in the pipeline

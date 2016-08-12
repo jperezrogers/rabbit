@@ -93,7 +93,7 @@ test_that("an error is thrown when not all classes exist",{
   expect_error(validateParameters(parameters),msg)
   parameters <- data.frame("parameter"=c("a","b"),"class"=c("a","factor"),"label"=c("a","b"),stringsAsFactors=F)
   expect_error(validateParameters(parameters),msg)
-  msg <- "b is not a valid class"
-  parameters <- data.frame("parameter"=c("a","b"),"class"=c("factor","b"),"label"=c("a","b"),stringsAsFactors=F)
+  msg <- "bb is not a valid class"
+  parameters <- data.frame("parameter"=c("a","b"),"class"=c("factor","bb"),"label"=c("a","b"),stringsAsFactors=F)
   expect_error(validateParameters(parameters),msg)
 })

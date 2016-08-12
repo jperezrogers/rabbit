@@ -9,8 +9,7 @@ License: GPL-3
 VignetteBuilder: knitr
 LazyData: true
 Imports:
-    caret,
-    R6
+    caret
 Suggests:
     testthat,
     BiocStyle,
