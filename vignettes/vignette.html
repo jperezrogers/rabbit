@@ -135,9 +135,16 @@ data(golub)</code></pre>
 </div>
 <div id="load-stock-pipeline" class="section level2">
 <h2><span class="header-section-number">2.3</span> Load Stock Pipeline</h2>
+<p>The <em><a href="https://github.com/jperezrogers/rabbit">rabbit</a></em> package provides a stock biomarker discovery pipeline developed based on the results from the MAQC-II study published by <a href="http://www.ncbi.nlm.nih.gov/pubmed/20676074">Shi et al. (2010)</a>. The stock pipeline is stored in the <code>stockPipeline</code> variable and contains 840 pre-build models, each with a unique combination of methods designed to select an optimal set of predictors and classification algorithm. For a more detailed description of the stock pipeline, see <a href="#stock-pipeline">Stock Pipeline</a> below.</p>
+<pre class="r"><code>library(rabbit)
+data(stockPipeline)</code></pre>
+<p>The pipeline requires that each sample and feature (gene, in this case) have a unique name. Here, we add mock names to the <code>golub</code> data matrix.</p>
+<pre class="r"><code>colnames(golub) &lt;- paste(&quot;Sample&quot;, 1:ncol(golub), sep=&quot;_&quot;)
+rownames(golub) &lt;- paste(&quot;Gene&quot;, 1:nrow(golub), sep=&quot;_&quot;)</code></pre>
 </div>
 <div id="run-stock-pipeline" class="section level2">
 <h2><span class="header-section-number">2.4</span> Run Stock Pipeline</h2>
+<pre class="r"><code>run(stockPipeline, x=golub, y=golub.cl, outputdir=getwd(), seed=1234, verbose=TRUE, force=TRUE</code></pre>
 </div>
 <div id="interpreting-results" class="section level2">
 <h2><span class="header-section-number">2.5</span> Interpreting Results</h2>

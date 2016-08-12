@@ -352,6 +352,15 @@ Pipeline <- R6::R6Class("Pipeline",
       if(!is.matrix(x)){
         stop("parameter 'x' must be of class 'matrix'")
       }
+      
+      # check that x has unique column and row names
+      if(is.null(colnames(x))|is.null(rownames(x))){
+        stop("parameter 'x' must have row and column names")
+      } else if(length(unique(colnames(x)))!=length(colnames(x))){
+        stop("colnames of parameter 'x' must all be unique")
+      } else if(length(unique(rownames(x)))!=length(rownames(x))){
+        stop("rownames of parameter 'x' must all be unique")
+      }
 
       # check that y is not null
       if(is.null(y)){
@@ -363,11 +372,13 @@ Pipeline <- R6::R6Class("Pipeline",
         stop("parameter 'y' must have length equal to ncol(x)")
       }
 
-      # check that y is a two level factor
-      if(length(levels(as.factor(y)))!=2){
-        stop("parameter 'y' must be a two-level factor")
+      # check that y is a two level factor with levels 0 and 1
+      if(!all(y%in%c(0,1))){
+        stop("parameter 'y' must be a two-level factor with levels '0' and '1'")
+      } else if(length(levels(as.factor(y)))!=2){
+        stop("parameter 'y' must have exactly two levels")
       }
-
+      
       # extract the parameters used in all tasks in the pipeline
       params <- unlist(lapply(unlist(private$parameter.key,recursive=F),function(x) names(unlist(x))))
 
@@ -532,13 +543,13 @@ Pipeline <- R6::R6Class("Pipeline",
               scores <- rep(NA,ncol(params$testdata))
               classifications <- rep(NA,ncol(params$testdata))
             } else {
-              if(!"score"%in%names(mylist)){
+              if(!"score"%in%names(o)){
                 warning(paste0("'scores' element missing from '",task.label,"' output. Setting scores to 'NA'"))
                 scores <- rep(NA,ncol(params$testdata))
               } else {
                 scores <- o$score
               }
-              if(!"class"%in%names(mylist)){
+              if(!"class"%in%names(o)){
                 warning(paste0("'class' element missing from '",task.label,"' output. Setting class to 'NA'"))
                 classifications <- rep(NA,ncol(params$testdata))
               } else {

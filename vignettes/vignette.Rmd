@@ -29,10 +29,22 @@ data(golub)
 ```
 
 ## Load Stock Pipeline
+The  `r Githubpkg("jperezrogers/rabbit")` package provides a stock biomarker discovery pipeline developed based on the results from the MAQC-II study published by [Shi et al. (2010)](http://www.ncbi.nlm.nih.gov/pubmed/20676074). The stock pipeline is stored in the `stockPipeline` variable and contains 840 pre-build models, each with a unique combination of methods designed to select an optimal set of predictors and classification algorithm. For a more detailed description of the stock pipeline, see [Stock Pipeline](#stock-pipeline) below.
+```{r, eval=FALSE}
+library(rabbit)
+data(stockPipeline)
+```
 
+The pipeline requires that each sample and feature (gene, in this case) have a unique name. Here, we add mock names to the `golub` data matrix.
+```{r, eval=FALSE}
+colnames(golub) <- paste("Sample", 1:ncol(golub), sep="_")
+rownames(golub) <- paste("Gene", 1:nrow(golub), sep="_")
+```
 
 ## Run Stock Pipeline
-
+```{r, eval=FALSE}
+run(stockPipeline, x=golub, y=golub.cl, outputdir=getwd(), seed=1234, verbose=TRUE, force=TRUE)
+```
 
 ## Interpreting Results
 
