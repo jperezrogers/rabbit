@@ -1,0 +1,167 @@
+---
+title: "Rabbit package"
+author: "Joe Perez-Rogers"
+date: "`r Sys.Date()`"
+output: BiocStyle::html_document
+vignette: >
+  %\VignetteIndexEntry{Rabbit package}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+# Introduction
+An introduciton to the rabbit package, its purpose, and its utility
+
+# Quick Start
+
+## Installing rabbit
+Install the most recent version of the `r Githubpkg("jperezrogers/rabbit")` package directly from Github. A development version of the package is also available and can be downloaded by setting `ref="development"` though this version may be unstable.
+```{r, eval=FALSE}
+library(devtools)
+install_github("jperezrogers/rabbit", ref="master")
+```
+
+## Load Example Data
+For illustrative purposes, we'll use the famous leukemia dataset from [Golub et al. (2009)](http://www.ncbi.nlm.nih.gov/pubmed/10521349) contained within the `r Biocpkg("multtest")` package. This dataset contains gene expression values of 3051 genes across 38 leukemia patients. 27 patients were diagnosed with acute lymphoblastic leukemia (ALL) and 11 were diagnosed with acute myeloid leukemia (AML). Within the outcome vector `golub.cl`, ALL patients are coded as `0` while AML patients are coded as `1`.
+```{r, eval=FALSE}
+library(multtest)
+data(golub)
+```
+
+## Load Stock Pipeline
+
+
+## Run Stock Pipeline
+
+
+## Interpreting Results
+
+
+# Terminology
+
+## Pipeline
+
+
+## Module
+
+
+## Task
+
+
+# Stock Pipeline
+
+## Prebuilt Modules
+
+### Feature Filter
+
+#### Available Tasks
+
+### Feature Selection
+
+#### Available Tasks
+
+### Biomarker Size
+
+#### Available Tasks
+
+### Classification
+
+#### Available Tasks
+
+## Customization
+
+### Activating/Deactivating Tasks
+
+### Adding/Deleting Tasks
+
+### Modifying Existing Tasks
+
+### Changing the Cross-Validation Scheme
+
+# Creating Custom Pipelines
+
+## Creating a New Pipeline
+
+## Adding a New Module to a Pipeline
+
+### M1 Modules
+
+### M2 Modules
+
+### M3 Modules
+
+### M4 Modules
+
+## Adding Tasks to Modules
+
+### Task Components
+
+### Method Element
+
+#### Specific Requirements for Tasks Added to M1 Modules
+
+#### Specific Requirements for Tasks Added to M2 Modules
+
+#### Specific Requirements for Tasks Added to M3 Modules
+
+#### Specific Requirements for Tasks Added to M4 Modules
+
+### Parameters Element
+
+### Control Element
+
+# Additional Utility Functions
+
+## summary
+
+## orderModules
+
+# Additional Considerations
+
+## Cross-Validation Scheme vs Sample Size
+
+## Parallelization
+
+## Debugging
+
+# Vignette Info
+
+Note the various macros within the `vignette` section of the metadata block above. These are required in order to instruct R how to build the vignette. Note that you should change the `title` field and the `\VignetteIndexEntry` to match the title of your vignette.
+
+# Styles
+
+The `html_vignette` template includes a basic CSS theme. To override this theme you can specify your own CSS in the document metadata as follows:
+
+    output: 
+      rmarkdown::html_vignette:
+        css: mystyles.css
+
+# Figures
+
+The figure sizes have been customised so that you can easily put two images side-by-side. 
+
+```{r, fig.show='hold'}
+plot(1:10)
+plot(10:1)
+```
+
+You can enable figure captions by `fig_caption: yes` in YAML:
+
+    output:
+      rmarkdown::html_vignette:
+        fig_caption: yes
+
+Then you can use the chunk option `fig.cap = "Your figure caption."` in **knitr**.
+
+# More Examples
+
+You can write math expressions, e.g. $Y = X\beta + \epsilon$, footnotes^[A footnote here.], and tables, e.g. using `knitr::kable()`.
+
+```{r, echo=FALSE, results='asis'}
+knitr::kable(head(mtcars, 10))
+```
+
+Also a quote using `>`:
+
+> "He who gives up [code] safety for [code] speed deserves neither."
+([via](https://twitter.com/hadleywickham/status/504368538874703872))
