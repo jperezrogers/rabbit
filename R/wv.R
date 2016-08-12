@@ -68,7 +68,7 @@ predict.wv <- function (model, data, type="raw") {
   
   if(type=="raw"){
     output <- predictions
-  } else if(type="prob"){
+  } else if(type=="prob"){
     output <- scores
   }
   
