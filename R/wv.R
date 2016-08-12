@@ -15,7 +15,7 @@ wv.model <- function(data, classlabel, correction = TRUE){
 # The elements of both vectors are named according to the probeset names, i.e., 
 #   the row names of the data matrix 
   
-  y <- lapply(0:1, function (i) {data[,classlabel==i,drop=F]})
+  y <- lapply(1:2, function (i) {data[,classlabel==names(table(classlabel))[i],drop=F]})
   mu <- sapply(y, apply, 1, mean, na.rm=T, simplify=F)
   sigma <- sapply(y, apply, 1, sd, na.rm=T, simplify=F)
   if (correction) {sigma <- mapply(pmax, sigma, lapply(mu, `*`, 0.2),SIMPLIFY=F)}
@@ -24,7 +24,7 @@ wv.model <- function(data, classlabel, correction = TRUE){
   return(list(weights=a, means=g))
 }
 
-predict.wv <- function (model, data) {
+predict.wv <- function (model, data, type="raw") {
 # Implementation of weighted voting code from Golub et al., Science, 1999.
 # Adam Gower, 2008
 
@@ -37,12 +37,16 @@ predict.wv <- function (model, data) {
 #   and means in the model!
 #
 # OUTPUT
-# A list with three elements:
+# depends on the value of type. If type="raw", prediction scores are output, 
+# else, binary predictions
 # scores: a vector of weighted voting scores for each sample; negative = class 
 #   0, positive = class 1
 # predictions: a vector of class predictions (0 or 1) for each sample as 
 #   determined from the sign of the scores vector
-# strengths: a vector of prediction strengths for each sample
+  
+  if(!type%in%c("raw","prob")){
+    stop("parameter 'type' must be one of 'raw' or 'prob'")
+  }
   
   indices <- match(names(model$means), rownames(data))
   votes <- model$weights * (data[indices,,drop=F]-model$means)
@@ -62,6 +66,12 @@ predict.wv <- function (model, data) {
     strengths <- abs(scores) / (V[,2] - V[,1])
   }
   
-  return(list(scores=scores, predictions=predictions, strengths=strengths))
+  if(type=="raw"){
+    output <- predictions
+  } else if(type="prob"){
+    output <- scores
+  }
+  
+  return(output)
 }
 
