@@ -10,7 +10,7 @@
 
 <meta name="author" content="Joe Perez-Rogers" />
 
-<meta name="date" content="2016-08-12" />
+<meta name="date" content="2016-08-16" />
 
 <title>Rabbit package</title>
 
@@ -51,7 +51,7 @@ document.addEventListener("DOMContentLoaded", function() {
 <div id="header">
 <h1 class="title">Rabbit package</h1>
 <h4 class="author"><em>Joe Perez-Rogers</em></h4>
-<h4 class="date"><em>2016-08-12</em></h4>
+<h4 class="date"><em>2016-08-16</em></h4>
 </div>
 
 <h1>Contents</h1>
@@ -129,7 +129,7 @@ install_github(&quot;jperezrogers/rabbit&quot;, ref=&quot;master&quot;)</code></
 </div>
 <div id="load-example-data" class="section level2">
 <h2><span class="header-section-number">2.2</span> Load Example Data</h2>
-<p>For illustrative purposes, we’ll use the famous leukemia dataset from <a href="http://www.ncbi.nlm.nih.gov/pubmed/10521349">Golub et al. (2009)</a> contained within the <em><a href="http://bioconductor.org/packages/release/bioc/html/multtest.html">multtest</a></em> package. This dataset contains gene expression values of 3051 genes across 38 leukemia patients. 27 patients were diagnosed with acute lymphoblastic leukemia (ALL) and 11 were diagnosed with acute myeloid leukemia (AML). Within the outcome vector <code>golub.cl</code>, ALL patients are coded as <code>0</code> while AML patients are coded as <code>1</code>.</p>
+<p>For illustrative purposes, we’ll use the famous leukemia dataset from <a href="http://www.ncbi.nlm.nih.gov/pubmed/10521349">Golub et al. (1999)</a> contained within the <em><a href="http://bioconductor.org/packages/release/bioc/html/multtest.html">multtest</a></em> package. This dataset contains gene expression values of 3051 genes across 38 leukemia patients. 27 patients were diagnosed with acute lymphoblastic leukemia (ALL) and 11 were diagnosed with acute myeloid leukemia (AML). Within the outcome vector <code>golub.cl</code>, ALL patients are coded as <code>0</code> while AML patients are coded as <code>1</code>.</p>
 <pre class="r"><code>library(multtest)
 data(golub)</code></pre>
 </div>
@@ -144,7 +144,7 @@ rownames(golub) &lt;- paste(&quot;Gene&quot;, 1:nrow(golub), sep=&quot;_&quot;)<
 </div>
 <div id="run-stock-pipeline" class="section level2">
 <h2><span class="header-section-number">2.4</span> Run Stock Pipeline</h2>
-<pre class="r"><code>run(stockPipeline, x=golub, y=golub.cl, outputdir=getwd(), seed=1234, verbose=TRUE, force=TRUE</code></pre>
+<pre class="r"><code>run(stockPipeline, x=golub, y=golub.cl, outputdir=getwd(), seed=1234, verbose=TRUE, force=TRUE)</code></pre>
 </div>
 <div id="interpreting-results" class="section level2">
 <h2><span class="header-section-number">2.5</span> Interpreting Results</h2>
@@ -154,12 +154,23 @@ rownames(golub) &lt;- paste(&quot;Gene&quot;, 1:nrow(golub), sep=&quot;_&quot;)<
 <h1><span class="header-section-number">3</span> Terminology</h1>
 <div id="pipeline" class="section level2">
 <h2><span class="header-section-number">3.1</span> Pipeline</h2>
+<p>A <code>Pipeline</code> is an <em><a href="http://cran.fhcrc.org/web/packages/R6/index.html">R6</a></em> object that contains all of the information required to build and evaluate a set of classification models. Pipeline objects have the following members:</p>
+<ul>
+<li><code>label</code> - a character vector of length 1 naming the <code>Pipeline</code> object</li>
+<li><code>modules</code> - a list of <code>Module</code> objects (see below)</li>
+<li><code>cv</code> - the cross-validation scheme to use. One of <code>cv</code>, <code>lgocv</code>, <code>loocv</code>, or <code>boot</code>. See <a href="#creating-custom-pipelines">Creating Custom Pipelines</a> below for more details about each cross-validation method.</li>
+<li><code>p</code> - the fraction of samples to include in the training set. This parameter is only active when <code>cv</code> is one of <code>lgocv</code>, or <code>boot</code></li>
+<li><code>nfolds</code> - the number of folds or iterations to use. This parameter is only active when <code>cv</code> is one of <code>cv</code>, <code>lgocv</code>, or <code>boot</code></li>
+</ul>
+<p>Pipelines are made up of <a href="#module">Modules</a> (see below) and each provides a self-contained object that can be used to run a series of biomarker models.</p>
 </div>
 <div id="module" class="section level2">
 <h2><span class="header-section-number">3.2</span> Module</h2>
+<p>A <code>Module</code> is an <em><a href="http://cran.fhcrc.org/web/packages/R6/index.html">R6</a></em> object which is added to a Pipeline. You should think of each module as a unique step in the development of a classification model (e.g. feature selection or classification). Every module is made up of tasks that have a similar input, output, and overall function. For example, you might want to try out two different linear modeling techniques to select genes associated with your variable of interest. In this case, these two different approaches would be added to your pipeline as individual tasks within the same module since they attempt to achieve the same goal of selecting a number of genes while employing slightly different techniques. Your module, in this case, might be called ‘Feature Selection’.</p>
 </div>
 <div id="task" class="section level2">
 <h2><span class="header-section-number">3.3</span> Task</h2>
+<p>A <code>Task</code> is the fundamental building block of a pipeline. A task object contains the actual function and parameters to apply to the data. Tasks are added to modules and</p>
 </div>
 </div>
 <div id="stock-pipeline" class="section level1">
