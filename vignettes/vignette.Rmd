@@ -65,36 +65,432 @@ Pipelines are made up of [Modules](#module) (see below) and each provides a self
 ## Module
 A `Module` is an `r CRANpkg("R6")` object which is added to a Pipeline. You should think of each module as a unique step in the development of a classification model (e.g. feature selection or classification). Every module is made up of tasks that have a similar input, output, and overall function. For example, you might want to try out two different linear modeling techniques to select genes associated with your variable of interest. In this case, these two different approaches would be added to your pipeline as individual tasks within the same module since they attempt to achieve the same goal of selecting a number of genes while employing slightly different techniques. Your module, in this case, might be called 'Feature Selection'.
 
+### Module Types
+
+#### M1
+#### M2
+#### M3
+#### M4
+
 ## Task
 A `Task` is the fundamental building block of a pipeline. A task object contains the actual function and parameters to apply to the data. Tasks are added to modules and 
 
-
 # Stock Pipeline
+The stock pipeline has been assembled to include the most used methods from the MAQC-II project (specifically those found in Table 2 of [Shi et al. (2010)](http://www.ncbi.nlm.nih.gov/pubmed/20676074)), as well as a few additional tasks to increase the diversity of methods available. 
+
+## Configuration
+The stock pipeline comes equipped with four modules and is designed to evaluate each model in 10-fold cross-validation. By default, when a new pipeline object is created, the `classification` module is already included. We then add a `gene filter` module for _unsupervised_ filtering methods, a `feature selection` module for _supervised_ filtering methods, and a `biomarker size` selection module to pick the final number of genes to be included in the classification model. 
+```{r, eval=TRUE}
+library(rabbit)
+stockPipeline <- newPipeline(label = "stock", cv = "cv", nfolds = 10)
+addModule(pipeline = stockPipeline, type = "M1", label = "gene filter")
+addModule(pipeline = stockPipeline, type = "M2", label = "feature selection")
+addModule(pipeline = stockPipeline, type = "M3", label = "biomarker size")
+```
 
 ## Prebuilt Modules
 
-### Feature Filter
+### Gene Filter
+The gene filter module (`label` = "gene filter") is a type-`M1` module and is the first module in the stock pipeline. It is designed to identify and remove genes in an unsupervised manner that are lowly expressed or that do not vary in expression across samples in the dataset. There are two tasks included in this module which are described below.
 
-#### Available Tasks
+#### Median Absolute Deviation (MAD)
+For each gene, the median absolute deviation is computed using the `stats::mad` function. MAD scores are then ranked in decreasing order, and the top `n` genes by MAD score are selected and returned where
+```{r, eval=FALSE}
+n = round(nrow(x)*fraction)
+```
+and `x` is the gene expression matrix with samples in columns and genes in rows and `fraction` is a decimal value between `0` and `1`. Three different values of `fraction` are built into the median absolute deviation task including `0.25`, `0.50`, and `0.75` with each being evaluated separately. The task definition is as follows:
+```{r, eval=TRUE}
+addTask(
+  pipeline = stockPipeline,
+  module = "gene filter",
+  label = "mad",
+  method = function(x,fraction=0.50){
+    madev <- apply(x,1,mad)
+    sorted.index <- sort(madev,decreasing=T,index.return=T)$ix
+    max.keep <- round(nrow(x)*fraction)
+    boundary <- madev[sorted.index[max.keep]]
+    x <- x[madev>=boundary,]
+    return(x)
+  },
+  datatype = "microarray",
+  parameters = data.frame(
+    parameter = c("fraction"),
+    class = c("numeric"),
+    label = c("fraction"),
+    stringsAsFactors = F
+  ),
+  control = list(
+    fraction = c(0.25,0.50,0.75)
+  )
+)
+```
+
+#### Mean Expression Filter
+For each gene, the mean expression is computed. Then, the array-wide average expression, `mu`, is computed by averaging each gene's mean-expression value such that
+```{r, eval=FALSE}
+mu = mean(apply(x,1,mean))
+```
+where `x` is the gene expression matrix with samples in columns and genes in rows. A one-tailed t-test is then used to rank genes based on how different their mean expression value is from the array-wide mean. Genes with a statistically significant p-value (p < 0.05) are selected and returned. The task definition is as follows:
+```{r, eval=TRUE}
+addTask(
+  pipeline = stockPipeline,
+  module = "gene filter",
+  label = "mean-expression",
+  method = function(x){
+    mean.expr <- mean(apply(x,1,mean))
+    p <- apply(x,1,function(i){
+      t.test(i,mu=mean.expr,alternative="greater")$p.value
+    })
+    x <- x[p<0.05,]
+    return(x)
+  },
+  datatype = "microarray"
+)
+```
 
 ### Feature Selection
+The feature selection module (`label` = "feature selection") is a type-`M2` module and is the second module in the stock pipeline. This module houses tasks that are designed to select genes that are most associated with the variable of interest `y` based on some metric. There are five tasks available in this module which are described in detail below.
 
-#### Available Tasks
+#### Significance Analysis of Microarrays (SAM)
+This task implements the Significance Analysis of Microarrays method published by [Tusher et al (2001)](http://www.ncbi.nlm.nih.gov/pubmed/11309499) and implemented in the `r CRANpkg("samr")` package. Genes are ranked by importance according to their p-value. The task definition is as follows:
+```{r, eval=TRUE}
+addTask(
+  pipeline = stockPipeline,
+  module = "feature selection",
+  label = "SAM",
+  method = function(x,y){
+    y.tmp <- ifelse(y==0,1,2)
+    data <- list(x=x,y=y.tmp, geneid=as.character(1:nrow(x)),genenames=row.names(x),logged2=TRUE)
+    junk <- capture.output(o <- samr(data,resp.type="Two class unpaired",nperms=100))
+    p <- samr.pvalues.from.perms(o$tt,o$ttstar)
+    rank <- abs(p-1)
+    rm(junk)
+    return(list(x=x,rank=rank))
+  },
+  datatype="microarray",
+  libraries = c("samr")
+)
+```
+__NOTE:__ The `rank` of each gene is a transformation of the p-value returned by the `samr.pvalues.from.perms` function. Not all tasks in the feature selection module will rank genes based on p-values, thus we need to standardize the direction in which genes are ranked by the `rank` vector. The direction in which the ranks are sorted is an arbitrary decision, but one that needs to be consistent across all tasks in the module. In this case, we have chosen to rank genes in _descending_ order based on the `rank` vector output by tasks in the feature selection module. P-values are transformed by subtracting `1` and taking the absolute value such that genes with the lowest p-values retain the highest rank.
+
+#### Fold Change + P-value
+Genes are first scored by moderated t-statistic (using the `r Biocpkg("limma")` package and `eBayes` function). Genes with a p-value less than 0.05 are retained and then ranked by log2 fold-change. In the event that no genes pass the specified p-value threshold, all genes are retained and ranked by log2 fold-change. A gene expression matrix containing only those genes that pass the p-value threshold and their associated log2 fold-change rank is returned.
+```{r, eval=TRUE}
+addTask(
+  pipeline = stockPipeline,
+  module = "feature selection",
+  label = "FC + P",
+  method = function(x,y){
+    fc <- apply(x,1,function(i){
+      mean(i[y==levels(y)[1]])/mean(i[y==levels(y)[2]])
+    })
+    mod <- model.matrix(~y)
+    fit <- limma::lmFit(x,mod)
+    modt <- limma::eBayes(fit)
+    p <- modt$p.value[,2]
+    if(sum(p<0.05)>0){
+      x <- x[p<0.05,]
+      rank <- fc[p<0.05]
+    } else {
+      x <- x
+      rank <- fc
+    }
+    return(list(x=x,rank=rank))
+  },
+  datatype="microarray",
+  libraries = c("limma")
+)
+```
+
+#### Student T-test
+A two-tailed student t-test assuming equal variances applied to each gene using the `mt.teststat` function from within the `r Biocpkg("multtest")` package for quick computation. Genes are ranked by p-value.
+```{r, eval=TRUE}
+addTask(
+  pipeline = stockPipeline,
+  module = "feature selection",
+  label = "t-test",
+  method = function(x,y){
+    t <- multtest::mt.teststat(x[1:10,],y)
+    p <- 2 * pt(-abs(t), df=ncol(x)-2)
+    rank <- abs(p-1)
+    return(list(x=x,rank=rank))
+  },
+  datatype="microarray",
+  libraries = c("multtest")
+)
+```
+
+#### Partial AUC
+The partial area under the receiver operating characteristic curve is computed for each gene. This task utilized the `rowpAUCs` function from within the `r Biocpkg("genefilter")` package. See [Pepe et al. (2003)](http://www.ncbi.nlm.nih.gov/pubmed/12762450) for details on the partial AUC method.
+```{r, eval=TRUE}
+addTask(
+  pipeline = stockPipeline,
+  module = "feature selection",
+  label = "pAUC",
+  method = function(x,y){
+    pauc <- area(genefilter::rowpAUCs(x,y,flip=TRUE))
+    return(list(x=x,rank=pauc))
+  },
+  datatype="microarray",
+  libraries = c("genefilter")
+)
+```
+
+#### Signal to Noise Ratio
+The signal-to-noise ratio as described by [Golub et al. (1999)](http://www.ncbi.nlm.nih.gov/pubmed/10521349) is computed for each gene with respect to the variable of interest `y`. Specifically, the difference in mean expression between levels of `y` are divided by the sum of their standard deviations. Genes are ranked based on their signal-to-noise ratio.
+```{r, eval=TRUE}
+addTask(
+  pipeline = stockPipeline,
+  module = "feature selection",
+  label = "signal-to-noise",
+  method = function(x,y){
+    mu1 <- rowMeans(x[,y==levels(y)[1]])
+    sd1 <- apply(x[,y==levels(y)[1]],1,sd)
+    mu2 <- rowMeans(x[,y==levels(y)[2]])
+    sd2 <- apply(x[,y==levels(y)[2]],1,sd)
+    ratio <- abs((mu1-mu2)/(sd1+sd2))
+    return(list(x=x,rank=ratio))
+  },
+  datatype="microarray"
+)
+```
 
 ### Biomarker Size
+The biomarker size module (`label` = "biomarker size") is a type-`M3` module and is the third module in the stock pipeline. This module stores tasks that use the gene expression matrix `x` and list of gene ranks `rank` from the previous module to select a set number of genes for inclusion in the final classifier. There is only one task in this module and it is described below.
 
-#### Available Tasks
+#### Size Selection
+The size selection task selects the top `n` genes based on their value in `rank`. The number of genes selected varies depending on the value passed to the parameter `size`. By default, values of `5`, `25`, `50`, `100`, `500` are used in the stock pipeline. In the event that the size selection task requests more genes than are available (e.g. if `size` = 500 but only 200 genes were retained after feature selection), the maximum number of genes available is used. 
+```{r, eval=TRUE}
+addTask(
+  pipeline = stockPipeline,
+  module = "biomarker size",
+  label = "size selection",
+  method = function(x,rank,size=5){
+    if(length(rank)!=nrow(x)){
+      stop(paste0("biomarker size -> size selection: input parameter 'rank' must have length equal to nrow(x). Actual: length(rank) = ",length(rank),", nrow(x) = ",nrow(x)))
+    }
+    if(size>length(rank)){
+      size <- length(rank)
+      warning(paste0("biomarker size -> size selection: more features requested (n=",size,") than available in parameter 'x' (n=",length(rank),"). Using maximum available features instead."))
+    }
+    x <- x[sort(rank,decreasing=T,index.return=T)$ix[1:size],]
+    return(x)
+  },
+  datatype="microarray",
+  parameters = data.frame(
+    parameter = c("size"),
+    class = c("numeric"),
+    label = c("size"),
+    stringsAsFactors = F
+  ),
+  control = list(
+    size = c(5,25,50,100,200,500)
+  )
+)
+```
 
 ### Classification
+The classification module (`label` = "classification") is a type-`M4` module and is the forth and final module in the stock pipeline. This module is responsible for training a predictive algorithm on the internal training set and evaluated that model on the internal test set within cross-validation. There are seven classification tasks included in the stock pipeline which are described in detail below. Where possible, the classifier is trained using the `r CRANpkg("caret")` package to take advantange of its `train` and `predict` functions which provide a uniform interface to hundreds of algorithms. 
 
-#### Available Tasks
+#### Linear Descriminant Analysis
+```{r, eval=TRUE}
+addTask(
+  pipeline = stockPipeline,
+  module = "classification",
+  label = "lda",
+  method = function(x,y,testdata){
+    control <- trainControl(method="none")
+    mod <- suppressMessages(caret::train(x=t(x), y=as.factor(y), method="lda", trControl=control))
+    preds <- predict(mod, newdata=t(testdata), type="prob")
+    classes <- predict(mod, newdata=t(testdata), type="raw")
+    return(list(score=preds[,1],class=classes))
+  },
+  datatype = "microarray",
+  libraries = "caret"
+)
+```
+
+#### Random Forest
+The random forest task uses 5x 10-fold cross-validation to tune the `mtry` parameter. By default, the number of trees is set to `500`. 
+```{r, eval=TRUE}
+addTask(
+  pipeline = stockPipeline,
+  module = "classification",
+  label = "random forest",
+  method = function(x,y,testdata){
+    control <- trainControl(method="repeatedcv", number=10, repeats=5, 
+                            search="random")
+    mod <- suppressMessages(caret::train(x=t(x), y=as.factor(y), method="rf", metric="ROC",
+                        trControl=control, tuneLength=10))
+    preds <- predict(mod,newdata=t(testdata),type="prob")
+    classification <- predict(mod,newdata=t(testdata),type="raw")
+    return(list(score=preds[,1],class=classification))
+  },
+  datatype = "microarray",
+  libraries = "caret"
+)
+```
+
+#### Naive Bayes
+```{r, eval=TRUE}
+addTask(
+  pipeline = stockPipeline,
+  module = "classification",
+  label = "naive bayes",
+  method = function(x,y,testdata){
+    control <- trainControl(method="none")
+    grid <- data.frame(fL=0, usekernel=FALSE, adjust=FALSE)
+    mod <- suppressMessages(train(x=t(x), y=as.factor(y), method="nb", trControl=control,
+                 tuneGrid=grid))
+    preds <- suppressWarnings(predict(mod,newdata=t(testdata),type="prob"))
+    classification <- suppressWarnings(predict(mod,newdata=t(testdata),
+                                               type="raw"))
+    return(list(score=preds[,1],class=classification))
+  },
+  datatype = "microarray",
+  libraries = "caret"
+)
+```
+
+#### K-Nearest Neighbors
+The k-nearest neighbors task uses 5x 10-fold cross-validation to tune the `k` parameter. 
+```{r, eval=TRUE}
+addTask(
+  pipeline = stockPipeline,
+  module = "classification",
+  label = "knn",
+  method = function(x,y,testdata){
+    y.tmp <- ifelse(y==0,"Class_0","Class_1")
+    kmax <- round(sqrt(ncol(x)))
+    kmax <- ifelse(kmax%%2==0,kmax+1,kmax)
+    control <- trainControl(method="repeatedcv", number=10, repeats=5,
+                            search="grid",selectionFunction="oneSE",
+                            summaryFunction=twoClassSummary, classProbs=TRUE)
+    mod <- suppressMessages(caret::train(x=t(x), y=as.factor(y.tmp), method="knn", trControl=control,
+                        metric="ROC", maximize=TRUE, 
+                        tuneGrid=expand.grid(k=1:kmax)))
+    opt.k <- caret::oneSE(mod$results, metric="ROC",num=5, maximize=TRUE)
+    control <- trainControl(method="none")
+    mod <- suppressMessages(
+      caret::train(x=t(x), y=as.factor(y.tmp), method="knn", trControl=control, 
+                        tuneGrid=data.frame(k=opt.k)))
+    preds <- predict(mod,newdata=t(testdata),type="prob")
+    classification <- predict(mod,newdata=t(testdata),type="raw")
+    return(list(score=preds[,1],class=classification))
+  },
+  datatype = "microarray",
+  libraries = "caret"
+)
+```
+
+#### Support Vector Machine (Radial)
+The support vector machine task uses 5x 10-fold cross-validation to tube the `sigma` and `C` parameters
+```{r, eval=TRUE}
+addTask(
+  pipeline = stockPipeline,
+  module = "classification",
+  label = "svm",
+  method = function(x,y,testdata){
+    y.tmp <- ifelse(y==0,"Class_0","Class_1")
+    control <- trainControl(method="repeatedcv", number=10, repeats=5, 
+                            summaryFunction=twoClassSummary, classProbs=TRUE)
+    mod <- suppressMessages(
+      train(x=t(x), y=as.factor(y.tmp), method="svmRadial", tuneLength=10,
+                 preProc=c("center","scale"), metric="ROC", trControl=control))
+    preds <- predict(mod,newdata=t(testdata),type="prob")
+    classification <- predict(mod,newdata=t(testdata),type="raw")
+    return(list(score=preds[,1],class=classification))
+  },
+  datatype = "microarray",
+  libraries = "caret"
+)
+```
+
+#### Weighted Voting
+```{r, eval=TRUE}
+addTask(
+  pipeline = stockPipeline,
+  module = "classification",
+  label = "weighted voting",
+  method = function(x,y,testdata){
+    mod <- suppressMessages(wv.model(x,y))
+    preds <- predict.wv(mod,testdata, type="prob")
+    classification <- predict.wv(mod,testdata, type="raw")
+    return(list(score=preds,class=classification))
+  },
+  datatype = "microarray",
+  libraries = "caret"
+)
+```
+
+#### Elastic Net Regression
+The elastic net task uses 5x 10-fold cross-validation to tune the `alpha` and `lambda` parameters.
+```{r, eval=TRUE}
+addTask(
+  pipeline = stockPipeline,
+  module = "classification",
+  label = "elastic net",
+  method = function(x,y,testdata){
+    y.tmp <- ifelse(y==0,"Class_0","Class_1")
+    control <- trainControl(method="repeatedcv", number=10, repeats=5, 
+                            summaryFunction=twoClassSummary, classProbs=TRUE)
+    grid <- expand.grid(alpha=seq(0,1,length=10), lambda=10^seq(2,-2,length=100))
+    mod <- suppressMessages(
+      train(x=t(x), y=as.factor(y.tmp), method="glmnet", trControl=control,
+                 tuneGrid=grid, metric="ROC"))
+    preds <- predict(mod,newdata=t(testdata),type="prob")
+    classification <- predict(mod,newdata=t(testdata),type="raw")
+    return(list(score=preds[,1],class=classification))
+  },
+  datatype = "microarray",
+  libraries = "caret"
+)
+```
 
 ## Customization
+The stock pipeline was built to provide the user with a minimal set of tools to build and evaluate predictive models on high dimensional data. However, not all modules and tasks may be valid or their use desired for every dataset. As a result, there are a number of functions provided to customize the stock pipeline, or any pipeline for that matter. 
 
 ### Activating/Deactivating Tasks
+Tasks within a pipeline can be activated and deactivated using the `activateTask` and `deactivateTask` functions, respectively. The active/inactive status of each task is accessed using the `summary` function setting `level` = "active"
+```{r, eval=TRUE}
+summary(stockPipeline, level="active")
+```
+
+```{r, eval=TRUE}
+deactivateTask(pipeline=stockPipeline, module="feature selection", task="pAUC")
+deactivateTask(pipeline=stockPipeline, module="classification", task=c("lda","random forest"))
+activateTask(pipeline=stockPipeline, module="classification", task="random forest")
+summary(stockPipeline, level="active")
+```
 
 ### Adding/Deleting Tasks
+Tasks can also be easily added and deleted from the stock pipeline using the `addTask` and `deleteTask` functions. For more a more detailed description of these functions and their input parameters, see [Adding Tasks to Modules](#adding-tasks-to-modules) below.
+```{r, eval=TRUE}
+deleteTask(pipeline=stockPipeline, module="feature selection", task="SAM")
+summary(stockPipeline, level="active")
+```
 
+Then, we can add the task back using the `addTask` function.
+```{r, eval=TRUE}
+addTask(
+  pipeline = stockPipeline,
+  module = "feature selection",
+  label = "SAM",
+  method = function(x,y){
+    y.tmp <- ifelse(y==0,1,2)
+    data <- list(x=x,y=y.tmp, geneid=as.character(1:nrow(x)),genenames=row.names(x),logged2=TRUE)
+    junk <- capture.output(o <- samr(data,resp.type="Two class unpaired",nperms=100))
+    p <- samr.pvalues.from.perms(o$tt,o$ttstar)
+    rank <- abs(p-1)
+    rm(junk)
+    return(list(x=x,rank=rank))
+  },
+  datatype="microarray",
+  libraries = c("samr")
+)
+
+summary(stockPipeline, level="active")
+```
 ### Modifying Existing Tasks
 
 ### Changing the Cross-Validation Scheme
@@ -114,6 +510,7 @@ A `Task` is the fundamental building block of a pipeline. A task object contains
 ### M4 Modules
 
 ## Adding Tasks to Modules
+__NOTE:__ only __active__ tasks are displayed in the pipeline structure summary. Inactive tasks will not be used when the pipeline is run and thus do not contribute to its overall structure.
 
 ### Task Components
 
