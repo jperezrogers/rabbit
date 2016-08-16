@@ -492,6 +492,9 @@ addTask(
 summary(stockPipeline, level="active")
 ```
 ### Modifying Existing Tasks
+```{r, eval=TRUE}
+getCall(stockPipeline, "gene filter", "mad")
+```
 
 ### Changing the Cross-Validation Scheme
 The stock pipeline has three parameters that can be modified to customize the cross-validation scheme used when the pipeline is run. 
@@ -502,9 +505,9 @@ The stock pipeline has three parameters that can be modified to customize the cr
 
 Each of these parameters can be modified using the `update` function.
 ```{r, eval=TRUE}
-rabbit::update(pipeline=stockPipeline, what="cv", value="lgocv")
-rabbit::update(pipeline=stockPipeline, what="p", value="0.70")
-rabbit::update(pipeline=stockPipeline, what="nfolds", value=20)
+update(pipeline=stockPipeline, what="cv", value="lgocv")
+update(pipeline=stockPipeline, what="p", value=0.70)
+update(pipeline=stockPipeline, what="nfolds", value=20)
 summary(stockPipeline)
 ```
 

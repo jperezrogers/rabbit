@@ -197,8 +197,13 @@ rownames(golub) &lt;- paste(&quot;Gene&quot;, 1:nrow(golub), sep=&quot;_&quot;)<
 <div id="configuration" class="section level2">
 <h2><span class="header-section-number">4.1</span> Configuration</h2>
 <p>The stock pipeline comes equipped with four modules and is designed to evaluate each model in 10-fold cross-validation. By default, when a new pipeline object is created, the <code>classification</code> module is already included. We then add a <code>gene filter</code> module for <em>unsupervised</em> filtering methods, a <code>feature selection</code> module for <em>supervised</em> filtering methods, and a <code>biomarker size</code> selection module to pick the final number of genes to be included in the classification model.</p>
-<pre class="r"><code>library(rabbit)
-stockPipeline &lt;- newPipeline(label = &quot;stock&quot;, cv = &quot;cv&quot;, nfolds = 10)
+<pre class="r"><code>library(rabbit)</code></pre>
+<pre><code>## 
+## Attaching package: 'rabbit'</code></pre>
+<pre><code>## The following object is masked from 'package:stats':
+## 
+##     update</code></pre>
+<pre class="r"><code>stockPipeline &lt;- newPipeline(label = &quot;stock&quot;, cv = &quot;cv&quot;, nfolds = 10)
 addModule(pipeline = stockPipeline, type = &quot;M1&quot;, label = &quot;gene filter&quot;)
 addModule(pipeline = stockPipeline, type = &quot;M2&quot;, label = &quot;feature selection&quot;)
 addModule(pipeline = stockPipeline, type = &quot;M3&quot;, label = &quot;biomarker size&quot;)</code></pre>
@@ -698,6 +703,8 @@ summary(stockPipeline, level=&quot;active&quot;)</code></pre>
 </div>
 <div id="modifying-existing-tasks" class="section level3">
 <h3><span class="header-section-number">4.3.3</span> Modifying Existing Tasks</h3>
+<pre class="r"><code>getCall(stockPipeline, &quot;gene filter&quot;, &quot;mad&quot;)</code></pre>
+<pre><code>## NULL</code></pre>
 </div>
 <div id="changing-the-cross-validation-scheme" class="section level3">
 <h3><span class="header-section-number">4.3.4</span> Changing the Cross-Validation Scheme</h3>
@@ -707,6 +714,17 @@ summary(stockPipeline, level=&quot;active&quot;)</code></pre>
 <li><code>p</code> - adjusts the fraction of samples that are included in the training set at each cross-validation run and can take on a value between 0 and 1 (<strong>NOTE</strong>: <code>p</code> is only used when <code>cv</code> is set to <code>lgocv</code> or <code>boot</code>).</li>
 <li><code>nfolds</code> - sets the number of folds (occasionally referred to as iterations). When <code>cv</code> is set to <code>cv</code>, <code>nfolds</code> determines the structure of the k-fold cross-validation. When <code>cv</code> is <code>lgocv</code> or <code>boot</code>, <code>nfolds</code> determines the number of sampling iterations to compute.</li>
 </ul>
+<p>Each of these parameters can be modified using the <code>update</code> function.</p>
+<pre class="r"><code>update(pipeline=stockPipeline, what=&quot;cv&quot;, value=&quot;lgocv&quot;)
+update(pipeline=stockPipeline, what=&quot;p&quot;, value=0.70)
+update(pipeline=stockPipeline, what=&quot;nfolds&quot;, value=20)
+summary(stockPipeline)</code></pre>
+<pre><code>## Pipeline Overview
+##    label: stock
+##    total models: 576
+##    cross-validation method (cv): lgocv
+##    number of folds (nfolds): 20
+##    training set fraction (p): 0.7</code></pre>
 </div>
 </div>
 </div>
