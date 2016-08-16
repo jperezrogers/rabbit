@@ -31,11 +31,11 @@ Pipeline <- R6::R6Class("Pipeline",
 # Public Members
 #===============================================================================
 
-    label = NA, # the name of the pipeline,
+    # label = NA, # the name of the pipeline,
     modules = list(), # a list of modules in the pipeline
-    cv = NA, # resampling method
-    nfolds = NA, # number of folds or resampling iterations
-    p = NA, # percentage of samples in the training set
+    # cv = NA, # resampling method
+    # nfolds = NA, # number of folds or resampling iterations
+    # p = NA, # percentage of samples in the training set
 
 #===============================================================================
 # Public Methods
@@ -48,13 +48,13 @@ Pipeline <- R6::R6Class("Pipeline",
     initialize = function(label=NULL,cv="lgocv",nfolds=10,p=0.80){
 
       # check that label is provided and in the right format, if so, set
-      # self$label
+      # private$label
       if(is.null(label)){
         stop("parameter 'label' must not be NULL")
       } else if(!is.character(label)){
         stop("parameter 'label' must be of class character")
       } else {
-        self$label <- label
+        private$label <- label
       }
 
       # check that cv is valid
@@ -66,7 +66,7 @@ Pipeline <- R6::R6Class("Pipeline",
       } else if(!cv%in%c("cv","loocv","lgocv","boot")){
         stop(msg)
       } else {
-        self$cv <- cv
+        private$cv <- cv
       }
 
       # check that nfolds is an integer
@@ -76,18 +76,18 @@ Pipeline <- R6::R6Class("Pipeline",
       } else if(!is.wholenumber(nfolds)|nfolds<=1){
         stop("parameter 'nfolds' must be an integer >1")
       } else {
-        self$nfolds <- nfolds
+        private$nfolds <- nfolds
       }
 
       # check that p is a numeric between 0 and 1
-      if(self$cv%in%c("lgocv","boot")){
+      if(private$cv%in%c("lgocv","boot")){
         if(!is.numeric(p)){
           stop("parameter 'p' must be a numeric value between 0 and 1")
         } else if(p>=1|p<=0){
           stop("parameter 'p' must be a numeric value between 0 and 1")
         }
       }
-      self$p <- p
+      private$p <- p
 
       # set the module list to be empty
       self$modules <- list()
@@ -253,7 +253,7 @@ Pipeline <- R6::R6Class("Pipeline",
     getOrder = function(verbose=FALSE){
 
       if(verbose){
-        cat(paste0(self$label,"\n"))
+        cat(paste0(private$label,"\n"))
         sapply(1:length(self$modules),function(i){
           cat(paste0("\t",i,". ",private$order[i],"\n"))
         })
@@ -293,7 +293,7 @@ Pipeline <- R6::R6Class("Pipeline",
       self$.validateUserInputs(x,y,data,rank,iter,seed)
 
       # step 6: split data into internal training/test sets based on cv
-      data.partition <- partitionData(y,cv=self$cv,nfolds=self$nfolds,p=self$p)
+      data.partition <- partitionData(y,cv=private$cv,nfolds=private$nfolds,p=private$p)
 
       # step 7: create the output directory structure that will store the results
       createOutputDirectoryStructure(data.partition,outputdir,private$model.index,force)
@@ -301,7 +301,7 @@ Pipeline <- R6::R6Class("Pipeline",
       # step 8: run each model
       if(is.null(iter)){
         i.iter <- 1
-        i.max <- self$nfolds
+        i.max <- private$nfolds
       } else {
         i.iter <- iter
         i.max <- iter
@@ -408,8 +408,8 @@ Pipeline <- R6::R6Class("Pipeline",
 
       # check that iter is a valid integer
       if(!is.null(iter)){
-        if(!(iter%in%c(1:self$nfolds))){
-          stop(paste0("parameter 'iter' must be an integer between 1 and ",self$nfolds))
+        if(!(iter%in%c(1:private$nfolds))){
+          stop(paste0("parameter 'iter' must be an integer between 1 and ",private$nfolds))
         }
       }
 
@@ -586,6 +586,10 @@ Pipeline <- R6::R6Class("Pipeline",
 # Private Members
 #===============================================================================
 
+    label = NA, # the name of the pipeline,
+    cv = NA, # resampling method
+    nfolds = NA, # number of folds or resampling iterations
+    p = NA, # percentage of samples in the training set
     order = NA, # the order in which the modules will be executed
     model.index = NA, # the index matrix of models and tasks
     parameter.key = NA, # key matching modules, tasks, and parameters

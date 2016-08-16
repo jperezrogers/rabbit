@@ -67,21 +67,24 @@ document.addEventListener("DOMContentLoaded", function() {
 </ul></li>
 <li><a href="#terminology"><span class="toc-section-number">3</span> Terminology</a><ul>
 <li><a href="#pipeline"><span class="toc-section-number">3.1</span> Pipeline</a></li>
-<li><a href="#module"><span class="toc-section-number">3.2</span> Module</a></li>
+<li><a href="#module"><span class="toc-section-number">3.2</span> Module</a><ul>
+<li><a href="#module-types"><span class="toc-section-number">3.2.1</span> Module Types</a></li>
+</ul></li>
 <li><a href="#task"><span class="toc-section-number">3.3</span> Task</a></li>
 </ul></li>
 <li><a href="#stock-pipeline"><span class="toc-section-number">4</span> Stock Pipeline</a><ul>
-<li><a href="#prebuilt-modules"><span class="toc-section-number">4.1</span> Prebuilt Modules</a><ul>
-<li><a href="#feature-filter"><span class="toc-section-number">4.1.1</span> Feature Filter</a></li>
-<li><a href="#feature-selection"><span class="toc-section-number">4.1.2</span> Feature Selection</a></li>
-<li><a href="#biomarker-size"><span class="toc-section-number">4.1.3</span> Biomarker Size</a></li>
-<li><a href="#classification"><span class="toc-section-number">4.1.4</span> Classification</a></li>
+<li><a href="#configuration"><span class="toc-section-number">4.1</span> Configuration</a></li>
+<li><a href="#prebuilt-modules"><span class="toc-section-number">4.2</span> Prebuilt Modules</a><ul>
+<li><a href="#gene-filter"><span class="toc-section-number">4.2.1</span> Gene Filter</a></li>
+<li><a href="#feature-selection"><span class="toc-section-number">4.2.2</span> Feature Selection</a></li>
+<li><a href="#biomarker-size"><span class="toc-section-number">4.2.3</span> Biomarker Size</a></li>
+<li><a href="#classification"><span class="toc-section-number">4.2.4</span> Classification</a></li>
 </ul></li>
-<li><a href="#customization"><span class="toc-section-number">4.2</span> Customization</a><ul>
-<li><a href="#activatingdeactivating-tasks"><span class="toc-section-number">4.2.1</span> Activating/Deactivating Tasks</a></li>
-<li><a href="#addingdeleting-tasks"><span class="toc-section-number">4.2.2</span> Adding/Deleting Tasks</a></li>
-<li><a href="#modifying-existing-tasks"><span class="toc-section-number">4.2.3</span> Modifying Existing Tasks</a></li>
-<li><a href="#changing-the-cross-validation-scheme"><span class="toc-section-number">4.2.4</span> Changing the Cross-Validation Scheme</a></li>
+<li><a href="#customization"><span class="toc-section-number">4.3</span> Customization</a><ul>
+<li><a href="#activatingdeactivating-tasks"><span class="toc-section-number">4.3.1</span> Activating/Deactivating Tasks</a></li>
+<li><a href="#addingdeleting-tasks"><span class="toc-section-number">4.3.2</span> Adding/Deleting Tasks</a></li>
+<li><a href="#modifying-existing-tasks"><span class="toc-section-number">4.3.3</span> Modifying Existing Tasks</a></li>
+<li><a href="#changing-the-cross-validation-scheme"><span class="toc-section-number">4.3.4</span> Changing the Cross-Validation Scheme</a></li>
 </ul></li>
 </ul></li>
 <li><a href="#creating-custom-pipelines"><span class="toc-section-number">5</span> Creating Custom Pipelines</a><ul>
@@ -167,6 +170,21 @@ rownames(golub) &lt;- paste(&quot;Gene&quot;, 1:nrow(golub), sep=&quot;_&quot;)<
 <div id="module" class="section level2">
 <h2><span class="header-section-number">3.2</span> Module</h2>
 <p>A <code>Module</code> is an <em><a href="http://cran.fhcrc.org/web/packages/R6/index.html">R6</a></em> object which is added to a Pipeline. You should think of each module as a unique step in the development of a classification model (e.g. feature selection or classification). Every module is made up of tasks that have a similar input, output, and overall function. For example, you might want to try out two different linear modeling techniques to select genes associated with your variable of interest. In this case, these two different approaches would be added to your pipeline as individual tasks within the same module since they attempt to achieve the same goal of selecting a number of genes while employing slightly different techniques. Your module, in this case, might be called ‘Feature Selection’.</p>
+<div id="module-types" class="section level3">
+<h3><span class="header-section-number">3.2.1</span> Module Types</h3>
+<div id="m1" class="section level4">
+<h4><span class="header-section-number">3.2.1.1</span> M1</h4>
+</div>
+<div id="m2" class="section level4">
+<h4><span class="header-section-number">3.2.1.2</span> M2</h4>
+</div>
+<div id="m3" class="section level4">
+<h4><span class="header-section-number">3.2.1.3</span> M3</h4>
+</div>
+<div id="m4" class="section level4">
+<h4><span class="header-section-number">3.2.1.4</span> M4</h4>
+</div>
+</div>
 </div>
 <div id="task" class="section level2">
 <h2><span class="header-section-number">3.3</span> Task</h2>
@@ -175,46 +193,538 @@ rownames(golub) &lt;- paste(&quot;Gene&quot;, 1:nrow(golub), sep=&quot;_&quot;)<
 </div>
 <div id="stock-pipeline" class="section level1">
 <h1><span class="header-section-number">4</span> Stock Pipeline</h1>
+<p>The stock pipeline has been assembled to include the most used methods from the MAQC-II project (specifically those found in Table 2 of <a href="http://www.ncbi.nlm.nih.gov/pubmed/20676074">Shi et al. (2010)</a>), as well as a few additional tasks to increase the diversity of methods available.</p>
+<div id="configuration" class="section level2">
+<h2><span class="header-section-number">4.1</span> Configuration</h2>
+<p>The stock pipeline comes equipped with four modules and is designed to evaluate each model in 10-fold cross-validation. By default, when a new pipeline object is created, the <code>classification</code> module is already included. We then add a <code>gene filter</code> module for <em>unsupervised</em> filtering methods, a <code>feature selection</code> module for <em>supervised</em> filtering methods, and a <code>biomarker size</code> selection module to pick the final number of genes to be included in the classification model.</p>
+<pre class="r"><code>library(rabbit)</code></pre>
+<pre><code>## 
+## Attaching package: 'rabbit'</code></pre>
+<pre><code>## The following object is masked from 'package:stats':
+## 
+##     update</code></pre>
+<pre class="r"><code>stockPipeline &lt;- newPipeline(label = &quot;stock&quot;, cv = &quot;cv&quot;, nfolds = 10)
+addModule(pipeline = stockPipeline, type = &quot;M1&quot;, label = &quot;gene filter&quot;)
+addModule(pipeline = stockPipeline, type = &quot;M2&quot;, label = &quot;feature selection&quot;)
+addModule(pipeline = stockPipeline, type = &quot;M3&quot;, label = &quot;biomarker size&quot;)</code></pre>
+</div>
 <div id="prebuilt-modules" class="section level2">
-<h2><span class="header-section-number">4.1</span> Prebuilt Modules</h2>
-<div id="feature-filter" class="section level3">
-<h3><span class="header-section-number">4.1.1</span> Feature Filter</h3>
-<div id="available-tasks" class="section level4">
-<h4><span class="header-section-number">4.1.1.1</span> Available Tasks</h4>
+<h2><span class="header-section-number">4.2</span> Prebuilt Modules</h2>
+<div id="gene-filter" class="section level3">
+<h3><span class="header-section-number">4.2.1</span> Gene Filter</h3>
+<p>The gene filter module (<code>label</code> = “gene filter”) is a type-<code>M1</code> module and is the first module in the stock pipeline. It is designed to identify and remove genes in an unsupervised manner that are lowly expressed or that do not vary in expression across samples in the dataset. There are two tasks included in this module which are described below.</p>
+<div id="median-absolute-deviation-mad" class="section level4">
+<h4><span class="header-section-number">4.2.1.1</span> Median Absolute Deviation (MAD)</h4>
+<p>For each gene, the median absolute deviation is computed using the <code>stats::mad</code> function. MAD scores are then ranked in decreasing order, and the top <code>n</code> genes by MAD score are selected and returned where</p>
+<pre class="r"><code>n = round(nrow(x)*fraction)</code></pre>
+<p>and <code>x</code> is the gene expression matrix with samples in columns and genes in rows and <code>fraction</code> is a decimal value between <code>0</code> and <code>1</code>. Three different values of <code>fraction</code> are built into the median absolute deviation task including <code>0.25</code>, <code>0.50</code>, and <code>0.75</code> with each being evaluated separately. The task definition is as follows:</p>
+<pre class="r"><code>addTask(
+  pipeline = stockPipeline,
+  module = &quot;gene filter&quot;,
+  label = &quot;mad&quot;,
+  method = function(x,fraction=0.50){
+    madev &lt;- apply(x,1,mad)
+    sorted.index &lt;- sort(madev,decreasing=T,index.return=T)$ix
+    max.keep &lt;- round(nrow(x)*fraction)
+    boundary &lt;- madev[sorted.index[max.keep]]
+    x &lt;- x[madev&gt;=boundary,]
+    return(x)
+  },
+  datatype = &quot;microarray&quot;,
+  parameters = data.frame(
+    parameter = c(&quot;fraction&quot;),
+    class = c(&quot;numeric&quot;),
+    label = c(&quot;fraction&quot;),
+    stringsAsFactors = F
+  ),
+  control = list(
+    fraction = c(0.25,0.50,0.75)
+  )
+)</code></pre>
+</div>
+<div id="mean-expression-filter" class="section level4">
+<h4><span class="header-section-number">4.2.1.2</span> Mean Expression Filter</h4>
+<p>For each gene, the mean expression is computed. Then, the array-wide average expression, <code>mu</code>, is computed by averaging each gene’s mean-expression value such that</p>
+<pre class="r"><code>mu = mean(apply(x,1,mean))</code></pre>
+<p>where <code>x</code> is the gene expression matrix with samples in columns and genes in rows. A one-tailed t-test is then used to rank genes based on how different their mean expression value is from the array-wide mean. Genes with a statistically significant p-value (p &lt; 0.05) are selected and returned. The task definition is as follows:</p>
+<pre class="r"><code>addTask(
+  pipeline = stockPipeline,
+  module = &quot;gene filter&quot;,
+  label = &quot;mean-expression&quot;,
+  method = function(x){
+    mean.expr &lt;- mean(apply(x,1,mean))
+    p &lt;- apply(x,1,function(i){
+      t.test(i,mu=mean.expr,alternative=&quot;greater&quot;)$p.value
+    })
+    x &lt;- x[p&lt;0.05,]
+    return(x)
+  },
+  datatype = &quot;microarray&quot;
+)</code></pre>
 </div>
 </div>
 <div id="feature-selection" class="section level3">
-<h3><span class="header-section-number">4.1.2</span> Feature Selection</h3>
-<div id="available-tasks-1" class="section level4">
-<h4><span class="header-section-number">4.1.2.1</span> Available Tasks</h4>
+<h3><span class="header-section-number">4.2.2</span> Feature Selection</h3>
+<p>The feature selection module (<code>label</code> = “feature selection”) is a type-<code>M2</code> module and is the second module in the stock pipeline. This module houses tasks that are designed to select genes that are most associated with the variable of interest <code>y</code> based on some metric. There are five tasks available in this module which are described in detail below.</p>
+<div id="significance-analysis-of-microarrays-sam" class="section level4">
+<h4><span class="header-section-number">4.2.2.1</span> Significance Analysis of Microarrays (SAM)</h4>
+<p>This task implements the Significance Analysis of Microarrays method published by <a href="http://www.ncbi.nlm.nih.gov/pubmed/11309499">Tusher et al (2001)</a> and implemented in the <em><a href="http://cran.fhcrc.org/web/packages/samr/index.html">samr</a></em> package. Genes are ranked by importance according to their p-value. The task definition is as follows:</p>
+<pre class="r"><code>addTask(
+  pipeline = stockPipeline,
+  module = &quot;feature selection&quot;,
+  label = &quot;SAM&quot;,
+  method = function(x,y){
+    y.tmp &lt;- ifelse(y==0,1,2)
+    data &lt;- list(x=x,y=y.tmp, geneid=as.character(1:nrow(x)),genenames=row.names(x),logged2=TRUE)
+    junk &lt;- capture.output(o &lt;- samr(data,resp.type=&quot;Two class unpaired&quot;,nperms=100))
+    p &lt;- samr.pvalues.from.perms(o$tt,o$ttstar)
+    rank &lt;- abs(p-1)
+    rm(junk)
+    return(list(x=x,rank=rank))
+  },
+  datatype=&quot;microarray&quot;,
+  libraries = c(&quot;samr&quot;)
+)</code></pre>
+<p><strong>NOTE:</strong> The <code>rank</code> of each gene is a transformation of the p-value returned by the <code>samr.pvalues.from.perms</code> function. Not all tasks in the feature selection module will rank genes based on p-values, thus we need to standardize the direction in which genes are ranked by the <code>rank</code> vector. The direction in which the ranks are sorted is an arbitrary decision, but one that needs to be consistent across all tasks in the module. In this case, we have chosen to rank genes in <em>descending</em> order based on the <code>rank</code> vector output by tasks in the feature selection module. P-values are transformed by subtracting <code>1</code> and taking the absolute value such that genes with the lowest p-values retain the highest rank.</p>
+</div>
+<div id="fold-change-p-value" class="section level4">
+<h4><span class="header-section-number">4.2.2.2</span> Fold Change + P-value</h4>
+<p>Genes are first scored by moderated t-statistic (using the <em><a href="http://bioconductor.org/packages/release/bioc/html/limma.html">limma</a></em> package and <code>eBayes</code> function). Genes with a p-value less than 0.05 are retained and then ranked by log2 fold-change. In the event that no genes pass the specified p-value threshold, all genes are retained and ranked by log2 fold-change. A gene expression matrix containing only those genes that pass the p-value threshold and their associated log2 fold-change rank is returned.</p>
+<pre class="r"><code>addTask(
+  pipeline = stockPipeline,
+  module = &quot;feature selection&quot;,
+  label = &quot;FC + P&quot;,
+  method = function(x,y){
+    fc &lt;- apply(x,1,function(i){
+      mean(i[y==levels(y)[1]])/mean(i[y==levels(y)[2]])
+    })
+    mod &lt;- model.matrix(~y)
+    fit &lt;- limma::lmFit(x,mod)
+    modt &lt;- limma::eBayes(fit)
+    p &lt;- modt$p.value[,2]
+    if(sum(p&lt;0.05)&gt;0){
+      x &lt;- x[p&lt;0.05,]
+      rank &lt;- fc[p&lt;0.05]
+    } else {
+      x &lt;- x
+      rank &lt;- fc
+    }
+    return(list(x=x,rank=rank))
+  },
+  datatype=&quot;microarray&quot;,
+  libraries = c(&quot;limma&quot;)
+)</code></pre>
+</div>
+<div id="student-t-test" class="section level4">
+<h4><span class="header-section-number">4.2.2.3</span> Student T-test</h4>
+<p>A two-tailed student t-test assuming equal variances applied to each gene using the <code>mt.teststat</code> function from within the <em><a href="http://bioconductor.org/packages/release/bioc/html/multtest.html">multtest</a></em> package for quick computation. Genes are ranked by p-value.</p>
+<pre class="r"><code>addTask(
+  pipeline = stockPipeline,
+  module = &quot;feature selection&quot;,
+  label = &quot;t-test&quot;,
+  method = function(x,y){
+    t &lt;- multtest::mt.teststat(x[1:10,],y)
+    p &lt;- 2 * pt(-abs(t), df=ncol(x)-2)
+    rank &lt;- abs(p-1)
+    return(list(x=x,rank=rank))
+  },
+  datatype=&quot;microarray&quot;,
+  libraries = c(&quot;multtest&quot;)
+)</code></pre>
+</div>
+<div id="partial-auc" class="section level4">
+<h4><span class="header-section-number">4.2.2.4</span> Partial AUC</h4>
+<p>The partial area under the receiver operating characteristic curve is computed for each gene. This task utilized the <code>rowpAUCs</code> function from within the <em><a href="http://bioconductor.org/packages/release/bioc/html/genefilter.html">genefilter</a></em> package. See <a href="http://www.ncbi.nlm.nih.gov/pubmed/12762450">Pepe et al. (2003)</a> for details on the partial AUC method.</p>
+<pre class="r"><code>addTask(
+  pipeline = stockPipeline,
+  module = &quot;feature selection&quot;,
+  label = &quot;pAUC&quot;,
+  method = function(x,y){
+    pauc &lt;- area(genefilter::rowpAUCs(x,y,flip=TRUE))
+    return(list(x=x,rank=pauc))
+  },
+  datatype=&quot;microarray&quot;,
+  libraries = c(&quot;genefilter&quot;)
+)</code></pre>
+</div>
+<div id="signal-to-noise-ratio" class="section level4">
+<h4><span class="header-section-number">4.2.2.5</span> Signal to Noise Ratio</h4>
+<p>The signal-to-noise ratio as described by <a href="http://www.ncbi.nlm.nih.gov/pubmed/10521349">Golub et al. (1999)</a> is computed for each gene with respect to the variable of interest <code>y</code>. Specifically, the difference in mean expression between levels of <code>y</code> are divided by the sum of their standard deviations. Genes are ranked based on their signal-to-noise ratio.</p>
+<pre class="r"><code>addTask(
+  pipeline = stockPipeline,
+  module = &quot;feature selection&quot;,
+  label = &quot;signal-to-noise&quot;,
+  method = function(x,y){
+    mu1 &lt;- rowMeans(x[,y==levels(y)[1]])
+    sd1 &lt;- apply(x[,y==levels(y)[1]],1,sd)
+    mu2 &lt;- rowMeans(x[,y==levels(y)[2]])
+    sd2 &lt;- apply(x[,y==levels(y)[2]],1,sd)
+    ratio &lt;- abs((mu1-mu2)/(sd1+sd2))
+    return(list(x=x,rank=ratio))
+  },
+  datatype=&quot;microarray&quot;
+)</code></pre>
 </div>
 </div>
 <div id="biomarker-size" class="section level3">
-<h3><span class="header-section-number">4.1.3</span> Biomarker Size</h3>
-<div id="available-tasks-2" class="section level4">
-<h4><span class="header-section-number">4.1.3.1</span> Available Tasks</h4>
+<h3><span class="header-section-number">4.2.3</span> Biomarker Size</h3>
+<p>The biomarker size module (<code>label</code> = “biomarker size”) is a type-<code>M3</code> module and is the third module in the stock pipeline. This module stores tasks that use the gene expression matrix <code>x</code> and list of gene ranks <code>rank</code> from the previous module to select a set number of genes for inclusion in the final classifier. There is only one task in this module and it is described below.</p>
+<div id="size-selection" class="section level4">
+<h4><span class="header-section-number">4.2.3.1</span> Size Selection</h4>
+<p>The size selection task selects the top <code>n</code> genes based on their value in <code>rank</code>. The number of genes selected varies depending on the value passed to the parameter <code>size</code>. By default, values of <code>5</code>, <code>25</code>, <code>50</code>, <code>100</code>, <code>500</code> are used in the stock pipeline. In the event that the size selection task requests more genes than are available (e.g. if <code>size</code> = 500 but only 200 genes were retained after feature selection), the maximum number of genes available is used.</p>
+<pre class="r"><code>addTask(
+  pipeline = stockPipeline,
+  module = &quot;biomarker size&quot;,
+  label = &quot;size selection&quot;,
+  method = function(x,rank,size=5){
+    if(length(rank)!=nrow(x)){
+      stop(paste0(&quot;biomarker size -&gt; size selection: input parameter 'rank' must have length equal to nrow(x). Actual: length(rank) = &quot;,length(rank),&quot;, nrow(x) = &quot;,nrow(x)))
+    }
+    if(size&gt;length(rank)){
+      size &lt;- length(rank)
+      warning(paste0(&quot;biomarker size -&gt; size selection: more features requested (n=&quot;,size,&quot;) than available in parameter 'x' (n=&quot;,length(rank),&quot;). Using maximum available features instead.&quot;))
+    }
+    x &lt;- x[sort(rank,decreasing=T,index.return=T)$ix[1:size],]
+    return(x)
+  },
+  datatype=&quot;microarray&quot;,
+  parameters = data.frame(
+    parameter = c(&quot;size&quot;),
+    class = c(&quot;numeric&quot;),
+    label = c(&quot;size&quot;),
+    stringsAsFactors = F
+  ),
+  control = list(
+    size = c(5,25,50,100,200,500)
+  )
+)</code></pre>
 </div>
 </div>
 <div id="classification" class="section level3">
-<h3><span class="header-section-number">4.1.4</span> Classification</h3>
-<div id="available-tasks-3" class="section level4">
-<h4><span class="header-section-number">4.1.4.1</span> Available Tasks</h4>
+<h3><span class="header-section-number">4.2.4</span> Classification</h3>
+<p>The classification module (<code>label</code> = “classification”) is a type-<code>M4</code> module and is the forth and final module in the stock pipeline. This module is responsible for training a predictive algorithm on the internal training set and evaluated that model on the internal test set within cross-validation. There are seven classification tasks included in the stock pipeline which are described in detail below. Where possible, the classifier is trained using the <em><a href="http://cran.fhcrc.org/web/packages/caret/index.html">caret</a></em> package to take advantange of its <code>train</code> and <code>predict</code> functions which provide a uniform interface to hundreds of algorithms.</p>
+<div id="linear-descriminant-analysis" class="section level4">
+<h4><span class="header-section-number">4.2.4.1</span> Linear Descriminant Analysis</h4>
+<pre class="r"><code>addTask(
+  pipeline = stockPipeline,
+  module = &quot;classification&quot;,
+  label = &quot;lda&quot;,
+  method = function(x,y,testdata){
+    control &lt;- trainControl(method=&quot;none&quot;)
+    mod &lt;- suppressMessages(caret::train(x=t(x), y=as.factor(y), method=&quot;lda&quot;, trControl=control))
+    preds &lt;- predict(mod, newdata=t(testdata), type=&quot;prob&quot;)
+    classes &lt;- predict(mod, newdata=t(testdata), type=&quot;raw&quot;)
+    return(list(score=preds[,1],class=classes))
+  },
+  datatype = &quot;microarray&quot;,
+  libraries = &quot;caret&quot;
+)</code></pre>
+</div>
+<div id="random-forest" class="section level4">
+<h4><span class="header-section-number">4.2.4.2</span> Random Forest</h4>
+<p>The random forest task uses 5x 10-fold cross-validation to tune the <code>mtry</code> parameter. By default, the number of trees is set to <code>500</code>.</p>
+<pre class="r"><code>addTask(
+  pipeline = stockPipeline,
+  module = &quot;classification&quot;,
+  label = &quot;random forest&quot;,
+  method = function(x,y,testdata){
+    control &lt;- trainControl(method=&quot;repeatedcv&quot;, number=10, repeats=5, 
+                            search=&quot;random&quot;)
+    mod &lt;- suppressMessages(caret::train(x=t(x), y=as.factor(y), method=&quot;rf&quot;, metric=&quot;ROC&quot;,
+                        trControl=control, tuneLength=10))
+    preds &lt;- predict(mod,newdata=t(testdata),type=&quot;prob&quot;)
+    classification &lt;- predict(mod,newdata=t(testdata),type=&quot;raw&quot;)
+    return(list(score=preds[,1],class=classification))
+  },
+  datatype = &quot;microarray&quot;,
+  libraries = &quot;caret&quot;
+)</code></pre>
+</div>
+<div id="naive-bayes" class="section level4">
+<h4><span class="header-section-number">4.2.4.3</span> Naive Bayes</h4>
+<pre class="r"><code>addTask(
+  pipeline = stockPipeline,
+  module = &quot;classification&quot;,
+  label = &quot;naive bayes&quot;,
+  method = function(x,y,testdata){
+    control &lt;- trainControl(method=&quot;none&quot;)
+    grid &lt;- data.frame(fL=0, usekernel=FALSE, adjust=FALSE)
+    mod &lt;- suppressMessages(train(x=t(x), y=as.factor(y), method=&quot;nb&quot;, trControl=control,
+                 tuneGrid=grid))
+    preds &lt;- suppressWarnings(predict(mod,newdata=t(testdata),type=&quot;prob&quot;))
+    classification &lt;- suppressWarnings(predict(mod,newdata=t(testdata),
+                                               type=&quot;raw&quot;))
+    return(list(score=preds[,1],class=classification))
+  },
+  datatype = &quot;microarray&quot;,
+  libraries = &quot;caret&quot;
+)</code></pre>
+</div>
+<div id="k-nearest-neighbors" class="section level4">
+<h4><span class="header-section-number">4.2.4.4</span> K-Nearest Neighbors</h4>
+<p>The k-nearest neighbors task uses 5x 10-fold cross-validation to tune the <code>k</code> parameter.</p>
+<pre class="r"><code>addTask(
+  pipeline = stockPipeline,
+  module = &quot;classification&quot;,
+  label = &quot;knn&quot;,
+  method = function(x,y,testdata){
+    y.tmp &lt;- ifelse(y==0,&quot;Class_0&quot;,&quot;Class_1&quot;)
+    kmax &lt;- round(sqrt(ncol(x)))
+    kmax &lt;- ifelse(kmax%%2==0,kmax+1,kmax)
+    control &lt;- trainControl(method=&quot;repeatedcv&quot;, number=10, repeats=5,
+                            search=&quot;grid&quot;,selectionFunction=&quot;oneSE&quot;,
+                            summaryFunction=twoClassSummary, classProbs=TRUE)
+    mod &lt;- suppressMessages(caret::train(x=t(x), y=as.factor(y.tmp), method=&quot;knn&quot;, trControl=control,
+                        metric=&quot;ROC&quot;, maximize=TRUE, 
+                        tuneGrid=expand.grid(k=1:kmax)))
+    opt.k &lt;- caret::oneSE(mod$results, metric=&quot;ROC&quot;,num=5, maximize=TRUE)
+    control &lt;- trainControl(method=&quot;none&quot;)
+    mod &lt;- suppressMessages(
+      caret::train(x=t(x), y=as.factor(y.tmp), method=&quot;knn&quot;, trControl=control, 
+                        tuneGrid=data.frame(k=opt.k)))
+    preds &lt;- predict(mod,newdata=t(testdata),type=&quot;prob&quot;)
+    classification &lt;- predict(mod,newdata=t(testdata),type=&quot;raw&quot;)
+    return(list(score=preds[,1],class=classification))
+  },
+  datatype = &quot;microarray&quot;,
+  libraries = &quot;caret&quot;
+)</code></pre>
+</div>
+<div id="support-vector-machine-radial" class="section level4">
+<h4><span class="header-section-number">4.2.4.5</span> Support Vector Machine (Radial)</h4>
+<p>The support vector machine task uses 5x 10-fold cross-validation to tube the <code>sigma</code> and <code>C</code> parameters</p>
+<pre class="r"><code>addTask(
+  pipeline = stockPipeline,
+  module = &quot;classification&quot;,
+  label = &quot;svm&quot;,
+  method = function(x,y,testdata){
+    y.tmp &lt;- ifelse(y==0,&quot;Class_0&quot;,&quot;Class_1&quot;)
+    control &lt;- trainControl(method=&quot;repeatedcv&quot;, number=10, repeats=5, 
+                            summaryFunction=twoClassSummary, classProbs=TRUE)
+    mod &lt;- suppressMessages(
+      train(x=t(x), y=as.factor(y.tmp), method=&quot;svmRadial&quot;, tuneLength=10,
+                 preProc=c(&quot;center&quot;,&quot;scale&quot;), metric=&quot;ROC&quot;, trControl=control))
+    preds &lt;- predict(mod,newdata=t(testdata),type=&quot;prob&quot;)
+    classification &lt;- predict(mod,newdata=t(testdata),type=&quot;raw&quot;)
+    return(list(score=preds[,1],class=classification))
+  },
+  datatype = &quot;microarray&quot;,
+  libraries = &quot;caret&quot;
+)</code></pre>
+</div>
+<div id="weighted-voting" class="section level4">
+<h4><span class="header-section-number">4.2.4.6</span> Weighted Voting</h4>
+<pre class="r"><code>addTask(
+  pipeline = stockPipeline,
+  module = &quot;classification&quot;,
+  label = &quot;weighted voting&quot;,
+  method = function(x,y,testdata){
+    mod &lt;- suppressMessages(wv.model(x,y))
+    preds &lt;- predict.wv(mod,testdata, type=&quot;prob&quot;)
+    classification &lt;- predict.wv(mod,testdata, type=&quot;raw&quot;)
+    return(list(score=preds,class=classification))
+  },
+  datatype = &quot;microarray&quot;,
+  libraries = &quot;caret&quot;
+)</code></pre>
+</div>
+<div id="elastic-net-regression" class="section level4">
+<h4><span class="header-section-number">4.2.4.7</span> Elastic Net Regression</h4>
+<p>The elastic net task uses 5x 10-fold cross-validation to tune the <code>alpha</code> and <code>lambda</code> parameters.</p>
+<pre class="r"><code>addTask(
+  pipeline = stockPipeline,
+  module = &quot;classification&quot;,
+  label = &quot;elastic net&quot;,
+  method = function(x,y,testdata){
+    y.tmp &lt;- ifelse(y==0,&quot;Class_0&quot;,&quot;Class_1&quot;)
+    control &lt;- trainControl(method=&quot;repeatedcv&quot;, number=10, repeats=5, 
+                            summaryFunction=twoClassSummary, classProbs=TRUE)
+    grid &lt;- expand.grid(alpha=seq(0,1,length=10), lambda=10^seq(2,-2,length=100))
+    mod &lt;- suppressMessages(
+      train(x=t(x), y=as.factor(y.tmp), method=&quot;glmnet&quot;, trControl=control,
+                 tuneGrid=grid, metric=&quot;ROC&quot;))
+    preds &lt;- predict(mod,newdata=t(testdata),type=&quot;prob&quot;)
+    classification &lt;- predict(mod,newdata=t(testdata),type=&quot;raw&quot;)
+    return(list(score=preds[,1],class=classification))
+  },
+  datatype = &quot;microarray&quot;,
+  libraries = &quot;caret&quot;
+)</code></pre>
 </div>
 </div>
 </div>
 <div id="customization" class="section level2">
-<h2><span class="header-section-number">4.2</span> Customization</h2>
+<h2><span class="header-section-number">4.3</span> Customization</h2>
+<p>The stock pipeline was built to provide the user with a minimal set of tools to build and evaluate predictive models on high dimensional data. However, not all modules and tasks may be valid or their use desired for every dataset. As a result, there are a number of functions provided to customize the stock pipeline, or any pipeline for that matter.</p>
 <div id="activatingdeactivating-tasks" class="section level3">
-<h3><span class="header-section-number">4.2.1</span> Activating/Deactivating Tasks</h3>
+<h3><span class="header-section-number">4.3.1</span> Activating/Deactivating Tasks</h3>
+<p>Tasks within a pipeline can be activated and deactivated using the <code>activateTask</code> and <code>deactivateTask</code> functions, respectively. The active/inactive status of each task is accessed using the <code>summary</code> function setting <code>level</code> = “active”</p>
+<pre class="r"><code>summary(stockPipeline, level=&quot;active&quot;)</code></pre>
+<pre><code>## Pipeline Task Activity
+## 
+##    Module 1: gene filter
+##       Active Task
+##        TRUE  mad
+##        TRUE  mean-expression
+## 
+##    Module 2: feature selection
+##       Active Task
+##        TRUE  SAM
+##        TRUE  FC + P
+##        TRUE  t-test
+##        TRUE  pAUC
+##        TRUE  signal-to-noise
+## 
+##    Module 3: biomarker size
+##       Active Task
+##        TRUE  size selection
+## 
+##    Module 4: classification
+##       Active Task
+##        TRUE  lda
+##        TRUE  random forest
+##        TRUE  naive bayes
+##        TRUE  knn
+##        TRUE  svm
+##        TRUE  weighted voting
+##        TRUE  elastic net</code></pre>
+<pre class="r"><code>deactivateTask(pipeline=stockPipeline, module=&quot;feature selection&quot;, task=&quot;pAUC&quot;)
+deactivateTask(pipeline=stockPipeline, module=&quot;classification&quot;, task=c(&quot;lda&quot;,&quot;random forest&quot;))
+activateTask(pipeline=stockPipeline, module=&quot;classification&quot;, task=&quot;random forest&quot;)
+summary(stockPipeline, level=&quot;active&quot;)</code></pre>
+<pre><code>## Pipeline Task Activity
+## 
+##    Module 1: gene filter
+##       Active Task
+##        TRUE  mad
+##        TRUE  mean-expression
+## 
+##    Module 2: feature selection
+##       Active Task
+##        TRUE  SAM
+##        TRUE  FC + P
+##        TRUE  t-test
+##        FALSE pAUC
+##        TRUE  signal-to-noise
+## 
+##    Module 3: biomarker size
+##       Active Task
+##        TRUE  size selection
+## 
+##    Module 4: classification
+##       Active Task
+##        FALSE lda
+##        TRUE  random forest
+##        TRUE  naive bayes
+##        TRUE  knn
+##        TRUE  svm
+##        TRUE  weighted voting
+##        TRUE  elastic net</code></pre>
 </div>
 <div id="addingdeleting-tasks" class="section level3">
-<h3><span class="header-section-number">4.2.2</span> Adding/Deleting Tasks</h3>
+<h3><span class="header-section-number">4.3.2</span> Adding/Deleting Tasks</h3>
+<p>Tasks can also be easily added and deleted from the stock pipeline using the <code>addTask</code> and <code>deleteTask</code> functions. For more a more detailed description of these functions and their input parameters, see <a href="#adding-tasks-to-modules">Adding Tasks to Modules</a> below.</p>
+<pre class="r"><code>deleteTask(pipeline=stockPipeline, module=&quot;feature selection&quot;, task=&quot;SAM&quot;)
+summary(stockPipeline, level=&quot;active&quot;)</code></pre>
+<pre><code>## Pipeline Task Activity
+## 
+##    Module 1: gene filter
+##       Active Task
+##        TRUE  mad
+##        TRUE  mean-expression
+## 
+##    Module 2: feature selection
+##       Active Task
+##        TRUE  FC + P
+##        TRUE  t-test
+##        FALSE pAUC
+##        TRUE  signal-to-noise
+## 
+##    Module 3: biomarker size
+##       Active Task
+##        TRUE  size selection
+## 
+##    Module 4: classification
+##       Active Task
+##        FALSE lda
+##        TRUE  random forest
+##        TRUE  naive bayes
+##        TRUE  knn
+##        TRUE  svm
+##        TRUE  weighted voting
+##        TRUE  elastic net</code></pre>
+<p>Then, we can add the task back using the <code>addTask</code> function.</p>
+<pre class="r"><code>addTask(
+  pipeline = stockPipeline,
+  module = &quot;feature selection&quot;,
+  label = &quot;SAM&quot;,
+  method = function(x,y){
+    y.tmp &lt;- ifelse(y==0,1,2)
+    data &lt;- list(x=x,y=y.tmp, geneid=as.character(1:nrow(x)),genenames=row.names(x),logged2=TRUE)
+    junk &lt;- capture.output(o &lt;- samr(data,resp.type=&quot;Two class unpaired&quot;,nperms=100))
+    p &lt;- samr.pvalues.from.perms(o$tt,o$ttstar)
+    rank &lt;- abs(p-1)
+    rm(junk)
+    return(list(x=x,rank=rank))
+  },
+  datatype=&quot;microarray&quot;,
+  libraries = c(&quot;samr&quot;)
+)
+
+summary(stockPipeline, level=&quot;active&quot;)</code></pre>
+<pre><code>## Pipeline Task Activity
+## 
+##    Module 1: gene filter
+##       Active Task
+##        TRUE  mad
+##        TRUE  mean-expression
+## 
+##    Module 2: feature selection
+##       Active Task
+##        TRUE  FC + P
+##        TRUE  t-test
+##        FALSE pAUC
+##        TRUE  signal-to-noise
+##        TRUE  SAM
+## 
+##    Module 3: biomarker size
+##       Active Task
+##        TRUE  size selection
+## 
+##    Module 4: classification
+##       Active Task
+##        FALSE lda
+##        TRUE  random forest
+##        TRUE  naive bayes
+##        TRUE  knn
+##        TRUE  svm
+##        TRUE  weighted voting
+##        TRUE  elastic net</code></pre>
 </div>
 <div id="modifying-existing-tasks" class="section level3">
-<h3><span class="header-section-number">4.2.3</span> Modifying Existing Tasks</h3>
+<h3><span class="header-section-number">4.3.3</span> Modifying Existing Tasks</h3>
+<pre class="r"><code>getCall(stockPipeline, &quot;gene filter&quot;, &quot;mad&quot;)</code></pre>
+<pre><code>## NULL</code></pre>
 </div>
 <div id="changing-the-cross-validation-scheme" class="section level3">
-<h3><span class="header-section-number">4.2.4</span> Changing the Cross-Validation Scheme</h3>
+<h3><span class="header-section-number">4.3.4</span> Changing the Cross-Validation Scheme</h3>
+<p>The stock pipeline has three parameters that can be modified to customize the cross-validation scheme used when the pipeline is run.</p>
+<ul>
+<li><code>cv</code> - can be set to <code>cv</code>, <code>lgocv</code> [default], <code>loocv</code>, or <code>boot</code> (see <a href="#creating-a-new-pipeline">Creating a New Pipeline</a> below for more details on each option).</li>
+<li><code>p</code> - adjusts the fraction of samples that are included in the training set at each cross-validation run and can take on a value between 0 and 1 (<strong>NOTE</strong>: <code>p</code> is only used when <code>cv</code> is set to <code>lgocv</code> or <code>boot</code>).</li>
+<li><code>nfolds</code> - sets the number of folds (occasionally referred to as iterations). When <code>cv</code> is set to <code>cv</code>, <code>nfolds</code> determines the structure of the k-fold cross-validation. When <code>cv</code> is <code>lgocv</code> or <code>boot</code>, <code>nfolds</code> determines the number of sampling iterations to compute.</li>
+</ul>
+<p>Each of these parameters can be modified using the <code>update</code> function.</p>
+<pre class="r"><code>update(pipeline=stockPipeline, what=&quot;cv&quot;, value=&quot;lgocv&quot;)
+update(pipeline=stockPipeline, what=&quot;p&quot;, value=0.70)
+update(pipeline=stockPipeline, what=&quot;nfolds&quot;, value=20)
+summary(stockPipeline)</code></pre>
+<pre><code>## Pipeline Overview
+##    label: stock
+##    total models: 576
+##    cross-validation method (cv): lgocv
+##    number of folds (nfolds): 20
+##    training set fraction (p): 0.7</code></pre>
 </div>
 </div>
 </div>
@@ -240,6 +750,7 @@ rownames(golub) &lt;- paste(&quot;Gene&quot;, 1:nrow(golub), sep=&quot;_&quot;)<
 </div>
 <div id="adding-tasks-to-modules" class="section level2">
 <h2><span class="header-section-number">5.3</span> Adding Tasks to Modules</h2>
+<p><strong>NOTE:</strong> only <strong>active</strong> tasks are displayed in the pipeline structure summary. Inactive tasks will not be used when the pipeline is run and thus do not contribute to its overall structure.</p>
 <div id="task-components" class="section level3">
 <h3><span class="header-section-number">5.3.1</span> Task Components</h3>
 </div>
