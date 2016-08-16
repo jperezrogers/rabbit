@@ -1,0 +1,188 @@
+---
+title: "Rabbit package"
+author: "Joe Perez-Rogers"
+date: "`r Sys.Date()`"
+output: BiocStyle::html_document
+vignette: >
+  %\VignetteIndexEntry{Rabbit package}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+# Introduction
+An introduciton to the rabbit package, its purpose, and its utility
+
+# Quick Start
+
+## Installing rabbit
+Install the most recent version of the `r Githubpkg("jperezrogers/rabbit")` package directly from Github. A development version of the package is also available and can be downloaded by setting `ref="development"` though this version may be unstable.
+```{r, eval=FALSE}
+library(devtools)
+install_github("jperezrogers/rabbit", ref="master")
+```
+
+## Load Example Data
+For illustrative purposes, we'll use the famous leukemia dataset from [Golub et al. (1999)](http://www.ncbi.nlm.nih.gov/pubmed/10521349) contained within the `r Biocpkg("multtest")` package. This dataset contains gene expression values of 3051 genes across 38 leukemia patients. 27 patients were diagnosed with acute lymphoblastic leukemia (ALL) and 11 were diagnosed with acute myeloid leukemia (AML). Within the outcome vector `golub.cl`, ALL patients are coded as `0` while AML patients are coded as `1`.
+```{r, eval=FALSE}
+library(multtest)
+data(golub)
+```
+
+## Load Stock Pipeline
+The  `r Githubpkg("jperezrogers/rabbit")` package provides a stock biomarker discovery pipeline developed based on the results from the MAQC-II study published by [Shi et al. (2010)](http://www.ncbi.nlm.nih.gov/pubmed/20676074). The stock pipeline is stored in the `stockPipeline` variable and contains 840 pre-build models, each with a unique combination of methods designed to select an optimal set of predictors and classification algorithm. For a more detailed description of the stock pipeline, see [Stock Pipeline](#stock-pipeline) below.
+```{r, eval=FALSE}
+library(rabbit)
+data(stockPipeline)
+```
+
+The pipeline requires that each sample and feature (gene, in this case) have a unique name. Here, we add mock names to the `golub` data matrix.
+```{r, eval=FALSE}
+colnames(golub) <- paste("Sample", 1:ncol(golub), sep="_")
+rownames(golub) <- paste("Gene", 1:nrow(golub), sep="_")
+```
+
+## Run Stock Pipeline
+```{r, eval=FALSE}
+run(stockPipeline, x=golub, y=golub.cl, outputdir=getwd(), seed=1234, verbose=TRUE, force=TRUE)
+```
+
+## Interpreting Results
+
+
+# Terminology
+
+## Pipeline
+A `Pipeline` is an `r CRANpkg("R6")` object that contains all of the information required to build and evaluate a set of classification models. Pipeline objects have the following members:
+
+* `label` - a character vector of length 1 naming the `Pipeline` object
+* `modules` - a list of `Module` objects (see below)
+* `cv` - the cross-validation scheme to use. One of `cv`, `lgocv`, `loocv`, or `boot`. See [Creating Custom Pipelines](#creating-custom-pipelines) below for more details about each cross-validation method.
+* `p` - the fraction of samples to include in the training set. This parameter is only active when `cv` is one of `lgocv`, or `boot`
+* `nfolds` - the number of folds or iterations to use. This parameter is only active when `cv` is one of `cv`, `lgocv`, or `boot`
+
+Pipelines are made up of [Modules](#module) (see below) and each provides a self-contained object that can be used to run a series of biomarker models. 
+
+## Module
+A `Module` is an `r CRANpkg("R6")` object which is added to a Pipeline. You should think of each module as a unique step in the development of a classification model (e.g. feature selection or classification). Every module is made up of tasks that have a similar input, output, and overall function. For example, you might want to try out two different linear modeling techniques to select genes associated with your variable of interest. In this case, these two different approaches would be added to your pipeline as individual tasks within the same module since they attempt to achieve the same goal of selecting a number of genes while employing slightly different techniques. Your module, in this case, might be called 'Feature Selection'.
+
+## Task
+A `Task` is the fundamental building block of a pipeline. A task object contains the actual function and parameters to apply to the data. Tasks are added to modules and 
+
+
+# Stock Pipeline
+
+## Prebuilt Modules
+
+### Feature Filter
+
+#### Available Tasks
+
+### Feature Selection
+
+#### Available Tasks
+
+### Biomarker Size
+
+#### Available Tasks
+
+### Classification
+
+#### Available Tasks
+
+## Customization
+
+### Activating/Deactivating Tasks
+
+### Adding/Deleting Tasks
+
+### Modifying Existing Tasks
+
+### Changing the Cross-Validation Scheme
+
+# Creating Custom Pipelines
+
+## Creating a New Pipeline
+
+## Adding a New Module to a Pipeline
+
+### M1 Modules
+
+### M2 Modules
+
+### M3 Modules
+
+### M4 Modules
+
+## Adding Tasks to Modules
+
+### Task Components
+
+### Method Element
+
+#### Specific Requirements for Tasks Added to M1 Modules
+
+#### Specific Requirements for Tasks Added to M2 Modules
+
+#### Specific Requirements for Tasks Added to M3 Modules
+
+#### Specific Requirements for Tasks Added to M4 Modules
+
+### Parameters Element
+
+### Control Element
+
+# Additional Utility Functions
+
+## summary
+
+## orderModules
+
+# Additional Considerations
+
+## Cross-Validation Scheme vs Sample Size
+
+## Parallelization
+
+## Debugging
+
+# Vignette Info
+
+Note the various macros within the `vignette` section of the metadata block above. These are required in order to instruct R how to build the vignette. Note that you should change the `title` field and the `\VignetteIndexEntry` to match the title of your vignette.
+
+# Styles
+
+The `html_vignette` template includes a basic CSS theme. To override this theme you can specify your own CSS in the document metadata as follows:
+
+    output: 
+      rmarkdown::html_vignette:
+        css: mystyles.css
+
+# Figures
+
+The figure sizes have been customised so that you can easily put two images side-by-side. 
+
+```{r, fig.show='hold'}
+plot(1:10)
+plot(10:1)
+```
+
+You can enable figure captions by `fig_caption: yes` in YAML:
+
+    output:
+      rmarkdown::html_vignette:
+        fig_caption: yes
+
+Then you can use the chunk option `fig.cap = "Your figure caption."` in **knitr**.
+
+# More Examples
+
+You can write math expressions, e.g. $Y = X\beta + \epsilon$, footnotes^[A footnote here.], and tables, e.g. using `knitr::kable()`.
+
+```{r, echo=FALSE, results='asis'}
+knitr::kable(head(mtcars, 10))
+```
+
+Also a quote using `>`:
+
+> "He who gives up [code] safety for [code] speed deserves neither."
+([via](https://twitter.com/hadleywickham/status/504368538874703872))

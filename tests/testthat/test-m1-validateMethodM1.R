@@ -41,7 +41,7 @@ test_that("a warning is issued if x is provided with a default value",{
 
 # test that an error is thrown if additional parameters do not have default values
 test_that("an error is thrown if additional parameters do not have default values",{
-  msg <- "All parameters other than 'x' in 'method' must have default values"
+  msg <- "All parameters other than 'x' and 'data' in 'method' must have default values"
   method <- function(x,y){invisible()}
   expect_error(validateMethodM1(method=method),msg)
   method <- function(x,y=NULL){invisible()}
