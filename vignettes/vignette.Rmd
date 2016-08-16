@@ -494,6 +494,19 @@ summary(stockPipeline, level="active")
 ### Modifying Existing Tasks
 
 ### Changing the Cross-Validation Scheme
+The stock pipeline has three parameters that can be modified to customize the cross-validation scheme used when the pipeline is run. 
+
+* `cv` - can be set to `cv`, `lgocv` [default], `loocv`, or `boot` (see [Creating a New Pipeline](#creating-a-new-pipeline) below for more details on each option). 
+* `p` - adjusts the fraction of samples that are included in the training set at each cross-validation run and can take on a value between 0 and 1 (__NOTE__: `p` is only used when `cv` is set to `lgocv` or `boot`). 
+* `nfolds` - sets the number of folds (occasionally referred to as iterations). When `cv` is set to `cv`, `nfolds` determines the structure of the k-fold cross-validation. When `cv` is `lgocv` or `boot`, `nfolds` determines the number of sampling iterations to compute. 
+
+Each of these parameters can be modified using the `update` function.
+```{r, eval=TRUE}
+rabbit::update(pipeline=stockPipeline, what="cv", value="lgocv")
+rabbit::update(pipeline=stockPipeline, what="p", value="0.70")
+rabbit::update(pipeline=stockPipeline, what="nfolds", value=20)
+summary(stockPipeline)
+```
 
 # Creating Custom Pipelines
 

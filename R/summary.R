@@ -84,16 +84,16 @@ summary.Pipeline <- function(object,...){
   if(level=="overview"){
 
     overview <- list()
-    overview[["label"]] <- x$label
+    overview[["label"]] <- x$.getPrivate(what="label")
     model.index <- indexModels(x)
     totmod <- ifelse(is.null(model.index),0,nrow(model.index))
     overview[["total models"]] <- totmod
-    overview[["cross-validation method (cv)"]] <- x$cv
-    if(x$cv%in%c("cv","lgocv","boot")){
-      overview[["number of folds (nfolds)"]] <- x$nfolds
+    overview[["cross-validation method (cv)"]] <- x$.getPrivate(what="cv")
+    if(x$.getPrivate(what="cv")%in%c("cv","lgocv","boot")){
+      overview[["number of folds (nfolds)"]] <- x$.getPrivate(what="nfolds")
     }
-    if(x$cv%in%c("lgocv","boot")){
-      overview[["training set fraction (p)"]] <- x$p
+    if(x$.getPrivate(what="cv")%in%c("lgocv","boot")){
+      overview[["training set fraction (p)"]] <- x$.getPrivate(what="p")
     }
 
     if(pretty){

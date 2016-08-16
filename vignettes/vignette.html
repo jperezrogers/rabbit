@@ -701,6 +701,12 @@ summary(stockPipeline, level=&quot;active&quot;)</code></pre>
 </div>
 <div id="changing-the-cross-validation-scheme" class="section level3">
 <h3><span class="header-section-number">4.3.4</span> Changing the Cross-Validation Scheme</h3>
+<p>The stock pipeline has three parameters that can be modified to customize the cross-validation scheme used when the pipeline is run.</p>
+<ul>
+<li><code>cv</code> - can be set to <code>cv</code>, <code>lgocv</code> [default], <code>loocv</code>, or <code>boot</code> (see <a href="#creating-a-new-pipeline">Creating a New Pipeline</a> below for more details on each option).</li>
+<li><code>p</code> - adjusts the fraction of samples that are included in the training set at each cross-validation run and can take on a value between 0 and 1 (<strong>NOTE</strong>: <code>p</code> is only used when <code>cv</code> is set to <code>lgocv</code> or <code>boot</code>).</li>
+<li><code>nfolds</code> - sets the number of folds (occasionally referred to as iterations). When <code>cv</code> is set to <code>cv</code>, <code>nfolds</code> determines the structure of the k-fold cross-validation. When <code>cv</code> is <code>lgocv</code> or <code>boot</code>, <code>nfolds</code> determines the number of sampling iterations to compute.</li>
+</ul>
 </div>
 </div>
 </div>
