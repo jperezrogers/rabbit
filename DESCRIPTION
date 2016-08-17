@@ -14,5 +14,8 @@ Suggests:
     testthat,
     BiocStyle,
     knitr,
-    rmarkdown
+    rmarkdown,
+    limma,
+    genefilter,
+    multtest
 RoxygenNote: 5.0.1
