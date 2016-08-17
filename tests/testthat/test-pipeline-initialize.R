@@ -25,11 +25,11 @@ test_that("an error is thrown if parameter 'label' is not a character",{
 test_that("parameter 'label' is correctly assigned if it is correctly specified",{
   expect_silent(Pipeline$new(label="mynewlabel"))
   pipeline <- Pipeline$new(label="mynewlabel")
-  expect_equal(pipeline$label,"mynewlabel")
+  expect_equal(pipeline$.getPrivate(what="label"),"mynewlabel")
   pipeline <- Pipeline$new(label="my_new_label")
-  expect_equal(pipeline$label,"my_new_label")
+  expect_equal(pipeline$.getPrivate(what="label"),"my_new_label")
   pipeline <- Pipeline$new(label="my\tnew\tlabel")
-  expect_equal(pipeline$label,"my\tnew\tlabel")
+  expect_equal(pipeline$.getPrivate(what="label"),"my\tnew\tlabel")
 })
 
 # test that an error is thrown if parameter 'cv' is not correctly specified
@@ -46,15 +46,15 @@ test_that("an error is thrown if parameter 'cv' is not correctly specified",{
 # test that parameter 'cv' is correctly assigned if it is correctly specified
 test_that("parameter 'cv' is correctly assigned if it is correctly specified",{
   pipeline <- Pipeline$new(label="pipeline")
-  expect_equal(pipeline$cv,"lgocv")
+  expect_equal(pipeline$.getPrivate(what="cv"),"lgocv")
   pipeline <- Pipeline$new(label="pipeline",cv="cv")
-  expect_equal(pipeline$cv,"cv")
+  expect_equal(pipeline$.getPrivate(what="cv"),"cv")
   pipeline <- Pipeline$new(label="pipeline",cv="loocv")
-  expect_equal(pipeline$cv,"loocv")
+  expect_equal(pipeline$.getPrivate(what="cv"),"loocv")
   pipeline <- Pipeline$new(label="pipeline",cv="lgocv")
-  expect_equal(pipeline$cv,"lgocv")
+  expect_equal(pipeline$.getPrivate(what="cv"),"lgocv")
   pipeline <- Pipeline$new(label="pipeline",cv="boot")
-  expect_equal(pipeline$cv,"boot")
+  expect_equal(pipeline$.getPrivate(what="cv"),"boot")
 })
 
 # test that an error is thrown if parameter 'nfolds' is not numeric
@@ -78,9 +78,9 @@ test_that("an error is thrown if parameter 'nfolds' is not an integer",{
 # test that parameter 'nfolds' is correctly assigned if it is correctly specified
 test_that("parameter 'nfolds' is correctly assigned if it is correctly specified",{
   pipeline <- Pipeline$new(label="pipeline")
-  expect_equal(pipeline$nfolds,10)
+  expect_equal(pipeline$.getPrivate(what="nfolds"),10)
   pipeline <- Pipeline$new(label="pipeline",nfolds=10)
-  expect_equal(pipeline$nfolds,10)
+  expect_equal(pipeline$.getPrivate(what="nfolds"),10)
 })
 
 # test that an error is thrown if parameter 'p' is not numeric
@@ -105,16 +105,16 @@ test_that("an error is thrown if parameter 'p' is not in the range [0,1]",{
 test_that("parameter 'p' is correctly assigned if it is correctly specified",{
   expect_silent(Pipeline$new(label="pipeline",cv="lgocv",p=0.8))
   pipeline <- Pipeline$new(label="pipeline",cv="lgocv",p=0.8)
-  expect_equal(pipeline$p,0.80)
+  expect_equal(pipeline$.getPrivate(what="p"),0.80)
   expect_silent(Pipeline$new(label="pipeline",cv="boot",p=0.8))
   pipeline <- Pipeline$new(label="pipeline",cv="boot",p=0.8)
-  expect_equal(pipeline$p,0.80)
+  expect_equal(pipeline$.getPrivate(what="p"),0.80)
   expect_silent(Pipeline$new(label="pipeline",cv="cv",p=NULL))
   expect_silent(Pipeline$new(label="pipeline",cv="loocv",p=NULL))
   pipeline <- Pipeline$new(label="pipeline",cv="cv",p=NULL)
-  expect_null(pipeline$p)
+  expect_null(pipeline$.getPrivate(what="p"))
   pipeline <- Pipeline$new(label="pipeline",cv="cv",p=100)
-  expect_equal(pipeline$p,100)
+  expect_equal(pipeline$.getPrivate(what="p"),100)
 })
 
 # test that the modules slot is a list upon initiation

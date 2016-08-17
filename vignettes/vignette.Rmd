@@ -491,9 +491,10 @@ addTask(
 
 summary(stockPipeline, level="active")
 ```
+
 ### Modifying Existing Tasks
 ```{r, eval=TRUE}
-getCall(stockPipeline, "gene filter", "mad")
+rabbit::getCall(stockPipeline, "gene filter", "mad")
 ```
 
 ### Changing the Cross-Validation Scheme
