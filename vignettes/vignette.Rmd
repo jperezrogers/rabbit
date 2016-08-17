@@ -16,9 +16,9 @@ An introduciton to the rabbit package, its purpose, and its utility
 
 ## Installing rabbit
 Install the most recent version of the `r Githubpkg("jperezrogers/rabbit")` package directly from Github. A development version of the package is also available and can be downloaded by setting `ref="development"` though this version may be unstable.
-```{r, eval=FALSE}
+```{r, eval=TRUE}
 library(devtools)
-install_github("jperezrogers/rabbit", ref="master")
+install_github("jperezrogers/rabbit", ref="development")
 ```
 
 ## Load Example Data
@@ -493,8 +493,14 @@ summary(stockPipeline, level="active")
 ```
 
 ### Modifying Existing Tasks
+Occasionally the user may want to reconfigure or modify a task that is already in the stock pipeline. The `getCall` function can be used to return the code used to generate a given task. This allows the user to easily create a new task or overwrite an existing task without having to rewrite the code from scratch. The `getCall` function returns a named list with elements corresponding to the input parameters of the `addTask` function. 
 ```{r, eval=TRUE}
-rabbit::getCall(stockPipeline, "gene filter", "mad")
+task.mad <- getCall(stockPipeline, "gene filter", "mad")
+task.mad
+```
+To add a task back to the pipeline after modifying the list returned by `getCall`, use the `do.call` function
+```{r, eval=TRUE}
+do.call(what=addTask, args=task.mad)
 ```
 
 ### Changing the Cross-Validation Scheme

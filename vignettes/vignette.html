@@ -200,9 +200,9 @@ rownames(golub) &lt;- paste(&quot;Gene&quot;, 1:nrow(golub), sep=&quot;_&quot;)<
 <pre class="r"><code>library(rabbit)</code></pre>
 <pre><code>## 
 ## Attaching package: 'rabbit'</code></pre>
-<pre><code>## The following object is masked from 'package:stats':
+<pre><code>## The following objects are masked from 'package:stats':
 ## 
-##     update</code></pre>
+##     getCall, update</code></pre>
 <pre class="r"><code>stockPipeline &lt;- newPipeline(label = &quot;stock&quot;, cv = &quot;cv&quot;, nfolds = 10)
 addModule(pipeline = stockPipeline, type = &quot;M1&quot;, label = &quot;gene filter&quot;)
 addModule(pipeline = stockPipeline, type = &quot;M2&quot;, label = &quot;feature selection&quot;)
@@ -703,8 +703,32 @@ summary(stockPipeline, level=&quot;active&quot;)</code></pre>
 </div>
 <div id="modifying-existing-tasks" class="section level3">
 <h3><span class="header-section-number">4.3.3</span> Modifying Existing Tasks</h3>
-<pre class="r"><code>getCall(stockPipeline, &quot;gene filter&quot;, &quot;mad&quot;)</code></pre>
-<pre><code>## NULL</code></pre>
+<pre class="r"><code>rabbit::getCall(stockPipeline, &quot;gene filter&quot;, &quot;mad&quot;)</code></pre>
+<pre><code>## $label
+## [1] &quot;mad&quot;
+## 
+## $method
+## function (x, fraction = 0.5) 
+## {
+##     madev &lt;- apply(x, 1, mad)
+##     sorted.index &lt;- sort(madev, decreasing = T, index.return = T)$ix
+##     max.keep &lt;- round(nrow(x) * fraction)
+##     boundary &lt;- madev[sorted.index[max.keep]]
+##     x &lt;- x[madev &gt;= boundary, ]
+##     return(x)
+## }
+## 
+## $parameters
+##   parameter   class    label
+## 1  fraction numeric fraction
+## 
+## $control
+## $control$fraction
+## [1] 0.25 0.50 0.75
+## 
+## 
+## $datatype
+## [1] &quot;microarray&quot;</code></pre>
 </div>
 <div id="changing-the-cross-validation-scheme" class="section level3">
 <h3><span class="header-section-number">4.3.4</span> Changing the Cross-Validation Scheme</h3>
