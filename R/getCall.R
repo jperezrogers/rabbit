@@ -32,6 +32,8 @@ getCall <- function(pipeline, module, task){
 
   task.call <- list()
   task.obj <- pipeline$modules[[module]]$tasks[[task]]
+  task.call$pipeline <- pipeline
+  task.call$module <- module
   task.call$label <- task.obj$label
   task.call$method <- task.obj$method
   task.call$parameters <- task.obj$parameters
