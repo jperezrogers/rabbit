@@ -210,7 +210,7 @@ addTask(
   module = "feature selection",
   label = "t-test",
   method = function(x,y){
-    t <- multtest::mt.teststat(x[1:10,],y)
+    t <- multtest::mt.teststat(x,y)
     p <- 2 * pt(-abs(t), df=ncol(x)-2)
     rank <- abs(p-1)
     return(list(x=x,rank=rank))
@@ -519,14 +519,67 @@ summary(stockPipeline)
 ```
 
 # Creating Custom Pipelines
+In some instances, you may want to build a pipeline from the ground up to fully customize your model building methods. The `r Githubpkg("jperezrogers/rabbit")` package provides a framework and a powerful set of tools that allow the user to build and design custom predictive models.
 
 ## Creating a New Pipeline
+To start, you have to create a new pipeline object using the `newPipeline` function. The only required input parameter, by default, is the `label` which essentially gives the pipeline a name. Other input parameters are available which allow you to customize the cross-validation scheme that will be used when the pipeline is run. The input parameters to `newPipeline` are as follows:
+
+* `label` - a character string naming the pipeline
+* `cv` - the cross-validation method to use. Must be one of `cv`, `lgocv` [default], `loocv`, or `boot` (details below)
+* `p` - the fraction of samples that are included in the internal training set within each fold of cross-validation [numeric between 0 and 1, default `0.80`]
+* `nfolds` - the number of folds or iterations to compute [integer, default `10`]
+
+When parameter `cv` is set to `cv`, ordinary k-fold cross-validation is used where the number of folds k is defined by the value of `nfolds`. `lgocv` implies leave-group-out cross-validation where `p` defines the fraction of samples to be randomly assigned to the training set and `nfolds` indicates the number of random data partitions to compute. `loocv` implies leave-one-out cross-validation in which each sample is left out of training and is predicted one time. In `loocv`, neither `p` nor `nfolds` are used. Finally, `boot` implies bootstrapped cross-validation in which `n` samples are randomly selected with replacement where `n` is the total number of samples in the dataset. Samples not included in the internal training set are used as a test set in bootstrapped cross-validation.
+
+Parameter `p` determines the fraction of samples included in the internal training set and is only used when `cv` is `lgocv`. In this case, a good choice of `p` is usually between 0.50 and 0.90 with the default value being set to 0.80. If your dataset is small, choosing a large value for `p` may result in very few samples being predicted in the test set while smaller values of `p` may underpower your training set.
+
+Parameter `nfolds` is used when `cv` is set to `cv`, `lgocv`, or `boot`. Traditionally, if `cv` = `cv`, 5 or 10-fold cross-validation is typically used. Higher or lower values of `nfolds` may result in small test sets or an insufficient number of cross-validated loops, respectively. When using leave-group-out or bootstrapped cross-validation, the number of folds could be much higher, in the range of 100s or 1000s if desired. 
+
+```{r, eval=TRUE}
+customPipeline <- newPipeline(label = "custom_pipeline", cv = "lgocv", nfolds = 100, p = 0.80)
+```
 
 ## Adding a New Module to a Pipeline
+Once you have created a new pipeline object you can start to add new modules to it. Each new module will represent a "step" in the pipeline. By default, when a new pipeline is created, it comes packages with a 'classification' module already installed. The reason for this is simple. The point of a pipeline is to train and evaluate a predictive model on a dataset, which intuitively means there needs to be a classification module that functions as the last "step" in the pipeline. Therefore, every pipeline must have a classification module and it must be the last module employed when evaluating models. We can see this using the `summary` function:
+```{r, eval=TRUE}
+summary(customPipeline, level="structure")
+```
+As you can see, the pipeline has one module, named 'classification' and that module contains no tasks. At this point we can 1) add tasks to the 'classification' module or 2) we can continue building the bones of our custom pipeline and add a few more modules. 
+
+Taking the latter approach, let's add another module using the `addModule` function. `addModule` takes three arguments:
+
+* `pipeline` - the pipeline object to which the module should be added
+* `type` - the module type to add. One of `M1`, `M2`, or `M3`
+* `label` - a character string naming the module
+
+There are four different types of modules available in this package (`M1`, `M2`, `M3`, and `M4`) which differ based on the expected inputs and outputs of their tasks. `M1`, `M2`, and `M3` modules can all be added to a pipeline object by the user. `M4` modules are 'classification' modules which are automatically added to each pipeline at initialization and cannot be re-added or deleted. Each module is described in detail below:
+
+![](figures/module_types.png)
 
 ### M1 Modules
+Type `M1` modules store tasks that take in a numerical matrix and output a numerical matrix. Optionally, these tasks may also take in phenotype information in the form of a `data.frame`. `M1` modules are used primarily for _unsupervised_ processes (those that do not use the response variable `y`) that are applied to the expression matrix. One example use case for an `M1` module would be to perform some sort of feature filtering, perhaps based on a gene's expression level or variance as in the stock pipeline example above. An expression matrix is read in by the tasks in the `M1` module, a subset is selected for, then an expression matrix is returned. The only assumption is that the column names will be identical between the input and output expression matrix. It's important to note that the expression matrix returned by a task in an `M1` module does __not__ need to have the same number of rows (genes) as the matrix that was passed to it, thus allowing the user to _select_ genes based on some metric and ensure that only those genes are passed to the next step in the pipeline.
+
+A second example use case for an `M1` module would be to create a 'batch correction' module where the expression matrix is read in, modified, and then returned by the task. Let's try to create the `method` parameter for a task in an `M1` module using the `ComBat` function from within the `r Biocpkg("sva")` package which we can use to apply a batch correction to our expression data. `ComBat` requires both a gene expression matrix (in our case, `x`), and the batch annotation which we can store in our phenotype data.frame `data`. We pass both `x` and `data` to our function and return the batch corrected matrix to the pipeline. 
+```{r, eval=FALSE}
+# an example 'method' parameter for a task in an 'M1' module
+method <- function(x,data){
+  mod <- model.matrix(~1, data=data)
+  new.x <- sva::ComBat(dat=x, batch=data$batch, mod=mod)
+  return(new.x)
+}
+```
 
 ### M2 Modules
+Type `M2` modules store tasks that take a numerical matrix, response variable, and (optionally) a data.frame of phenotypic information. Unlike `M1` modules, `M2` modules are designed for _supervised_ processes (those making use of the response variable `y`). In the stock pipeline example above, we used an `M2` module for the feature selection module, where tasks select genes based on their association with `y`. `M2` modules can be used not only to select genes (e.g. by returning an expression matrix containing only genes meeting a desired criteria), but also to rank genes in the event that 'selection' occurs at a later step in the pipeline. To fascilitate this functionality, tasks in `M2` modules need to output either 1) an expression matrix _or_ 2) a list containing an expression matrix named `x` and a ranked list named `rank`. 
+```{r, eval=FALSE}
+# an example 'method' parameter for a task in an 'M2' module
+method = function(x,y){
+  t <- multtest::mt.teststat(x,y)
+  p <- 2 * pt(-abs(t), df=ncol(x)-2)
+  rank <- abs(p-1)
+  return(list(x=x, rank=rank))
+}
+```
 
 ### M3 Modules
 
@@ -551,11 +604,11 @@ __NOTE:__ only __active__ tasks are displayed in the pipeline structure summary.
 
 ### Control Element
 
-# Additional Utility Functions
+## Activating/Deactivating Tasks
 
-## summary
+## Rearranging Modules
 
-## orderModules
+## Summary Functions
 
 # Additional Considerations
 
@@ -565,44 +618,3 @@ __NOTE:__ only __active__ tasks are displayed in the pipeline structure summary.
 
 ## Debugging
 
-# Vignette Info
-
-Note the various macros within the `vignette` section of the metadata block above. These are required in order to instruct R how to build the vignette. Note that you should change the `title` field and the `\VignetteIndexEntry` to match the title of your vignette.
-
-# Styles
-
-The `html_vignette` template includes a basic CSS theme. To override this theme you can specify your own CSS in the document metadata as follows:
-
-    output: 
-      rmarkdown::html_vignette:
-        css: mystyles.css
-
-# Figures
-
-The figure sizes have been customised so that you can easily put two images side-by-side. 
-
-```{r, fig.show='hold'}
-plot(1:10)
-plot(10:1)
-```
-
-You can enable figure captions by `fig_caption: yes` in YAML:
-
-    output:
-      rmarkdown::html_vignette:
-        fig_caption: yes
-
-Then you can use the chunk option `fig.cap = "Your figure caption."` in **knitr**.
-
-# More Examples
-
-You can write math expressions, e.g. $Y = X\beta + \epsilon$, footnotes^[A footnote here.], and tables, e.g. using `knitr::kable()`.
-
-```{r, echo=FALSE, results='asis'}
-knitr::kable(head(mtcars, 10))
-```
-
-Also a quote using `>`:
-
-> "He who gives up [code] safety for [code] speed deserves neither."
-([via](https://twitter.com/hadleywickham/status/504368538874703872))
