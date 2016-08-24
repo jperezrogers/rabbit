@@ -29,7 +29,7 @@ update <- function(pipeline, what, value){
   if(what=="label"){
     if(is.null(value)){
       stop("parameter 'label' must not be NULL")
-    } else if(!is.character(label)){
+    } else if(!is.character(value)){
       stop("parameter 'label' must be of class character")
     } else {
       pipeline$.setPrivate("label",value)
