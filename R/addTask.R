@@ -6,10 +6,10 @@
 #' @param module the label of the module that will contain the task
 #' @param label a character string
 #' @param method a user-defined function. The input/output requirements for \code{method} are dependent upon the class of \code{module}. See details below for more information. 
-#' @param parameters Additional input parameters used in \code{method}
-#' @param libraries A character vector of libraries required in \code{method}
-#' @param control A named list with values of \code{parameters} to pass to \code{method}
-#' @param datatype A character vector of valid datatypes on which \code{method} can be used
+#' @param parameters A data frame with named columns \code{parameter}, \code{class}, and \code{label}. \code{parameters} should contain the names, classes, and default values of all additional input parameters passed to \code{method}.
+#' @param libraries A character vector of libraries required in \code{method}.
+#' @param control A named list with values of \code{parameters} to pass to \code{method}.
+#' @param datatype A character vector of valid datatypes on which \code{method} can be used.
 #' 
 #' @details
 #' Specific input parameters and outputs are required for user-defined methods depending on the class of \code{module}. Tasks added to \code{M1} modules are required to have input parameter \code{x}. Tasks added to \code{M2} modules are required to have input parameters \code{x}, \code{y}, and optionally \code{data}. Tasks added to \code{M3} modules are required to have input parameters \code{x} and \code{rank}. Tasks added to \code{M4} modules are required to have input parameters \code{x}, \code{y}, and \code{testdata}.

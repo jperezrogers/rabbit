@@ -10,7 +10,7 @@
 
 <meta name="author" content="Joe Perez-Rogers" />
 
-<meta name="date" content="2016-08-18" />
+<meta name="date" content="2016-09-13" />
 
 <title>Rabbit package</title>
 
@@ -51,7 +51,7 @@ document.addEventListener("DOMContentLoaded", function() {
 <div id="header">
 <h1 class="title">Rabbit package</h1>
 <h4 class="author"><em>Joe Perez-Rogers</em></h4>
-<h4 class="date"><em>2016-08-18</em></h4>
+<h4 class="date"><em>2016-09-13</em></h4>
 </div>
 
 <h1>Contents</h1>
@@ -124,12 +124,12 @@ document.addEventListener("DOMContentLoaded", function() {
 <p>Install the most recent version of the <em><a href="https://github.com/jperezrogers/rabbit">rabbit</a></em> package directly from Github. A development version of the package is also available and can be downloaded by setting <code>ref=&quot;development&quot;</code> though this version may be unstable.</p>
 <pre class="r"><code>library(devtools)
 install_github(&quot;jperezrogers/rabbit&quot;, ref=&quot;development&quot;)</code></pre>
-<pre><code>## Skipping install for github remote, the SHA1 (cef2df19) has not changed since last install.
+<pre><code>## Skipping install of 'rabbit' from a github remote, the SHA1 (94770e5c) has not changed since last install.
 ##   Use `force = TRUE` to force installation</code></pre>
 </div>
 <div id="load-example-data" class="section level2">
 <h2><span class="header-section-number">2.2</span> Load Example Data</h2>
-<p>For illustrative purposes, we’ll use the famous leukemia dataset from <a href="http://www.ncbi.nlm.nih.gov/pubmed/10521349">Golub et al. (1999)</a> contained within the <em><a href="http://bioconductor.org/packages/release/bioc/html/multtest.html">multtest</a></em> package. This dataset contains gene expression values of 3051 genes across 38 leukemia patients. 27 patients were diagnosed with acute lymphoblastic leukemia (ALL) and 11 were diagnosed with acute myeloid leukemia (AML). Within the outcome vector <code>golub.cl</code>, ALL patients are coded as <code>0</code> while AML patients are coded as <code>1</code>.</p>
+<p>For illustrative purposes, we’ll use the famous leukemia dataset from <a href="http://www.ncbi.nlm.nih.gov/pubmed/10521349">Golub et al. (1999)</a> contained within the <em><a href="http://bioconductor.org/packages/multtest">multtest</a></em> package. This dataset contains gene expression values of 3051 genes across 38 leukemia patients. 27 patients were diagnosed with acute lymphoblastic leukemia (ALL) and 11 were diagnosed with acute myeloid leukemia (AML). Within the outcome vector <code>golub.cl</code>, ALL patients are coded as <code>0</code> while AML patients are coded as <code>1</code>.</p>
 <pre class="r"><code>library(multtest)
 data(golub)</code></pre>
 </div>
@@ -286,7 +286,7 @@ addModule(pipeline = stockPipeline, type = &quot;M3&quot;, label = &quot;biomark
 </div>
 <div id="fold-change-p-value" class="section level4">
 <h4><span class="header-section-number">4.2.2.2</span> Fold Change + P-value</h4>
-<p>Genes are first scored by moderated t-statistic (using the <em><a href="http://bioconductor.org/packages/release/bioc/html/limma.html">limma</a></em> package and <code>eBayes</code> function). Genes with a p-value less than 0.05 are retained and then ranked by log2 fold-change. In the event that no genes pass the specified p-value threshold, all genes are retained and ranked by log2 fold-change. A gene expression matrix containing only those genes that pass the p-value threshold and their associated log2 fold-change rank is returned.</p>
+<p>Genes are first scored by moderated t-statistic (using the <em><a href="http://bioconductor.org/packages/limma">limma</a></em> package and <code>eBayes</code> function). Genes with a p-value less than 0.05 are retained and then ranked by log2 fold-change. In the event that no genes pass the specified p-value threshold, all genes are retained and ranked by log2 fold-change. A gene expression matrix containing only those genes that pass the p-value threshold and their associated log2 fold-change rank is returned.</p>
 <pre class="r"><code>addTask(
   pipeline = stockPipeline,
   module = &quot;feature selection&quot;,
@@ -314,7 +314,7 @@ addModule(pipeline = stockPipeline, type = &quot;M3&quot;, label = &quot;biomark
 </div>
 <div id="student-t-test" class="section level4">
 <h4><span class="header-section-number">4.2.2.3</span> Student T-test</h4>
-<p>A two-tailed student t-test assuming equal variances applied to each gene using the <code>mt.teststat</code> function from within the <em><a href="http://bioconductor.org/packages/release/bioc/html/multtest.html">multtest</a></em> package for quick computation. Genes are ranked by p-value.</p>
+<p>A two-tailed student t-test assuming equal variances applied to each gene using the <code>mt.teststat</code> function from within the <em><a href="http://bioconductor.org/packages/multtest">multtest</a></em> package for quick computation. Genes are ranked by p-value.</p>
 <pre class="r"><code>addTask(
   pipeline = stockPipeline,
   module = &quot;feature selection&quot;,
@@ -331,7 +331,7 @@ addModule(pipeline = stockPipeline, type = &quot;M3&quot;, label = &quot;biomark
 </div>
 <div id="partial-auc" class="section level4">
 <h4><span class="header-section-number">4.2.2.4</span> Partial AUC</h4>
-<p>The partial area under the receiver operating characteristic curve is computed for each gene. This task utilized the <code>rowpAUCs</code> function from within the <em><a href="http://bioconductor.org/packages/release/bioc/html/genefilter.html">genefilter</a></em> package. See <a href="http://www.ncbi.nlm.nih.gov/pubmed/12762450">Pepe et al. (2003)</a> for details on the partial AUC method.</p>
+<p>The partial area under the receiver operating characteristic curve is computed for each gene. This task utilized the <code>rowpAUCs</code> function from within the <em><a href="http://bioconductor.org/packages/genefilter">genefilter</a></em> package. See <a href="http://www.ncbi.nlm.nih.gov/pubmed/12762450">Pepe et al. (2003)</a> for details on the partial AUC method.</p>
 <pre class="r"><code>addTask(
   pipeline = stockPipeline,
   module = &quot;feature selection&quot;,
@@ -489,7 +489,7 @@ addModule(pipeline = stockPipeline, type = &quot;M3&quot;, label = &quot;biomark
 </div>
 <div id="support-vector-machine-radial" class="section level4">
 <h4><span class="header-section-number">4.2.4.5</span> Support Vector Machine (Radial)</h4>
-<p>The support vector machine task uses 5x 10-fold cross-validation to tube the <code>sigma</code> and <code>C</code> parameters</p>
+<p>The support vector machine task uses 5x 10-fold cross-validation to tune the <code>sigma</code> and <code>C</code> parameters</p>
 <pre class="r"><code>addTask(
   pipeline = stockPipeline,
   module = &quot;classification&quot;,
@@ -819,7 +819,7 @@ summary(stockPipeline)</code></pre>
 <div id="m1-modules" class="section level3">
 <h3><span class="header-section-number">5.2.1</span> M1 Modules</h3>
 <p>Type <code>M1</code> modules store tasks that take in a numerical matrix and output a numerical matrix. Optionally, these tasks may also take in phenotype information in the form of a <code>data.frame</code>. <code>M1</code> modules are used primarily for <em>unsupervised</em> processes (those that do not use the response variable <code>y</code>) that are applied to the expression matrix. One example use case for an <code>M1</code> module would be to perform some sort of feature filtering, perhaps based on a gene’s expression level or variance as in the stock pipeline example above. An expression matrix is read in by the tasks in the <code>M1</code> module, a subset is selected for, then an expression matrix is returned. The only assumption is that the column names will be identical between the input and output expression matrix. It’s important to note that the expression matrix returned by a task in an <code>M1</code> module does <strong>not</strong> need to have the same number of rows (genes) as the matrix that was passed to it, thus allowing the user to <em>select</em> genes based on some metric and ensure that only those genes are passed to the next step in the pipeline.</p>
-<p>A second example use case for an <code>M1</code> module would be to create a ‘batch correction’ module where the expression matrix is read in, modified, and then returned by the task. Let’s try to create the <code>method</code> parameter for a task in an <code>M1</code> module using the <code>ComBat</code> function from within the <em><a href="http://bioconductor.org/packages/release/bioc/html/sva.html">sva</a></em> package which we can use to apply a batch correction to our expression data. <code>ComBat</code> requires both a gene expression matrix (in our case, <code>x</code>), and the batch annotation which we can store in our phenotype data.frame <code>data</code>. We pass both <code>x</code> and <code>data</code> to our function and return the batch corrected matrix to the pipeline.</p>
+<p>A second example use case for an <code>M1</code> module would be to create a ‘batch correction’ module where the expression matrix is read in, modified, and then returned by the task. Let’s try to create the <code>method</code> parameter for a task in an <code>M1</code> module using the <code>ComBat</code> function from within the <em><a href="http://bioconductor.org/packages/sva">sva</a></em> package which we can use to apply a batch correction to our expression data. <code>ComBat</code> requires both a gene expression matrix (in our case, <code>x</code>), and the batch annotation which we can store in our phenotype data.frame <code>data</code>. We pass both <code>x</code> and <code>data</code> to our function and return the batch corrected matrix to the pipeline.</p>
 <pre class="r"><code># an example 'method' parameter for a task in an 'M1' module
 method &lt;- function(x,data){
   mod &lt;- model.matrix(~1, data=data)

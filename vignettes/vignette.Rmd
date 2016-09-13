@@ -16,7 +16,7 @@ An introduciton to the rabbit package, its purpose, and its utility
 
 ## Installing rabbit
 Install the most recent version of the `r Githubpkg("jperezrogers/rabbit")` package directly from Github. A development version of the package is also available and can be downloaded by setting `ref="development"` though this version may be unstable.
-```{r, eval=FALSE}
+```{r, eval=TRUE}
 library(devtools)
 install_github("jperezrogers/rabbit", ref="development")
 ```
@@ -384,7 +384,7 @@ addTask(
 ```
 
 #### Support Vector Machine (Radial)
-The support vector machine task uses 5x 10-fold cross-validation to tube the `sigma` and `C` parameters
+The support vector machine task uses 5x 10-fold cross-validation to tune the `sigma` and `C` parameters
 ```{r, eval=TRUE}
 addTask(
   pipeline = stockPipeline,

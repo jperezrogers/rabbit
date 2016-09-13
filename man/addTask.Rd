@@ -16,13 +16,13 @@ addTask(pipeline, module, label, method, datatype = "microarray",
 
 \item{method}{a user-defined function. The input/output requirements for \code{method} are dependent upon the class of \code{module}. See details below for more information.}
 
-\item{datatype}{A character vector of valid datatypes on which \code{method} can be used}
+\item{datatype}{A character vector of valid datatypes on which \code{method} can be used.}
 
-\item{parameters}{Additional input parameters used in \code{method}}
+\item{parameters}{A data frame with named columns \code{parameter}, \code{class}, and \code{label}. \code{parameters} should contain the names, classes, and default values of all additional input parameters passed to \code{method}.}
 
-\item{libraries}{A character vector of libraries required in \code{method}}
+\item{libraries}{A character vector of libraries required in \code{method}.}
 
-\item{control}{A named list with values of \code{parameters} to pass to \code{method}}
+\item{control}{A named list with values of \code{parameters} to pass to \code{method}.}
 }
 \description{
 A more detailed description will eventually go here...
