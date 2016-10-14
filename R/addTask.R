@@ -9,7 +9,6 @@
 #' @param parameters A data frame with named columns \code{parameter}, \code{class}, and \code{label}. \code{parameters} should contain the names, classes, and default values of all additional input parameters passed to \code{method}.
 #' @param libraries A character vector of libraries required in \code{method}.
 #' @param control A named list with values of \code{parameters} to pass to \code{method}.
-#' @param datatype A character vector of valid datatypes on which \code{method} can be used.
 #' 
 #' @details
 #' Specific input parameters and outputs are required for user-defined methods depending on the class of \code{module}. Tasks added to \code{M1} modules are required to have input parameter \code{x}. Tasks added to \code{M2} modules are required to have input parameters \code{x}, \code{y}, and optionally \code{data}. Tasks added to \code{M3} modules are required to have input parameters \code{x} and \code{rank}. Tasks added to \code{M4} modules are required to have input parameters \code{x}, \code{y}, and \code{testdata}.
@@ -22,7 +21,7 @@
 #' }
 #' @export
 
-addTask <- function(pipeline,module,label,method,datatype="microarray",parameters=NULL,libraries=NULL,control=NULL){
+addTask <- function(pipeline,module,label,method,parameters=NULL,libraries=NULL,control=NULL){
   
   if(!"Pipeline"%in%class(pipeline)){
     stop("parameter 'pipeline' must be of class 'Pipeline'")
@@ -34,5 +33,6 @@ addTask <- function(pipeline,module,label,method,datatype="microarray",parameter
     stop("parameter 'module' must be one of: '",paste0(module.names,collapse="', '"),"'")
   }
   
-  pipeline$modules[[module]]$addTask(label,method,datatype,parameters,libraries,control)
+  pipeline$modules[[module]]$addTask(label,method,parameters,libraries,control)
+  # pipeline$modules[[module]]$addTask(label,method,datatype,parameters,libraries,control)
 }

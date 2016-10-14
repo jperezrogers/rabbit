@@ -52,7 +52,7 @@ M3 <- R6::R6Class("M3",
       validateParameters(parameters=task$parameters)
       validateLibraries(libraries=task$libraries)
       validateControl(parameters=task$parameters,control=task$control)
-      validateDatatype(datatype=task$datatype)
+      # validateDatatype(datatype=task$datatype)
     }
     
   ),

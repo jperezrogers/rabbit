@@ -32,10 +32,11 @@ Task <- R6::R6Class("Task",
     control = NA,
     
     # public methods
-    initialize = function(label,method,datatype,parameters=NULL,libraries=NULL,control=NULL){
+    # initialize = function(label,method,datatype,parameters=NULL,libraries=NULL,control=NULL){
+    initialize = function(label,method,parameters=NULL,libraries=NULL,control=NULL){
       self$label = label
       self$method = method
-      self$datatype = datatype
+      # self$datatype = datatype
       self$parameters = parameters
       self$libraries = libraries
       self$control = control
