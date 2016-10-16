@@ -373,10 +373,10 @@ Pipeline <- R6::R6Class("Pipeline",
       }
 
       # check that y is a two level factor with levels 0 and 1
-      if(!all(y%in%c(0,1))){
+      if(!is.factor(y)){
         stop("parameter 'y' must be a two-level factor with levels '0' and '1'")
-      } else if(length(levels(as.factor(y)))!=2){
-        stop("parameter 'y' must have exactly two levels")
+      } else if(!all(y%in%c(0,1))){
+        stop("parameter 'y' must be a two-level factor with levels '0' and '1'")
       }
       
       # extract the parameters used in all tasks in the pipeline
@@ -452,6 +452,19 @@ Pipeline <- R6::R6Class("Pipeline",
       # set up the internal test set
       test.x <- x[,-partition[[iter]]]
       test.y <- y[-partition[[iter]]]
+      
+      # set up the list of generics
+      nmodules <- ncol(private$model.index)
+      generics <- list()
+      for(i in 1:nmodules){
+        generics[[paste0("L",i)]] <- list()
+      }
+      
+      # set the generics for the first module in the pipeline
+      generics[[1]] <- list(x=train.x,y=train.y,data=train.data,rank=rank,testdata=test.x)
+      
+      # define minimally changing module
+      min.change <- 1
 
       # starting model evaluation
       if(verbose){cat("Iteration",iter,"\n")}
@@ -464,22 +477,32 @@ Pipeline <- R6::R6Class("Pipeline",
 
         # beginning model computation, no errors have occured
         error.occured <- FALSE
-
-        # set the generic variables
-        generics <- list(x=train.x,y=train.y,data=train.data,rank=rank,testdata=test.x)
+        
+        # set the minimum change between current module and former module
+        if(model.n==1){
+          min.change <- 1
+        } else {
+          current.index <- private$model.index[model.n,]
+          former.index <- private$model.index[model.n-1,]
+          min.change <- as.numeric(which(current.index!=former.index)[1])
+        }
+        
+        # generics counter
+        generics.counter <- min.change
 
         # loop through the modules & tasks for the first model
-        for(module.name in colnames(private$model.index)){
-
+        for(module.name in colnames(private$model.index)[min.change:ncol(private$model.index)]){
+          
           i <- private$model.index[model.n,module.name]
           task.label <- private$label.key[[module.name]][[i]]
+          
           method <- self$modules[[module.name]]$tasks[[task.label]]$method
           params <- private$parameter.key[[module.name]][[i]]
 
           # load the required libraries if they're not already loaded
           libs <- self$modules[[module.name]]$tasks[[task.label]]$libraries
           if(!is.null(libs)){
-            suppressPackageStartupMessages(library(libs,character.only=T))
+            sapply(libs,function(x){suppressPackageStartupMessages(library(x,character.only=T))})
           }
 
           # extract the module class
@@ -490,7 +513,7 @@ Pipeline <- R6::R6Class("Pipeline",
           # input parameters that will be passed to the task's method function.
           #=====================================================================
 
-          params <- updateParametersFromGenerics(params,generics,module.class)
+          params <- updateParametersFromGenerics(params,generics[[generics.counter]],module.class)
 
           #=====================================================================
           # Now that the parameters are set, we can run the task. In the event
@@ -530,7 +553,10 @@ Pipeline <- R6::R6Class("Pipeline",
           # M4, wite out the final feature names and prediction scores to files
           #=====================================================================
 
-          generics <- updateGenerics(generics,o,module.class)
+          generics[[generics.counter+1]] <- updateGenerics(generics[[generics.counter]],o,module.class)
+
+          # bump the generics counter for the next module
+          generics.counter <- generics.counter + 1
 
           if(module.class=="M4"){
 
