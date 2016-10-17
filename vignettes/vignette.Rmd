@@ -17,8 +17,7 @@ An introduciton to the rabbit package, its purpose, and its utility
 ## Installing rabbit
 Install the most recent version of the `r Githubpkg("jperezrogers/rabbit")` package directly from Github. A development version of the package is also available and can be downloaded by setting `ref="development"` though this version may be unstable.
 ```{r, eval=TRUE}
-library(devtools)
-install_github("jperezrogers/rabbit", ref="development")
+devtools::install_github("jperezrogers/rabbit", ref="development")
 ```
 
 ## Load Example Data
@@ -112,7 +111,6 @@ addTask(
     x <- x[madev>=boundary,]
     return(x)
   },
-  datatype = "microarray",
   parameters = data.frame(
     parameter = c("fraction"),
     class = c("numeric"),
@@ -143,8 +141,7 @@ addTask(
     })
     x <- x[p<0.05,]
     return(x)
-  },
-  datatype = "microarray"
+  }
 )
 ```
 
@@ -167,7 +164,6 @@ addTask(
     rm(junk)
     return(list(x=x,rank=rank))
   },
-  datatype="microarray",
   libraries = c("samr")
 )
 ```
@@ -197,7 +193,6 @@ addTask(
     }
     return(list(x=x,rank=rank))
   },
-  datatype="microarray",
   libraries = c("limma")
 )
 ```
@@ -215,7 +210,6 @@ addTask(
     rank <- abs(p-1)
     return(list(x=x,rank=rank))
   },
-  datatype="microarray",
   libraries = c("multtest")
 )
 ```
@@ -231,7 +225,6 @@ addTask(
     pauc <- area(genefilter::rowpAUCs(x,y,flip=TRUE))
     return(list(x=x,rank=pauc))
   },
-  datatype="microarray",
   libraries = c("genefilter")
 )
 ```
@@ -250,8 +243,7 @@ addTask(
     sd2 <- apply(x[,y==levels(y)[2]],1,sd)
     ratio <- abs((mu1-mu2)/(sd1+sd2))
     return(list(x=x,rank=ratio))
-  },
-  datatype="microarray"
+  }
 )
 ```
 
@@ -276,7 +268,6 @@ addTask(
     x <- x[sort(rank,decreasing=T,index.return=T)$ix[1:size],]
     return(x)
   },
-  datatype="microarray",
   parameters = data.frame(
     parameter = c("size"),
     class = c("numeric"),
@@ -305,7 +296,6 @@ addTask(
     classes <- predict(mod, newdata=t(testdata), type="raw")
     return(list(score=preds[,1],class=classes))
   },
-  datatype = "microarray",
   libraries = "caret"
 )
 ```
@@ -326,7 +316,6 @@ addTask(
     classification <- predict(mod,newdata=t(testdata),type="raw")
     return(list(score=preds[,1],class=classification))
   },
-  datatype = "microarray",
   libraries = "caret"
 )
 ```
@@ -347,7 +336,6 @@ addTask(
                                                type="raw"))
     return(list(score=preds[,1],class=classification))
   },
-  datatype = "microarray",
   libraries = "caret"
 )
 ```
@@ -378,7 +366,6 @@ addTask(
     classification <- predict(mod,newdata=t(testdata),type="raw")
     return(list(score=preds[,1],class=classification))
   },
-  datatype = "microarray",
   libraries = "caret"
 )
 ```
@@ -401,7 +388,6 @@ addTask(
     classification <- predict(mod,newdata=t(testdata),type="raw")
     return(list(score=preds[,1],class=classification))
   },
-  datatype = "microarray",
   libraries = "caret"
 )
 ```
@@ -418,7 +404,6 @@ addTask(
     classification <- predict.wv(mod,testdata, type="raw")
     return(list(score=preds,class=classification))
   },
-  datatype = "microarray",
   libraries = "caret"
 )
 ```
@@ -442,7 +427,6 @@ addTask(
     classification <- predict(mod,newdata=t(testdata),type="raw")
     return(list(score=preds[,1],class=classification))
   },
-  datatype = "microarray",
   libraries = "caret"
 )
 ```
@@ -485,7 +469,6 @@ addTask(
     rm(junk)
     return(list(x=x,rank=rank))
   },
-  datatype="microarray",
   libraries = c("samr")
 )
 
