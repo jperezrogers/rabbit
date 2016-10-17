@@ -71,7 +71,7 @@ validateControl <- function(control=NULL,parameters=NULL){
     for(i in 1:length(control)){
       param <- names(control)[i]
       param.class <- parameters$class[which(parameters$parameter==param)]
-      if(!all(sapply(control[[i]],function(x) is(x,param.class)))){
+      if(!all(sapply(control[[i]],function(x) methods::is(x,param.class)))){
         stop(paste0("Not all of the values provided for parameter '",param,"' in control are of class '",param.class,"'"))
       }
     }  
