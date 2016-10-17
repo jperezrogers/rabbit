@@ -11,7 +11,7 @@ Install the most recent version of the rabbit package directly from Github. A de
 
 ```r
 library(devtools)
-install_github("jperezrogers/rabbit", ref="development")
+install_github("jperezrogers/rabbit", ref="master")
 ```
 
 ### Load Example Data
@@ -39,5 +39,5 @@ rownames(golub) <- paste("Gene", 1:nrow(golub), sep="_")
 
 ### Run Stock Pipeline
 ```r
-run(stockPipeline, x=golub, y=golub.cl, outputdir=getwd(), seed=1234, verbose=TRUE, force=TRUE)
+run(stockPipeline, x=golub, y=as.factor(golub.cl), outputdir=getwd(), seed=1234, verbose=TRUE, force=TRUE)
 ```
