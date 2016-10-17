@@ -17,7 +17,7 @@ wv.model <- function(data, classlabel, correction = TRUE){
   
   y <- lapply(1:2, function (i) {data[,classlabel==names(table(classlabel))[i],drop=F]})
   mu <- sapply(y, apply, 1, mean, na.rm=T, simplify=F)
-  sigma <- sapply(y, apply, 1, sd, na.rm=T, simplify=F)
+  sigma <- sapply(y, apply, 1, stats::sd, na.rm=T, simplify=F)
   if (correction) {sigma <- mapply(pmax, sigma, lapply(mu, `*`, 0.2),SIMPLIFY=F)}
   a <- (mu[[2]] - mu[[1]]) / (sigma[[1]] + sigma[[2]])
   g <- (mu[[1]] + mu[[2]]) / 2
