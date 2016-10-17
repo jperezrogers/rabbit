@@ -25,8 +25,8 @@ validateLibraries <- function(libraries=NULL){
     }
     
     # check that all libraries are installed
-    if(!all(libraries%in%installed.packages()[,1])){
-      not.libs <- libraries[which(!(libraries%in%installed.packages()[,1]))]
+    if(!all(libraries%in%utils::installed.packages()[,1])){
+      not.libs <- libraries[which(!(libraries%in%utils::installed.packages()[,1]))]
       not.libs.str <- paste(not.libs,collapse=", ")
       stop(paste("The following libraries are not installed. Please install them:",not.libs.str))
     }

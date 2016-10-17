@@ -15,7 +15,7 @@
 # }
 # @keywords internal
 
-createOutputDirectoryStructure = function(data.partition,outputdir,model.index,force=F){
+createOutputDirectoryStructure = function(data.partition,outputdir,model.index,force=FALSE){
   
   # check if the output directory exists, if not, create it
   if(file.exists(file.path(outputdir))){
@@ -37,7 +37,7 @@ createOutputDirectoryStructure = function(data.partition,outputdir,model.index,f
     old.files <- dir(path=outputdir,pattern="cv_loop_")
     if(length(old.files)>0){
       old.files <- file.path(paste(outputdir,old.files,sep="/"))
-      unlink(old.files,recursive=T,force=F)  
+      unlink(old.files,recursive=T,force=F)
     }
   }
   

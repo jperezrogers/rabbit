@@ -39,7 +39,7 @@ getCall <- function(pipeline, module, task){
   task.call$parameters <- task.obj$parameters
   task.call$control <- task.obj$control
   task.call$libraries <- task.obj$libraries
-  task.call$datatype <- task.obj$datatype
+  # task.call$datatype <- task.obj$datatype
   
   return(task.call)
 }

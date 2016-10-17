@@ -42,10 +42,11 @@ Module <- R6::R6Class("Module",
     #================#
     
     # global function to add a task
-    addTask = function(label=NULL,method=NULL,datatype=NULL,parameters=NULL,libraries=NULL,control=NULL){
+    addTask = function(label=NULL,method=NULL,parameters=NULL,libraries=NULL,control=NULL){
       
       # create a new Task object
-      task <- Task$new(label,method,datatype,parameters,libraries,control)
+      # task <- Task$new(label,method,datatype,parameters,libraries,control)
+      task <- Task$new(label,method,parameters,libraries,control)
       
       # validate the object's parameters
       private$validate(task)

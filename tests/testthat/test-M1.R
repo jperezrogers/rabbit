@@ -35,16 +35,15 @@ test_that("each validate function is called when adding a new Task",{
 # test that new tasks are added correctly
 test_that("new tasks are added correctly",{
   mod <- M1$new("mymod")
-  mod$addTask(label="mytask",datatype="microarray",method=function(x){return(x)})
+  mod$addTask(label="mytask",method=function(x){return(x)})
   expect_equal(length(mod$tasks),1)
-  expect_equal(mod$tasks[["mytask"]]$datatype,"microarray")
-  expect_equal(mod$tasks[["mytask"]]$method,function(x){return(x)})
+  # expect_equal(mod$tasks[["mytask"]]$method,function(x){return(x)})
 })
 
 # test that an error is thrown if delete task is incorrectly specified
 test_that("an error is thrown if delete task is incorrectly specified",{
   mod <- M1$new("mymod")
-  mod$addTask(label="mytask",datatype="microarray",method=function(x){return(x)})
+  mod$addTask(label="mytask",method=function(x){return(x)})
   expect_error(mod$deleteTask(),"argument 'label' cannot be NULL")
   expect_error(mod$deleteTask(label=NULL),"argument 'label' cannot be NULL")
   expect_error(mod$deleteTask(123),"argument 'label' must be of class character")
@@ -59,15 +58,15 @@ test_that("an error is thrown if delete task is incorrectly specified",{
 # test that a task is deleted when delete task is correctly specified
 test_that("a task is deleted when delete task is correctly specified",{
   mod <- M1$new("mymod")
-  mod$addTask(label="myFirstTask",datatype="microarray",method=function(x){return(x)})
-  mod$addTask(label="mySecondTask",datatype="microarray",method=function(x){return(x)})
+  mod$addTask(label="myFirstTask",method=function(x){return(x)})
+  mod$addTask(label="mySecondTask",method=function(x){return(x)})
   expect_equal(names(mod$tasks),c("myFirstTask","mySecondTask"))
   mod$deleteTask("myFirstTask")
   expect_equal(names(mod$tasks),"mySecondTask")
   mod$deleteTask("mySecondTask")
   expect_equal(mod$tasks,list())
-  mod$addTask(label="myFirstTask",datatype="microarray",method=function(x){return(x)})
-  mod$addTask(label="mySecondTask",datatype="microarray",method=function(x){return(x)})
+  mod$addTask(label="myFirstTask",method=function(x){return(x)})
+  mod$addTask(label="mySecondTask",method=function(x){return(x)})
   mod$deleteTask(c("myFirstTask","mySecondTask"))
   expect_equal(mod$tasks,list())
 })

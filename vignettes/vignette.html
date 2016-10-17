@@ -10,7 +10,7 @@
 
 <meta name="author" content="Joe Perez-Rogers" />
 
-<meta name="date" content="2016-08-18" />
+<meta name="date" content="2016-10-17" />
 
 <title>Rabbit package</title>
 
@@ -51,7 +51,7 @@ document.addEventListener("DOMContentLoaded", function() {
 <div id="header">
 <h1 class="title">Rabbit package</h1>
 <h4 class="author"><em>Joe Perez-Rogers</em></h4>
-<h4 class="date"><em>2016-08-18</em></h4>
+<h4 class="date"><em>2016-10-17</em></h4>
 </div>
 
 <h1>Contents</h1>
@@ -124,12 +124,18 @@ document.addEventListener("DOMContentLoaded", function() {
 <p>Install the most recent version of the <em><a href="https://github.com/jperezrogers/rabbit">rabbit</a></em> package directly from Github. A development version of the package is also available and can be downloaded by setting <code>ref=&quot;development&quot;</code> though this version may be unstable.</p>
 <pre class="r"><code>library(devtools)
 install_github(&quot;jperezrogers/rabbit&quot;, ref=&quot;development&quot;)</code></pre>
-<pre><code>## Skipping install for github remote, the SHA1 (cef2df19) has not changed since last install.
-##   Use `force = TRUE` to force installation</code></pre>
+<pre><code>## Downloading GitHub repo jperezrogers/rabbit@development
+## from URL https://api.github.com/repos/jperezrogers/rabbit/zipball/development</code></pre>
+<pre><code>## Installing rabbit</code></pre>
+<pre><code>## '/usr/local/Cellar/r/3.3.1_2/R.framework/Resources/bin/R' --no-site-file  \
+##   --no-environ --no-save --no-restore --quiet CMD INSTALL  \
+##   '/private/var/folders/98/sh1934tj35jg7mfsmmt8pty00000gn/T/RtmpmbW00D/devtoolse9fee2685c0/jperezrogers-rabbit-4a45de8'  \
+##   --library='/usr/local/lib/R/3.3/site-library' --install-tests</code></pre>
+<pre><code>## </code></pre>
 </div>
 <div id="load-example-data" class="section level2">
 <h2><span class="header-section-number">2.2</span> Load Example Data</h2>
-<p>For illustrative purposes, we’ll use the famous leukemia dataset from <a href="http://www.ncbi.nlm.nih.gov/pubmed/10521349">Golub et al. (1999)</a> contained within the <em><a href="http://bioconductor.org/packages/release/bioc/html/multtest.html">multtest</a></em> package. This dataset contains gene expression values of 3051 genes across 38 leukemia patients. 27 patients were diagnosed with acute lymphoblastic leukemia (ALL) and 11 were diagnosed with acute myeloid leukemia (AML). Within the outcome vector <code>golub.cl</code>, ALL patients are coded as <code>0</code> while AML patients are coded as <code>1</code>.</p>
+<p>For illustrative purposes, we’ll use the famous leukemia dataset from <a href="http://www.ncbi.nlm.nih.gov/pubmed/10521349">Golub et al. (1999)</a> contained within the <em><a href="http://bioconductor.org/packages/multtest">multtest</a></em> package. This dataset contains gene expression values of 3051 genes across 38 leukemia patients. 27 patients were diagnosed with acute lymphoblastic leukemia (ALL) and 11 were diagnosed with acute myeloid leukemia (AML). Within the outcome vector <code>golub.cl</code>, ALL patients are coded as <code>0</code> while AML patients are coded as <code>1</code>.</p>
 <pre class="r"><code>library(multtest)
 data(golub)</code></pre>
 </div>
@@ -227,7 +233,6 @@ addModule(pipeline = stockPipeline, type = &quot;M3&quot;, label = &quot;biomark
     x &lt;- x[madev&gt;=boundary,]
     return(x)
   },
-  datatype = &quot;microarray&quot;,
   parameters = data.frame(
     parameter = c(&quot;fraction&quot;),
     class = c(&quot;numeric&quot;),
@@ -255,8 +260,7 @@ addModule(pipeline = stockPipeline, type = &quot;M3&quot;, label = &quot;biomark
     })
     x &lt;- x[p&lt;0.05,]
     return(x)
-  },
-  datatype = &quot;microarray&quot;
+  }
 )</code></pre>
 </div>
 </div>
@@ -279,14 +283,13 @@ addModule(pipeline = stockPipeline, type = &quot;M3&quot;, label = &quot;biomark
     rm(junk)
     return(list(x=x,rank=rank))
   },
-  datatype=&quot;microarray&quot;,
   libraries = c(&quot;samr&quot;)
 )</code></pre>
 <p><strong>NOTE:</strong> The <code>rank</code> of each gene is a transformation of the p-value returned by the <code>samr.pvalues.from.perms</code> function. Not all tasks in the feature selection module will rank genes based on p-values, thus we need to standardize the direction in which genes are ranked by the <code>rank</code> vector. The direction in which the ranks are sorted is an arbitrary decision, but one that needs to be consistent across all tasks in the module. In this case, we have chosen to rank genes in <em>descending</em> order based on the <code>rank</code> vector output by tasks in the feature selection module. P-values are transformed by subtracting <code>1</code> and taking the absolute value such that genes with the lowest p-values retain the highest rank.</p>
 </div>
 <div id="fold-change-p-value" class="section level4">
 <h4><span class="header-section-number">4.2.2.2</span> Fold Change + P-value</h4>
-<p>Genes are first scored by moderated t-statistic (using the <em><a href="http://bioconductor.org/packages/release/bioc/html/limma.html">limma</a></em> package and <code>eBayes</code> function). Genes with a p-value less than 0.05 are retained and then ranked by log2 fold-change. In the event that no genes pass the specified p-value threshold, all genes are retained and ranked by log2 fold-change. A gene expression matrix containing only those genes that pass the p-value threshold and their associated log2 fold-change rank is returned.</p>
+<p>Genes are first scored by moderated t-statistic (using the <em><a href="http://bioconductor.org/packages/limma">limma</a></em> package and <code>eBayes</code> function). Genes with a p-value less than 0.05 are retained and then ranked by log2 fold-change. In the event that no genes pass the specified p-value threshold, all genes are retained and ranked by log2 fold-change. A gene expression matrix containing only those genes that pass the p-value threshold and their associated log2 fold-change rank is returned.</p>
 <pre class="r"><code>addTask(
   pipeline = stockPipeline,
   module = &quot;feature selection&quot;,
@@ -308,13 +311,12 @@ addModule(pipeline = stockPipeline, type = &quot;M3&quot;, label = &quot;biomark
     }
     return(list(x=x,rank=rank))
   },
-  datatype=&quot;microarray&quot;,
   libraries = c(&quot;limma&quot;)
 )</code></pre>
 </div>
 <div id="student-t-test" class="section level4">
 <h4><span class="header-section-number">4.2.2.3</span> Student T-test</h4>
-<p>A two-tailed student t-test assuming equal variances applied to each gene using the <code>mt.teststat</code> function from within the <em><a href="http://bioconductor.org/packages/release/bioc/html/multtest.html">multtest</a></em> package for quick computation. Genes are ranked by p-value.</p>
+<p>A two-tailed student t-test assuming equal variances applied to each gene using the <code>mt.teststat</code> function from within the <em><a href="http://bioconductor.org/packages/multtest">multtest</a></em> package for quick computation. Genes are ranked by p-value.</p>
 <pre class="r"><code>addTask(
   pipeline = stockPipeline,
   module = &quot;feature selection&quot;,
@@ -325,13 +327,12 @@ addModule(pipeline = stockPipeline, type = &quot;M3&quot;, label = &quot;biomark
     rank &lt;- abs(p-1)
     return(list(x=x,rank=rank))
   },
-  datatype=&quot;microarray&quot;,
   libraries = c(&quot;multtest&quot;)
 )</code></pre>
 </div>
 <div id="partial-auc" class="section level4">
 <h4><span class="header-section-number">4.2.2.4</span> Partial AUC</h4>
-<p>The partial area under the receiver operating characteristic curve is computed for each gene. This task utilized the <code>rowpAUCs</code> function from within the <em><a href="http://bioconductor.org/packages/release/bioc/html/genefilter.html">genefilter</a></em> package. See <a href="http://www.ncbi.nlm.nih.gov/pubmed/12762450">Pepe et al. (2003)</a> for details on the partial AUC method.</p>
+<p>The partial area under the receiver operating characteristic curve is computed for each gene. This task utilized the <code>rowpAUCs</code> function from within the <em><a href="http://bioconductor.org/packages/genefilter">genefilter</a></em> package. See <a href="http://www.ncbi.nlm.nih.gov/pubmed/12762450">Pepe et al. (2003)</a> for details on the partial AUC method.</p>
 <pre class="r"><code>addTask(
   pipeline = stockPipeline,
   module = &quot;feature selection&quot;,
@@ -340,7 +341,6 @@ addModule(pipeline = stockPipeline, type = &quot;M3&quot;, label = &quot;biomark
     pauc &lt;- area(genefilter::rowpAUCs(x,y,flip=TRUE))
     return(list(x=x,rank=pauc))
   },
-  datatype=&quot;microarray&quot;,
   libraries = c(&quot;genefilter&quot;)
 )</code></pre>
 </div>
@@ -358,8 +358,7 @@ addModule(pipeline = stockPipeline, type = &quot;M3&quot;, label = &quot;biomark
     sd2 &lt;- apply(x[,y==levels(y)[2]],1,sd)
     ratio &lt;- abs((mu1-mu2)/(sd1+sd2))
     return(list(x=x,rank=ratio))
-  },
-  datatype=&quot;microarray&quot;
+  }
 )</code></pre>
 </div>
 </div>
@@ -384,7 +383,6 @@ addModule(pipeline = stockPipeline, type = &quot;M3&quot;, label = &quot;biomark
     x &lt;- x[sort(rank,decreasing=T,index.return=T)$ix[1:size],]
     return(x)
   },
-  datatype=&quot;microarray&quot;,
   parameters = data.frame(
     parameter = c(&quot;size&quot;),
     class = c(&quot;numeric&quot;),
@@ -413,7 +411,6 @@ addModule(pipeline = stockPipeline, type = &quot;M3&quot;, label = &quot;biomark
     classes &lt;- predict(mod, newdata=t(testdata), type=&quot;raw&quot;)
     return(list(score=preds[,1],class=classes))
   },
-  datatype = &quot;microarray&quot;,
   libraries = &quot;caret&quot;
 )</code></pre>
 </div>
@@ -433,7 +430,6 @@ addModule(pipeline = stockPipeline, type = &quot;M3&quot;, label = &quot;biomark
     classification &lt;- predict(mod,newdata=t(testdata),type=&quot;raw&quot;)
     return(list(score=preds[,1],class=classification))
   },
-  datatype = &quot;microarray&quot;,
   libraries = &quot;caret&quot;
 )</code></pre>
 </div>
@@ -453,7 +449,6 @@ addModule(pipeline = stockPipeline, type = &quot;M3&quot;, label = &quot;biomark
                                                type=&quot;raw&quot;))
     return(list(score=preds[,1],class=classification))
   },
-  datatype = &quot;microarray&quot;,
   libraries = &quot;caret&quot;
 )</code></pre>
 </div>
@@ -483,13 +478,12 @@ addModule(pipeline = stockPipeline, type = &quot;M3&quot;, label = &quot;biomark
     classification &lt;- predict(mod,newdata=t(testdata),type=&quot;raw&quot;)
     return(list(score=preds[,1],class=classification))
   },
-  datatype = &quot;microarray&quot;,
   libraries = &quot;caret&quot;
 )</code></pre>
 </div>
 <div id="support-vector-machine-radial" class="section level4">
 <h4><span class="header-section-number">4.2.4.5</span> Support Vector Machine (Radial)</h4>
-<p>The support vector machine task uses 5x 10-fold cross-validation to tube the <code>sigma</code> and <code>C</code> parameters</p>
+<p>The support vector machine task uses 5x 10-fold cross-validation to tune the <code>sigma</code> and <code>C</code> parameters</p>
 <pre class="r"><code>addTask(
   pipeline = stockPipeline,
   module = &quot;classification&quot;,
@@ -505,7 +499,6 @@ addModule(pipeline = stockPipeline, type = &quot;M3&quot;, label = &quot;biomark
     classification &lt;- predict(mod,newdata=t(testdata),type=&quot;raw&quot;)
     return(list(score=preds[,1],class=classification))
   },
-  datatype = &quot;microarray&quot;,
   libraries = &quot;caret&quot;
 )</code></pre>
 </div>
@@ -521,7 +514,6 @@ addModule(pipeline = stockPipeline, type = &quot;M3&quot;, label = &quot;biomark
     classification &lt;- predict.wv(mod,testdata, type=&quot;raw&quot;)
     return(list(score=preds,class=classification))
   },
-  datatype = &quot;microarray&quot;,
   libraries = &quot;caret&quot;
 )</code></pre>
 </div>
@@ -544,7 +536,6 @@ addModule(pipeline = stockPipeline, type = &quot;M3&quot;, label = &quot;biomark
     classification &lt;- predict(mod,newdata=t(testdata),type=&quot;raw&quot;)
     return(list(score=preds[,1],class=classification))
   },
-  datatype = &quot;microarray&quot;,
   libraries = &quot;caret&quot;
 )</code></pre>
 </div>
@@ -664,7 +655,6 @@ summary(stockPipeline, level=&quot;active&quot;)</code></pre>
     rm(junk)
     return(list(x=x,rank=rank))
   },
-  datatype=&quot;microarray&quot;,
   libraries = c(&quot;samr&quot;)
 )
 
@@ -752,11 +742,7 @@ task.mad</code></pre>
 ## 
 ## $control
 ## $control$fraction
-## [1] 0.25 0.50 0.75
-## 
-## 
-## $datatype
-## [1] &quot;microarray&quot;</code></pre>
+## [1] 0.25 0.50 0.75</code></pre>
 <p>To add a task back to the pipeline after modifying the list returned by <code>getCall</code>, use the <code>do.call</code> function</p>
 <pre class="r"><code>do.call(what=addTask, args=task.mad)</code></pre>
 </div>
@@ -819,7 +805,7 @@ summary(stockPipeline)</code></pre>
 <div id="m1-modules" class="section level3">
 <h3><span class="header-section-number">5.2.1</span> M1 Modules</h3>
 <p>Type <code>M1</code> modules store tasks that take in a numerical matrix and output a numerical matrix. Optionally, these tasks may also take in phenotype information in the form of a <code>data.frame</code>. <code>M1</code> modules are used primarily for <em>unsupervised</em> processes (those that do not use the response variable <code>y</code>) that are applied to the expression matrix. One example use case for an <code>M1</code> module would be to perform some sort of feature filtering, perhaps based on a gene’s expression level or variance as in the stock pipeline example above. An expression matrix is read in by the tasks in the <code>M1</code> module, a subset is selected for, then an expression matrix is returned. The only assumption is that the column names will be identical between the input and output expression matrix. It’s important to note that the expression matrix returned by a task in an <code>M1</code> module does <strong>not</strong> need to have the same number of rows (genes) as the matrix that was passed to it, thus allowing the user to <em>select</em> genes based on some metric and ensure that only those genes are passed to the next step in the pipeline.</p>
-<p>A second example use case for an <code>M1</code> module would be to create a ‘batch correction’ module where the expression matrix is read in, modified, and then returned by the task. Let’s try to create the <code>method</code> parameter for a task in an <code>M1</code> module using the <code>ComBat</code> function from within the <em><a href="http://bioconductor.org/packages/release/bioc/html/sva.html">sva</a></em> package which we can use to apply a batch correction to our expression data. <code>ComBat</code> requires both a gene expression matrix (in our case, <code>x</code>), and the batch annotation which we can store in our phenotype data.frame <code>data</code>. We pass both <code>x</code> and <code>data</code> to our function and return the batch corrected matrix to the pipeline.</p>
+<p>A second example use case for an <code>M1</code> module would be to create a ‘batch correction’ module where the expression matrix is read in, modified, and then returned by the task. Let’s try to create the <code>method</code> parameter for a task in an <code>M1</code> module using the <code>ComBat</code> function from within the <em><a href="http://bioconductor.org/packages/sva">sva</a></em> package which we can use to apply a batch correction to our expression data. <code>ComBat</code> requires both a gene expression matrix (in our case, <code>x</code>), and the batch annotation which we can store in our phenotype data.frame <code>data</code>. We pass both <code>x</code> and <code>data</code> to our function and return the batch corrected matrix to the pipeline.</p>
 <pre class="r"><code># an example 'method' parameter for a task in an 'M1' module
 method &lt;- function(x,data){
   mod &lt;- model.matrix(~1, data=data)
