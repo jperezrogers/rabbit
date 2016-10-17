@@ -561,7 +561,7 @@ Pipeline <- R6::R6Class("Pipeline",
           if(module.class=="M4"){
 
             # for now, write results out to flat files
-            feature.names <- row.names(generics$x)
+            feature.names <- row.names(generics[[generics.counter]]$x)
 
             # check the output of the classification task for correctness
             if(!is.list(o)){
