@@ -10,7 +10,7 @@
 
 <meta name="author" content="Joe Perez-Rogers" />
 
-<meta name="date" content="2016-10-17" />
+<meta name="date" content="2016-10-18" />
 
 <title>Rabbit package</title>
 
@@ -51,7 +51,7 @@ document.addEventListener("DOMContentLoaded", function() {
 <div id="header">
 <h1 class="title">Rabbit package</h1>
 <h4 class="author"><em>Joe Perez-Rogers</em></h4>
-<h4 class="date"><em>2016-10-17</em></h4>
+<h4 class="date"><em>2016-10-18</em></h4>
 </div>
 
 <h1>Contents</h1>
@@ -122,16 +122,9 @@ document.addEventListener("DOMContentLoaded", function() {
 <div id="installing-rabbit" class="section level2">
 <h2><span class="header-section-number">2.1</span> Installing rabbit</h2>
 <p>Install the most recent version of the <em><a href="https://github.com/jperezrogers/rabbit">rabbit</a></em> package directly from Github. A development version of the package is also available and can be downloaded by setting <code>ref=&quot;development&quot;</code> though this version may be unstable.</p>
-<pre class="r"><code>library(devtools)
-install_github(&quot;jperezrogers/rabbit&quot;, ref=&quot;development&quot;)</code></pre>
-<pre><code>## Downloading GitHub repo jperezrogers/rabbit@development
-## from URL https://api.github.com/repos/jperezrogers/rabbit/zipball/development</code></pre>
-<pre><code>## Installing rabbit</code></pre>
-<pre><code>## '/usr/local/Cellar/r/3.3.1_2/R.framework/Resources/bin/R' --no-site-file  \
-##   --no-environ --no-save --no-restore --quiet CMD INSTALL  \
-##   '/private/var/folders/98/sh1934tj35jg7mfsmmt8pty00000gn/T/RtmpmbW00D/devtoolse9fee2685c0/jperezrogers-rabbit-4a45de8'  \
-##   --library='/usr/local/lib/R/3.3/site-library' --install-tests</code></pre>
-<pre><code>## </code></pre>
+<pre class="r"><code>devtools::install_github(&quot;jperezrogers/rabbit&quot;, ref=&quot;master&quot;)</code></pre>
+<pre><code>## Skipping install of 'rabbit' from a github remote, the SHA1 (23ea5c32) has not changed since last install.
+##   Use `force = TRUE` to force installation</code></pre>
 </div>
 <div id="load-example-data" class="section level2">
 <h2><span class="header-section-number">2.2</span> Load Example Data</h2>
