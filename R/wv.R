@@ -1,3 +1,17 @@
+#' Train a weighted voting classifier
+#'
+#' A more detailed description will eventually go here...
+#'
+#' @param data matrix with samples in columns and genes in rows
+#' @param classlabel two-level factor of binary outcomes (0 or 1)
+#' @param correction should the Broad Institute's correction method be used?
+#'
+#' @examples
+#' \dontrun{
+#' library(multtest)
+#' data(golub)
+#' mod <- wv.model(golub,golub.cl,correction=T)
+#' }
 #' @export
 
 wv.model <- function(data, classlabel, correction = TRUE){
