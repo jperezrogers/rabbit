@@ -296,7 +296,7 @@ Pipeline <- R6::R6Class("Pipeline",
       data.partition <- partitionData(y,cv=private$cv,nfolds=private$nfolds,p=private$p)
 
       # step 7: create the output directory structure that will store the results
-      createOutputDirectoryStructure(data.partition,outputdir,private$model.index,force)
+      createOutputDirectoryStructure(data.partition,outputdir,private$model.index,force,iter)
 
       # step 8: run each model
       if(is.null(iter)){
