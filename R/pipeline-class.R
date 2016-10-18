@@ -270,8 +270,11 @@ Pipeline <- R6::R6Class("Pipeline",
     run = function(x,y,data=NULL,rank=NULL,outputdir=getwd(),iter=NULL,seed=NULL,
                    force=FALSE,verbose=FALSE,exitOnError=FALSE,returnTraceback=TRUE){
 
-      # seed and iter need to be specified together
-
+      # set the seed
+      if(!is.null(seed)){
+        set.seed(seed)  
+      }
+      
       # step #: validate pipeline config
 
       # step #: validate that all modules have tasks
@@ -309,6 +312,9 @@ Pipeline <- R6::R6Class("Pipeline",
 
       if(verbose){cat("Evaluating Models\n\n")}
       for(i in i.iter:i.max){
+        if(!is.null(seed)){
+          set.seed(seed)  
+        }
         self$.buildModelsSingleIter(x=x,y=y,data=data,rank=rank,outputdir=outputdir,
                                     partition=data.partition,iter=i,
                                     model.index=private$model.index,
