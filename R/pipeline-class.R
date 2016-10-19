@@ -323,6 +323,52 @@ Pipeline <- R6::R6Class("Pipeline",
 
     },
 
+    getModelSpecs <- function(self){
+      
+      # create model index
+      model.index <- indexModels(self)
+      
+      # create a detailed label key
+      parameter.key <- private$generateParameterKey(self)
+      label.key <- private$generateLabelKey(self)
+      label.key.detailed <- list()
+      for(n in 1:length(names(parameter.key))){
+        module.name <- names(parameter.key)[n]
+        module <- parameter.key[[module.name]]
+        module.tasks <- c()
+        if(length(stockPipeline$modules[[module.name]]$tasks)>0){
+          for(i in 1:length(module)){
+            task.label <- label.key[[module.name]][[i]]
+            additional.params.idx <- which(!names(module[[i]])%in%c("x","y","data","rank","testdata"))
+            additional.params <- module[[i]][additional.params.idx]
+            if(length(additional.params)>0){
+              strings <- c()
+              for(j in 1:length(additional.params)){
+                string <- paste(names(additional.params)[j],"=",additional.params[[j]])
+                strings <- c(strings,string)
+              }
+              extra.params <- paste0("(",paste0(strings,collapse=", "),")")
+              task.label <- paste(task.label,extra.params)
+            }
+            module.tasks <- append(module.tasks,task.label)
+          }
+        }
+        label.key.detailed[[module.name]] <- module.tasks
+      }
+      
+      # create the specs matrix
+      col.idx <- seq(1:ncol(model.index))
+      specs <- t(sapply(1:nrow(model.index),function(z){
+        sapply(col.idx,function(x){unlist(label.key.detailed[[x]][model.index[z,x]])})
+      }))
+      colnames(specs) <- colnames(model.index)
+      rownames(specs) <- rownames(model.index)
+      
+      # return specs
+      return(specs)
+      
+    },
+
 #===============================================================================
 # Public 'Hidden' Methods
 #===============================================================================
