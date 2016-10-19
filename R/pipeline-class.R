@@ -323,14 +323,18 @@ Pipeline <- R6::R6Class("Pipeline",
 
     },
 
-    getModelSpecs = function(self){
+    #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    # getModelSpecs function
+    #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+    getModelSpecs = function(){
       
       # create model index
       model.index <- indexModels(self)
       
       # create a detailed label key
-      parameter.key <- private$generateParameterKey(self)
-      label.key <- private$generateLabelKey(self)
+      parameter.key <- generateParameterKey(self)
+      label.key <- generateLabelKey(self)
       label.key.detailed <- list()
       for(n in 1:length(names(parameter.key))){
         module.name <- names(parameter.key)[n]
