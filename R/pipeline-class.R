@@ -336,7 +336,7 @@ Pipeline <- R6::R6Class("Pipeline",
         module.name <- names(parameter.key)[n]
         module <- parameter.key[[module.name]]
         module.tasks <- c()
-        if(length(stockPipeline$modules[[module.name]]$tasks)>0){
+        if(length(self$modules[[module.name]]$tasks)>0){
           for(i in 1:length(module)){
             task.label <- label.key[[module.name]][[i]]
             additional.params.idx <- which(!names(module[[i]])%in%c("x","y","data","rank","testdata"))
