@@ -323,7 +323,7 @@ Pipeline <- R6::R6Class("Pipeline",
 
     },
 
-    getModelSpecs <- function(self){
+    getModelSpecs = function(self){
       
       # create model index
       model.index <- indexModels(self)
