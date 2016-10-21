@@ -10,7 +10,7 @@
 
 <meta name="author" content="Joe Perez-Rogers" />
 
-<meta name="date" content="2016-10-18" />
+<meta name="date" content="2016-10-21" />
 
 <title>Rabbit package</title>
 
@@ -51,7 +51,7 @@ document.addEventListener("DOMContentLoaded", function() {
 <div id="header">
 <h1 class="title">Rabbit package</h1>
 <h4 class="author"><em>Joe Perez-Rogers</em></h4>
-<h4 class="date"><em>2016-10-18</em></h4>
+<h4 class="date"><em>2016-10-21</em></h4>
 </div>
 
 <h1>Contents</h1>
@@ -123,14 +123,6 @@ document.addEventListener("DOMContentLoaded", function() {
 <h2><span class="header-section-number">2.1</span> Installing rabbit</h2>
 <p>Install the most recent version of the <em><a href="https://github.com/jperezrogers/rabbit">rabbit</a></em> package directly from Github. A development version of the package is also available and can be downloaded by setting <code>ref=&quot;development&quot;</code> though this version may be unstable.</p>
 <pre class="r"><code>devtools::install_github(&quot;jperezrogers/rabbit&quot;, ref=&quot;master&quot;)</code></pre>
-<pre><code>## Downloading GitHub repo jperezrogers/rabbit@master
-## from URL https://api.github.com/repos/jperezrogers/rabbit/zipball/master</code></pre>
-<pre><code>## Installing rabbit</code></pre>
-<pre><code>## '/usr/local/Cellar/r/3.3.1_2/R.framework/Resources/bin/R' --no-site-file  \
-##   --no-environ --no-save --no-restore --quiet CMD INSTALL  \
-##   '/private/var/folders/98/sh1934tj35jg7mfsmmt8pty00000gn/T/RtmpDMffkT/devtools107681f5b4879/jperezrogers-rabbit-23ea5c3'  \
-##   --library='/usr/local/lib/R/3.3/site-library' --install-tests</code></pre>
-<pre><code>## </code></pre>
 </div>
 <div id="load-example-data" class="section level2">
 <h2><span class="header-section-number">2.2</span> Load Example Data</h2>
@@ -703,6 +695,7 @@ task.mad</code></pre>
 ##     addModule: function (type = NULL, label = NULL) 
 ##     clone: function (deep = FALSE) 
 ##     deleteModule: function (label = NULL) 
+##     getModelSpecs: function () 
 ##     getOrder: function (verbose = FALSE) 
 ##     initialize: function (label = NULL, cv = &quot;lgocv&quot;, nfolds = 10, p = 0.8) 
 ##     modules: list
