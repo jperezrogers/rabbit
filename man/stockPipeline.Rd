@@ -3,16 +3,16 @@
 \docType{data}
 \name{stockPipeline}
 \alias{stockPipeline}
-\title{Stock implementation of a biomarker discovery pipeline}
-\format{a \code{Pipeline} object containing 4 modules and 15 total tasks.}
+\title{Stock biomarker discovery pipeline for microarray data}
+\format{An object of class \code{Pipeline}}
 \usage{
-stockPipeline
+data(stockPipeline)
 }
 \description{
-A more detailed description will eventually go here...
+More detail will go here
 }
 \examples{
-summary(stockPipeline, level="structure")
+data(stockPipeline)
 }
 \keyword{datasets}
 

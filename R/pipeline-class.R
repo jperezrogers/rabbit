@@ -270,8 +270,11 @@ Pipeline <- R6::R6Class("Pipeline",
     run = function(x,y,data=NULL,rank=NULL,outputdir=getwd(),iter=NULL,seed=NULL,
                    force=FALSE,verbose=FALSE,exitOnError=FALSE,returnTraceback=TRUE){
 
-      # seed and iter need to be specified together
-
+      # set the seed
+      if(!is.null(seed)){
+        set.seed(seed)  
+      }
+      
       # step #: validate pipeline config
 
       # step #: validate that all modules have tasks
@@ -296,7 +299,7 @@ Pipeline <- R6::R6Class("Pipeline",
       data.partition <- partitionData(y,cv=private$cv,nfolds=private$nfolds,p=private$p)
 
       # step 7: create the output directory structure that will store the results
-      createOutputDirectoryStructure(data.partition,outputdir,private$model.index,force)
+      createOutputDirectoryStructure(data.partition,outputdir,private$model.index,force,iter)
 
       # step 8: run each model
       if(is.null(iter)){
@@ -309,12 +312,65 @@ Pipeline <- R6::R6Class("Pipeline",
 
       if(verbose){cat("Evaluating Models\n\n")}
       for(i in i.iter:i.max){
+        if(!is.null(seed)){
+          set.seed(seed)  
+        }
         self$.buildModelsSingleIter(x=x,y=y,data=data,rank=rank,outputdir=outputdir,
                                     partition=data.partition,iter=i,
                                     model.index=private$model.index,
                                     verbose,exitOnError,returnTraceback)
       }
 
+    },
+
+    #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    # getModelSpecs function
+    #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+    getModelSpecs = function(){
+      
+      # create model index
+      model.index <- indexModels(self)
+      
+      # create a detailed label key
+      parameter.key <- generateParameterKey(self)
+      label.key <- generateLabelKey(self)
+      label.key.detailed <- list()
+      for(n in 1:length(names(parameter.key))){
+        module.name <- names(parameter.key)[n]
+        module <- parameter.key[[module.name]]
+        module.tasks <- c()
+        if(length(self$modules[[module.name]]$tasks)>0){
+          for(i in 1:length(module)){
+            task.label <- label.key[[module.name]][[i]]
+            additional.params.idx <- which(!names(module[[i]])%in%c("x","y","data","rank","testdata"))
+            additional.params <- module[[i]][additional.params.idx]
+            if(length(additional.params)>0){
+              strings <- c()
+              for(j in 1:length(additional.params)){
+                string <- paste(names(additional.params)[j],"=",additional.params[[j]])
+                strings <- c(strings,string)
+              }
+              extra.params <- paste0("(",paste0(strings,collapse=", "),")")
+              task.label <- paste(task.label,extra.params)
+            }
+            module.tasks <- append(module.tasks,task.label)
+          }
+        }
+        label.key.detailed[[module.name]] <- module.tasks
+      }
+      
+      # create the specs matrix
+      col.idx <- seq(1:ncol(model.index))
+      specs <- t(sapply(1:nrow(model.index),function(z){
+        sapply(col.idx,function(x){unlist(label.key.detailed[[x]][model.index[z,x]])})
+      }))
+      colnames(specs) <- colnames(model.index)
+      rownames(specs) <- rownames(model.index)
+      
+      # return specs
+      return(specs)
+      
     },
 
 #===============================================================================

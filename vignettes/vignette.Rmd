@@ -16,7 +16,7 @@ An introduciton to the rabbit package, its purpose, and its utility
 
 ## Installing rabbit
 Install the most recent version of the `r Githubpkg("jperezrogers/rabbit")` package directly from Github. A development version of the package is also available and can be downloaded by setting `ref="development"` though this version may be unstable.
-```{r, eval=TRUE}
+```{r, eval=FALSE}
 devtools::install_github("jperezrogers/rabbit", ref="master")
 ```
 

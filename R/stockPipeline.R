@@ -1,9 +1,16 @@
-#' Stock implementation of a biomarker discovery pipeline
+#' Stock biomarker discovery pipeline for microarray data
+#'
+#' More detail will go here
 #' 
-#' A more detailed description will eventually go here...
-#' 
-#' @format a \code{Pipeline} object containing 4 modules and 15 total tasks.
-#' 
+#' @docType data
+#'
+#' @usage data(stockPipeline)
+#'
+#' @format An object of class \code{Pipeline}
+#'
+#' @keywords datasets
+#'
+#'
 #' @examples
-#' summary(stockPipeline, level="structure")
+#' data(stockPipeline)
 "stockPipeline"
