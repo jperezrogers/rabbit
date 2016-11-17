@@ -640,7 +640,7 @@ Pipeline <- R6::R6Class("Pipeline",
             }
 
             prefix <- paste0(outputdir,"/cv_loop_",iter,"/model_",model.n)
-            outfile <- data.frame(Sample=colnames(params$testdata),Score=scores,Classification=classifications)
+            outfile <- data.frame(Sample=colnames(params$testdata),Score=scores,Classification=classifications, Response=test.y)
             write.table(feature.names,paste(prefix,"feature_names.txt",sep="/"),
                         sep="\t",col.names=F,row.names=F,quote=F)
             write.table(outfile,paste(prefix,"predictions.txt",sep="/"),
