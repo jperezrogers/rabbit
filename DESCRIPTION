@@ -1,8 +1,23 @@
 Package: rabbit
-Title: What the Package Does (one line, title case)
-Version: 0.0.0.9000
-Authors@R: person("First", "Last", email = "first.last@example.com", role = c("aut", "cre"))
+Title: An R Package to Create Computational Pipelines to Develop and Evaluate Biomarkers from High Dimensional Genomic Data
+Version: 0.1.4
+Authors@R: person("Joe", "Perez-Rogers", email = "jperezrogers@gmail.com", role = c("aut", "cre"))
 Description: What the package does (one paragraph).
-Depends: R (>= 3.1.1)
-License: What license is it under?
+Depends:
+    R (>= 3.1.1)
+License: GPL-3
+VignetteBuilder: knitr
 LazyData: true
+Imports:
+    caret,
+    methods
+Suggests:
+    devtools,
+    testthat,
+    BiocStyle,
+    knitr,
+    rmarkdown,
+    limma,
+    genefilter,
+    multtest
+RoxygenNote: 5.0.1
