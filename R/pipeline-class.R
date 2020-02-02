@@ -73,8 +73,8 @@ Pipeline <- R6::R6Class("Pipeline",
       is.wholenumber <- function(x, tol = .Machine$double.eps^0.5)  abs(x - round(x)) < tol
       if(!is.numeric(nfolds)){
         stop("parameter 'nfolds' must be of class numeric")
-      } else if(!is.wholenumber(nfolds)|nfolds<=1){
-        stop("parameter 'nfolds' must be an integer >1")
+      } else if(!is.wholenumber(nfolds)){
+        stop("parameter 'nfolds' must be an integer >=1")
       } else {
         private$nfolds <- nfolds
       }
@@ -270,7 +270,10 @@ Pipeline <- R6::R6Class("Pipeline",
     run = function(x,y,data=NULL,rank=NULL,outputdir=getwd(),iter=NULL,seed=NULL,
                    force=FALSE,verbose=FALSE,exitOnError=FALSE,returnTraceback=TRUE,
                   inputPartition=NULL){
-
+      
+      if(is.null(inputPartition)&&(private$nfolds==1)){
+        stop(paste0('If nfolds is equal to 1, then an input partition must be given in inputPartition'))
+      }
       # set the seed
       if(!is.null(seed)){
         set.seed(seed)  
@@ -575,6 +578,9 @@ Pipeline <- R6::R6Class("Pipeline",
           #=====================================================================
 
           params <- updateParametersFromGenerics(params,generics[[generics.counter]],module.class)
+          params$model.n=model.n
+          params$iter=iter
+          params$outputdir=outputdir
 
           #=====================================================================
           # Now that the parameters are set, we can run the task. In the event

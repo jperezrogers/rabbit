@@ -25,8 +25,8 @@
 #' @export
 
 run <- function(pipeline,x,y,data=NULL,rank=NULL,outputdir=getwd(),iter=NULL,seed=NULL,
-                force=FALSE,verbose=FALSE,exitOnError=FALSE,returnTraceback=TRUE){
+                force=FALSE,verbose=FALSE,exitOnError=FALSE,returnTraceback=TRUE,inputPartition=NULL){
   
-  pipeline$run(x,y,data,rank,outputdir,iter,seed,force,verbose,exitOnError,returnTraceback)
+  pipeline$run(x,y,data,rank,outputdir,iter,seed,force,verbose,exitOnError,returnTraceback,inputPartition)
   
 }

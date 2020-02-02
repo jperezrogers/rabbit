@@ -34,7 +34,6 @@ partitionData = function(y,cv="cv",nfolds=10,p=0.80){
   } else if(cv=="boot"){
     data.partition <- caret::createResample(y=index,times=nfolds)
   }
-  
   # return the data partition
   return(data.partition)
   

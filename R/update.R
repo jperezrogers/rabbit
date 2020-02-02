@@ -55,8 +55,8 @@ update <- function(pipeline, what, value){
     is.wholenumber <- function(x, tol = .Machine$double.eps^0.5)  abs(x - round(x)) < tol
     if(!is.numeric(value)){
       stop("parameter 'nfolds' must be of class numeric")
-    } else if(!is.wholenumber(value)|value<=1){
-      stop("parameter 'nfolds' must be an integer >1")
+    } else if(!is.wholenumber(value)){
+      stop("parameter 'nfolds' must be an integer >=1")
     } else {
       pipeline$.setPrivate("nfolds",value)
     }
