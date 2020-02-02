@@ -14,6 +14,7 @@
 #' @param verbose logical. Should intermediate text be printed to the screen?
 #' @param exitOnError should the pipeline run be aborted due to an error (\code{TRUE}) or should the pipeline simply skip the problematic model (\code{FALSE})
 #' @param returnTraceback in the event of an error, should the error traceback be returned?
+#' @param inputPartition a given input partition, if it is NULL the partition will be generated using the parameters, otherwise inputPartition will be used
 #' 
 #' @details
 #' More details to come...
@@ -25,8 +26,8 @@
 #' @export
 
 run <- function(pipeline,x,y,data=NULL,rank=NULL,outputdir=getwd(),iter=NULL,seed=NULL,
-                force=FALSE,verbose=FALSE,exitOnError=FALSE,returnTraceback=TRUE){
+                force=FALSE,verbose=FALSE,exitOnError=FALSE,returnTraceback=TRUE,inputPartition=NULL){
   
-  pipeline$run(x,y,data,rank,outputdir,iter,seed,force,verbose,exitOnError,returnTraceback)
+  pipeline$run(x,y,data,rank,outputdir,iter,seed,force,verbose,exitOnError,returnTraceback,inputPartition)
   
 }
