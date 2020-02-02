@@ -268,7 +268,8 @@ Pipeline <- R6::R6Class("Pipeline",
     #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
     run = function(x,y,data=NULL,rank=NULL,outputdir=getwd(),iter=NULL,seed=NULL,
-                   force=FALSE,verbose=FALSE,exitOnError=FALSE,returnTraceback=TRUE){
+                   force=FALSE,verbose=FALSE,exitOnError=FALSE,returnTraceback=TRUE,
+                  inputPartition=NULL){
 
       # set the seed
       if(!is.null(seed)){
@@ -296,7 +297,11 @@ Pipeline <- R6::R6Class("Pipeline",
       self$.validateUserInputs(x,y,data,rank,iter,seed)
 
       # step 6: split data into internal training/test sets based on cv
-      data.partition <- partitionData(y,cv=private$cv,nfolds=private$nfolds,p=private$p)
+      if (is.null(inputPartition)){
+        data.partition <- partitionData(y,cv=private$cv,nfolds=private$nfolds,p=private$p)
+      } else{
+        data.partition <- inputPartition
+      }
 
       # step 7: create the output directory structure that will store the results
       createOutputDirectoryStructure(data.partition,outputdir,private$model.index,force,iter)
